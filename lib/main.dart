@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/main_menu.dart';
+import 'package:godeliveryapp_naranja/product_card.dart';
 
 void main() {
   runApp(const MyApp());
@@ -117,8 +118,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const MainMenu()), );
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProductListScreen()),
+          );
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
