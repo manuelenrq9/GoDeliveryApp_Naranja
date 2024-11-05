@@ -12,7 +12,7 @@ class ProductListScreen extends StatelessWidget {
               // Acción para ver todos los productos
             },
             child: const Text(
-              'View All',
+              'Ver mas',
               style: TextStyle(color: Colors.orange),
             ),
           ),
@@ -26,7 +26,7 @@ class ProductListScreen extends StatelessWidget {
                 'https://www.nestle.com.bd/sites/g/files/pydnoa311/files/koko_0.png',
             name: 'Nestle Koko Krunch Duo (Kids pack)',
             size: '550 gm',
-            price: '৳ 550',
+            price: '\$550',
             oldPrice: null,
           ),
           ProductItem(
@@ -34,16 +34,16 @@ class ProductListScreen extends StatelessWidget {
                 'https://sadinbazar.com/wp-content/uploads/2020/12/Rupchanda-Soyabean-Oil-5.jpeg',
             name: 'Rupchanda Soyabean Oil',
             size: '5 litres',
-            price: '৳ 480',
-            oldPrice: '৳ 650',
+            price: '\$480',
+            oldPrice: '\$650',
           ),
           ProductItem(
             imageUrl:
                 'https://www.allservefoodservice.com/wp-content/uploads/2022/01/azucar-zulka.jpeg',
             name: 'azucar-zulka',
             size: '5 litres',
-            price: '৳ 480',
-            oldPrice: '৳ 650',
+            price: '\$480',
+            oldPrice: '\$650',
           ),
           // Agrega más ProductItem aquí si es necesario
         ],
