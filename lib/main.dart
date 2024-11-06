@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/register.dart';
+import 'package:godeliveryapp_naranja/login.dart';
+import 'package:godeliveryapp_naranja/main_menu.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyApp());  
 }
 
 class MyApp extends StatelessWidget {
@@ -61,11 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const RegisterScreen()),
-          );
+        
+        onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const MainMenu()), );
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
