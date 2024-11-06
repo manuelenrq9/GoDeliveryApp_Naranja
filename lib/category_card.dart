@@ -30,13 +30,13 @@ class _CategoryCardState extends State<CategoryCard> {
         ),
         child: Column(
           children: [
-            SizedBox(height: 12,),
+            const SizedBox(height: 12,),
             Container(
               width: 49,
               height: 49,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
-                color:Color.fromARGB(255, 255, 255, 255),
+                color:const Color.fromARGB(255, 255, 255, 255),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(9),
@@ -45,8 +45,8 @@ class _CategoryCardState extends State<CategoryCard> {
                 ),
               ),
             ),
-            SizedBox(height: 5,),
-            Text(
+            const SizedBox(height: 5,),
+            const Text(
               "Food",
               style: TextStyle(
                 color: Colors.white,

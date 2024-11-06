@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
 import 'combo_card.dart';
-import 'package:godeliveryapp_naranja/category_card.dart';
+import 'category_card.dart';
+import 'product_card.dart';
+
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
 
@@ -9,8 +10,8 @@ class MainMenu extends StatefulWidget {
 
    _MainMenuState createState() => _MainMenuState();
 
-
 }
+
 
 class _MainMenuState extends State<MainMenu> {
   @override
@@ -31,12 +32,12 @@ class _MainMenuState extends State<MainMenu> {
             // Accion para abrir el menu
           },
         ),
-        // title: Center(
-        //   child: Image.asset(
-        //     '',
-        //     height: 40,
-        //   ),
-        // ),
+        title: Center(
+          child: Image.asset(
+            'images/LogoLetrasGoDely.png',
+            height: 40,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -46,14 +47,25 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-
-
-      
         body: SingleChildScrollView(
             
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                  const SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        CategoryCard(title: '', iconPath: ''),
+                        CategoryCard(title: '', iconPath: ''),
+                        CategoryCard(title: '', iconPath: ''),
+                        CategoryCard(title: '', iconPath: ''),
+                        CategoryCard(title: '', iconPath: ''),
+                        CategoryCard(title: '', iconPath: ''),
+                        CategoryCard(title: '', iconPath: ''),
+                      ],
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Row(
@@ -113,12 +125,11 @@ class _MainMenuState extends State<MainMenu> {
                       ],
                     ),
                   ),
+                  const ProductListScreen(),
               ],
             ),                
         )
-      
-
     );
 
   }
-}
+  }
