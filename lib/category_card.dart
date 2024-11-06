@@ -9,6 +9,7 @@ class CategoryCard extends StatefulWidget {
       required this.iconPath,
     });
 
+
   @override
   State<CategoryCard> createState() => _CategoryCardState();
 }
@@ -17,6 +18,7 @@ class _CategoryCardState extends State<CategoryCard> {
 
   @override
   Widget build(BuildContext context) {
+
     return  Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
