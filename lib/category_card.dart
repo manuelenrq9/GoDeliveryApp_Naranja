@@ -5,9 +5,8 @@ class CategoryCard extends StatelessWidget {
   final String iconPath;
     const CategoryCard({
     super.key,
-    requited this.title,
-    r
-tiuq
+    required this.title,
+    required this.iconPath
     });
 
   @override
