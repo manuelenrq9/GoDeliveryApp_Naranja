@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'main_menu.dart';
+import 'package:godeliveryapp_naranja/register.dart';
+import 'package:godeliveryapp_naranja/login.dart';
+import 'package:godeliveryapp_naranja/main_menu.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MyApp());  
 }
 
 class MyApp extends StatelessWidget {

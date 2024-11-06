@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'combo_card.dart';
 
+import 'combo_card.dart';
+import 'package:godeliveryapp_naranja/category_card.dart';
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
 
-  @override 
-  State<MainMenu> createState() => _MainMenuState();
+  @override
+   _MainMenuState createState() => _MainMenuState();
+
 }
 
 class _MainMenuState extends State<MainMenu> {
@@ -18,6 +20,7 @@ class _MainMenuState extends State<MainMenu> {
     double containerHeight = screenHeight * 0.32;
 
     return Scaffold(
+
         appBar: AppBar( // Color de la barra superior
         leading: IconButton(
           icon: const Icon(Icons.menu),
@@ -111,6 +114,7 @@ class _MainMenuState extends State<MainMenu> {
             ),                
         )
       
+
     );
   }
 }
