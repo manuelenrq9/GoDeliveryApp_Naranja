@@ -10,6 +10,10 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int quantity = 1;
   double price = 25.0;
+  final String productName = "Nestle Koko Krunch Duo (Kids Pack)";
+  final String descripcion =
+      "Delicioso cereal de chocolate para niños, perfecto para el desayuno o la merienda.";
+  final String divisa = "USD"; // Divisa del precio
 
   void incrementQuantity() {
     setState(() {
@@ -78,16 +82,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   Center(
                     child: Image.network(
-                      'https://media.nedigital.sg/fairprice/fpol/media/images/product/XL/13206550_XL1_20240903.jpg?w=400&q=70', // URL de la imagen
+                      'https://media.nedigital.sg/fairprice/fpol/media/images/product/XL/13206550_XL1_20240903.jpg?w=400&q=70',
                       height: 150,
                     ),
                   ),
                   const SizedBox(height: 18),
-                  const Center(
+                  Center(
                     child: Text(
-                      'Nestle koko krunch duo (kids pack)',
+                      productName,
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      descripcion,
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 16, color: Colors.black54),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -117,7 +130,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.black54),
                       ),
                       Text(
-                        '\$$price',
+                        '$divisa $price', // Añadimos la divisa junto con el precio
                         style: const TextStyle(
                           fontSize: 22,
                           color: Color(0xFFFF9027),
