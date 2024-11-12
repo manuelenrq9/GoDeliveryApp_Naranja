@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'main_menu.dart';
-import 'package:godeliveryapp_naranja/register.dart';
-import 'package:godeliveryapp_naranja/login.dart';
-import 'package:godeliveryapp_naranja/main_menu.dart';
-import 'package:godeliveryapp_naranja/product_card.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/register.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/login.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/main_menu.dart';
+import 'package:godeliveryapp_naranja/presentation/widgets/product_card.dart';
 
 void main() {
   runApp(const MyApp());  
