@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'combo_card.dart';
-import 'category_card.dart';
-import 'product_card.dart';
+import '../widgets/combo_card.dart';
+import '../widgets/category_card.dart';
+import '../widgets/product_card.dart';
 
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
@@ -23,7 +23,6 @@ class _MainMenuState extends State<MainMenu> {
     double containerHeight = screenHeight * 0.32;
 
     return Scaffold(
-
 
         appBar: AppBar( // Color de la barra superior
         leading: IconButton(
