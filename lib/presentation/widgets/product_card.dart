@@ -47,13 +47,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
         if (snapshot.hasData){
           print("entro en el IF");
           print(snapshot.data!.length);
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index){
-              return ProductItem(product: snapshot.data![index]);
-            },
-            );
+          return Wrap(
+        children: snapshot.data!.map((product) => ProductItem(product: product)).toList(),
+      );
         } else if (snapshot.hasError){
           print("entro en el ELSE");
           return Text('${snapshot.error}');
