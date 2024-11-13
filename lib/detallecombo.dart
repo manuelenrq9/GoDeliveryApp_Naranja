@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/carrito/cart_screen.dart';
 
 class ComboDetailScreen extends StatefulWidget {
   const ComboDetailScreen({super.key});
@@ -51,7 +52,9 @@ class _ComboDetailScreenState extends State<ComboDetailScreen> {
           IconButton(
             icon: const Icon(Icons.shopping_cart,
                 color: Color.fromARGB(255, 175, 91, 7)),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> CartScreen()),);
+            },
           ),
         ],
       ),
