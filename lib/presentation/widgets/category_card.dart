@@ -40,15 +40,14 @@ class _CategoryCardState extends State<CategoryCard> {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(9),
-                child: Image.asset(
-                    'images/hamburger.png',
+                child: Image.asset(widget.iconPath,
                 ),
               ),
             ),
             const SizedBox(height: 5,),
-            const Text(
-              "Food",
-              style: TextStyle(
+            Text(
+              widget.title,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,
               ),
