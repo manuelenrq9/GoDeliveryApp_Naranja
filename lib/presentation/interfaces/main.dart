@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/carrito/cart_screen.dart';
+import 'package:godeliveryapp_naranja/detallecombo.dart';
+import 'package:godeliveryapp_naranja/orderhistory/order_history_screen.dart';
+import 'package:godeliveryapp_naranja/ordersummary/OrderSummaryScreen.dart';
+import 'package:godeliveryapp_naranja/product_detail.dart';
 import 'main_menu.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/register.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/login.dart';
@@ -6,7 +11,7 @@ import 'package:godeliveryapp_naranja/presentation/interfaces/main_menu.dart';
 import 'package:godeliveryapp_naranja/presentation/widgets/product_card.dart';
 
 void main() {
-  runApp(const MyApp());  
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -68,9 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-
             MaterialPageRoute(builder: (context) => const MainMenu()),
-
           );
         },
         tooltip: 'Increment',
