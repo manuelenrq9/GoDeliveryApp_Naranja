@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/detallecombo.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
 
 class ComboCard extends StatelessWidget {
   final String title;
@@ -29,7 +30,7 @@ class ComboCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0), // Espaciado externo para evitar corte de bordes
       child: GestureDetector(
         onTap: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>ComboDetailScreen()),);
+          showLoadingScreen(context,destination: const ComboDetailScreen());
         },
         child: Container(
           width: cardWidth, // Ancho dinámico de la tarjeta

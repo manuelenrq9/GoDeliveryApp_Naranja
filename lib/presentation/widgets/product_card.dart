@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/entities/product.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
 import 'package:godeliveryapp_naranja/product_detail.dart';
 import 'package:http/http.dart' as http;
 
@@ -49,8 +50,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
         future: futureProducts,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            print("entro en el IF");
-            print(snapshot.data!.length);
             return Wrap(
               children: snapshot.data!
                   .map((product) => ProductItem(product: product))
@@ -74,7 +73,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>ProductDetailScreen()),);
+          showLoadingScreen(context, destination: const ProductDetailScreen());
         },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8.0),

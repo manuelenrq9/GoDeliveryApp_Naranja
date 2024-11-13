@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/main_menu.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/register.dart';
 
@@ -6,6 +7,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
@@ -85,10 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.push(
-                          context, 
-                          MaterialPageRoute(builder: (context) => const MainMenu())
-                        );
+                        showLoadingScreen(context,destination: const MainMenu());
                       },
                       child: const Text(
                         'Iniciar sesión',
@@ -107,7 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.center,
                 child: TextButton(
                   onPressed: () {
-                    // Acción de olvidé mi contraseña
                   },
                   child: const Text(
                     'Olvidé mi contraseña',
@@ -122,10 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 alignment: Alignment.center,
                 child: TextButton(
                   onPressed: () {
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(builder: (context) => RegisterScreen()),
-                    );
+                    showLoadingScreen(context,destination: const RegisterScreen());
                   },
                   child: const Text(
                   'No tienes cuenta? Regístrate',

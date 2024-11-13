@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/login.dart';
 import 'package:intl/intl.dart';
 
@@ -252,8 +253,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()),
-                    );
+                    showLoadingScreen(context,destination: const LoginScreen());
                   },
                   child: const Text(
                     'Crear Cuenta',
@@ -270,7 +270,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // Texto de ir al Login
               TextButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()),);
+                  showLoadingScreen(context,destination: const LoginScreen());
                 },
                 child: const Text(
                   '¿Ya tienes cuenta? Inicia sesión',
