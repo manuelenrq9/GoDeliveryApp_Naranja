@@ -22,7 +22,7 @@ class _CategoryCardState extends State<CategoryCard> {
     return  Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
-        width: 73,
+        width: 80,
         height: 97,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),

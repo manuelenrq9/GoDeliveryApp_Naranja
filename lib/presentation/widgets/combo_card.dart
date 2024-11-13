@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/entities/combo.dart';
 
 class ComboCard extends StatelessWidget {
-  final String title;
-  final String imagePath;
-  final String description;
-  final double price;
+  final Combo combo;
 
   const ComboCard({
     super.key,
-    required this.title,
-    required this.imagePath,
-    required this.description,
-    required this.price,
+    required this.combo
   });
 
   @override
@@ -21,14 +16,17 @@ class ComboCard extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     // Calcular ancho y altura de la tarjeta en función del tamaño de la pantalla
-    double cardWidth = screenWidth * 0.45; // Por ejemplo, el 45% del ancho de la pantalla
-    double imageHeight = screenHeight * 0.15; // 15% de la altura de la pantalla para la imagen
+    double cardWidth =
+        screenWidth * 0.45; // Por ejemplo, el 45% del ancho de la pantalla
+    double imageHeight =
+        screenHeight * 0.15; // 15% de la altura de la pantalla para la imagen
 
     return Padding(
-      padding: const EdgeInsets.all(8.0), // Espaciado externo para evitar corte de bordes
+      padding: const EdgeInsets.all(
+          8.0), // Espaciado externo para evitar corte de bordes
       child: GestureDetector(
         onTap: () {
-          // Acción al hacer clic
+          
         },
         child: Container(
           width: cardWidth, // Ancho dinámico de la tarjeta
@@ -40,7 +38,8 @@ class ComboCard extends StatelessWidget {
                 color: Colors.grey.withOpacity(0.3),
                 spreadRadius: 2,
                 blurRadius: 5,
-                offset: const Offset(0, 3), // Sombra para mejorar visibilidad de bordes
+                offset: const Offset(
+                    0, 3), // Sombra para mejorar visibilidad de bordes
               ),
             ],
           ),
@@ -51,34 +50,37 @@ class ComboCard extends StatelessWidget {
               children: [
                 // Imagen del combo
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(10), // Borde redondeado para la imagen
+                  borderRadius: BorderRadius.circular(
+                      10), // Borde redondeado para la imagen
                   child: Image.network(
-                    imagePath,
+                    combo.comboImage,
                     width: double.infinity,
                     height: imageHeight, // Altura dinámica de la imagen
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.error),
                   ),
                 ),
                 const SizedBox(height: 8),
                 // Título del combo
                 Text(
-                  title,
+                  combo.name,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16, 
+                    fontSize: 16,
                   ),
-                  maxLines: 1,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 // Descripción del combo con ajuste flexible
                 Text(
-                  description,
+                  combo.description,
                   style: const TextStyle(
-                    fontSize: 12, 
+                    fontSize: 12,
                     color: Colors.grey,
                   ),
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const Spacer(),
@@ -87,10 +89,10 @@ class ComboCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      '\$${price.toStringAsFixed(2)}',
+                      '\$${combo.specialPrice.toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16, 
+                        fontSize: 16,
                       ),
                     ),
                     ElevatedButton(
@@ -99,7 +101,8 @@ class ComboCard extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF7000),
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         minimumSize: const Size(30, 30),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),

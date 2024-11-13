@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/combo_card.dart';
+import 'package:godeliveryapp_naranja/presentation/widgets/combo_list.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 
@@ -79,47 +79,8 @@ class _MainMenuState extends State<MainMenu> {
                   ],
                 ),
               ),
-
-
-              // SizedBox(
-              //   height: containerHeight,
-              //   child: ListView(
-              //     scrollDirection: Axis.horizontal,
-              //     children: const [
-              //       ComboCard(
-              //         title: 'Combo 1',
-              //         imagePath: 'https://quemantequilla.online/wp-content/uploads/2020/07/Combo-Quincanal-copia.jpg',
-              //         description: 'Pan, azucar, galleta, salsa, leche harina.',
-              //         price: 29.99,
-              //       ),
-              //       ComboCard(
-              //         title: 'Combo 2',
-              //         imagePath: 'https://quemantequilla.online/wp-content/uploads/2020/07/Combo-Semanal.jpg',
-              //         description: 'Harina PAN, azucar, aceite, pasta, arroz, cafe, mantequilla y salsa inglesa.',
-              //         price: 19.99,
-              //       ),
-              //       ComboCard(
-              //         title: 'Combo 3',
-              //         imagePath: 'https://quemantequilla.online/wp-content/uploads/2019/10/Combo-Limpieza.jpg',
-              //         description: 'Cloro, detergente y lavaplato.',
-              //         price: 24.99,
-              //       ),
-              //       ComboCard(
-              //         title: 'Combo 4',
-              //         imagePath: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0iI_M5dxeG0D7k2EVAFCC0-edM8OqbIR36w&s',
-              //         description: 'Variedades.',
-              //         price: 14.99,
-              //       ),
-              //       ComboCard(
-              //         title: 'Combo 5',
-              //         imagePath: 'https://quemantequilla.online/wp-content/uploads/2020/07/Combo-Semanal-Portada-1.jpg',
-              //         description: 'Combo semanal con una selección de productos esenciales para el hogar.',
-              //         price: 34.99,
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              const ProductListScreen(),
+              const ComboListScreen(),
+              const ProductListScreen(),              
           ],
         )
     );
