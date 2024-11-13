@@ -4,17 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/entities/product.dart';
 import 'package:http/http.dart' as http;
 
-Future <List<Product>> fetchProducts() async {
-  final response = await http.get(Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/product'));
+Future<List<Product>> fetchProducts() async {
+  final response = await http.get(Uri.parse(
+      'https://orangeteam-deliverybackend-production.up.railway.app/product'));
 
   print(response.body);
   print(response.statusCode);
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
     // then parse the JSON.
-    final Map<String,dynamic> jsonData = jsonDecode(response.body);
+    final Map<String, dynamic> jsonData = jsonDecode(response.body);
     final List<dynamic> productsData = jsonData['products'];
-    return productsData.map((productJson) => Product.fromJson(productJson)).toList();
+    return productsData
+        .map((productJson) => Product.fromJson(productJson))
+        .toList();
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
@@ -42,31 +45,29 @@ class _ProductListScreenState extends State<ProductListScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Product>>(
-      future: futureProducts,
-      builder: (context, snapshot) {
-        if (snapshot.hasData){
-          print("entro en el IF");
-          print(snapshot.data!.length);
-          return Wrap(
-        children: snapshot.data!.map((product) => ProductItem(product: product)).toList(),
-      );
-        } else if (snapshot.hasError){
-          print("entro en el ELSE");
-          return Text('${snapshot.error}');
-        }
-        return const CircularProgressIndicator();
-      }
-    );
+        future: futureProducts,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            print("entro en el IF");
+            print(snapshot.data!.length);
+            return Wrap(
+              children: snapshot.data!
+                  .map((product) => ProductItem(product: product))
+                  .toList(),
+            );
+          } else if (snapshot.hasError) {
+            print("entro en el ELSE");
+            return Text('${snapshot.error}');
+          }
+          return const CircularProgressIndicator();
+        });
   }
 }
 
 class ProductItem extends StatelessWidget {
   final Product product;
 
-  const ProductItem({
-    super.key, 
-    required this.product
-  });
+  const ProductItem({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +116,7 @@ class ProductItem extends StatelessWidget {
                 Text(
                   product.currency,
                   style: const TextStyle(
-                    color:  Color(0xFFFF7000),
+                    color: Color(0xFFFF7000),
                     decoration: TextDecoration.lineThrough,
                   ),
                 ),
