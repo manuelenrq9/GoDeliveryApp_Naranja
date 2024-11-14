@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/presentation/widgets/combo_list.dart';
 import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
 import '../widgets/combo_card.dart';
 import '../widgets/category_card.dart';
@@ -25,11 +26,7 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-    // Obtiene el alto de la pantalla
-    double screenHeight = MediaQuery.of(context).size.height;
-
-    // Calcula una altura adaptable para el contenedor
-    double containerHeight = screenHeight * 0.32;
+    
 
     return Scaffold(
       appBar: AppBar(
@@ -54,70 +51,20 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          const SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                CategoryCard(title: '', iconPath: ''),
-                CategoryCard(title: '', iconPath: ''),
-                CategoryCard(title: '', iconPath: ''),
-                CategoryCard(title: '', iconPath: ''),
-                CategoryCard(title: '', iconPath: ''),
-                CategoryCard(title: '', iconPath: ''),
-                CategoryCard(title: '', iconPath: ''),
-              ],
-            ),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Combos de Productos',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                  onPressed: () {
-                    // Acción ver más combos
-                  },
-                  child: const Text(
-                    'Ver más',
-                    style: TextStyle(color: Color(0xFFFF7000)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: containerHeight,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: const [
-                ComboCard(
-                  title: 'Combo 1',
-                  imagePath:
-                      'https://quemantequilla.online/wp-content/uploads/2020/07/Combo-Quincanal-copia.jpg',
-                  description: 'Pan, azucar, galleta, salsa, leche harina.',
-                  price: 29.99,
-                ),
-                ComboCard(
-                  title: 'Combo 2',
-                  imagePath:
-                      'https://quemantequilla.online/wp-content/uploads/2020/07/Combo-Semanal.jpg',
-                  description:
-                      'Harina PAN, azucar, aceite, pasta, arroz, cafe, mantequilla y salsa inglesa.',
-                  price: 19.99,
-                ),
-                ComboCard(
-                  title: 'Combo 3',
-                  imagePath:
-                      'https://quemantequilla.online/wp-content/uploads/2019/10/Combo-Limpieza.jpg',
-                  description: 'Cloro, detergente y lavaplato.',
-                  price: 24.99,
+        body: ListView(
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+              const SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    CategoryCard(title: 'Comida', iconPath: 'images/Comida.png'),
+                    CategoryCard(title: 'Bebidas', iconPath: 'images/Bebidas.png'),
+                    CategoryCard(title: 'Postres', iconPath: 'images/Postres.png'),
+                    CategoryCard(title: 'Snacks', iconPath: 'images/Snacks.png'),
+                    CategoryCard(title: 'Mexicana', iconPath: 'images/Comida Mexicana.png'),
+                    CategoryCard(title: 'Licores', iconPath: 'images/Licores2.png'),
+                  ],
                 ),
                 ComboCard(
                   title: 'Combo 4',
@@ -126,20 +73,11 @@ class _MainMenuState extends State<MainMenu> {
                   description: 'Variedades.',
                   price: 14.99,
                 ),
-                ComboCard(
-                  title: 'Combo 5',
-                  imagePath:
-                      'https://quemantequilla.online/wp-content/uploads/2020/07/Combo-Semanal-Portada-1.jpg',
-                  description:
-                      'Combo semanal con una selección de productos esenciales para el hogar.',
-                  price: 34.99,
-                ),
-              ],
-            ),
-          ),
-          const ProductListScreen(),
-        ],
-      ),
+              ),
+              const ComboListScreen(),
+              const ProductListScreen(),              
+          ],
+        )
       // Agregar CustomNavBar en el bottomNavigationBar
       bottomNavigationBar: CustomNavBar(
         currentIndex: _currentIndex,

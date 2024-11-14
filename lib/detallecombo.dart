@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/entities/combo.dart';
 import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
 import 'package:godeliveryapp_naranja/carrito/cart_screen.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
 
-
 class ComboDetailScreen extends StatefulWidget {
-  const ComboDetailScreen({super.key});
+  final Combo combo;
+  const ComboDetailScreen({super.key, required this.combo});
 
   @override
   ComboDetailScreenState createState() => ComboDetailScreenState();
@@ -13,7 +14,13 @@ class ComboDetailScreen extends StatefulWidget {
 
 class ComboDetailScreenState extends State<ComboDetailScreen> {
   int quantity = 1;
-  double price = 25.0;
+  num price = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    price = widget.combo.specialPrice;
+  }
 
   // Variable para el índice de la barra de navegación
   int _currentIndex = 0;
@@ -28,7 +35,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
   void incrementQuantity() {
     setState(() {
       quantity++;
-      price = 25.0 * quantity;
+      price = widget.combo.specialPrice * quantity;
     });
   }
 
@@ -36,7 +43,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
     setState(() {
       if (quantity > 1) {
         quantity--;
-        price = 25.0 * quantity;
+        price = widget.combo.specialPrice * quantity;
       }
     });
   }
@@ -72,106 +79,54 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        // Asegúrate de envolver todo en un SingleChildScrollView
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 8,
-                      offset: Offset(0, 4),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Image.network(
+                      widget.combo.comboImage,
+                      height: 150,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.error),
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Image.network(
-                        'https://quemantequilla.online/wp-content/uploads/2020/07/Combo-Mensual-1.jpg', // URL de la imagen
-                        height: 150,
-                        fit: BoxFit
-                            .contain, // Esto ayuda a que la imagen no se desborde
-                      ),
+                  ),
+                  const SizedBox(height: 18),
+                  Center(
+                    child: Text(
+                      widget.combo.name,
+                      style:
+                          const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 18),
-                    const Center(
-                      child: Text(
-                        'Combo 2',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Divider(color: Colors.grey[300]),
-                    const Text(
-                      'Productos Incluidos',
-                      style: TextStyle(fontSize: 16, color: Colors.black54),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 100,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          Image.network(
-                            'https://www.supergarzon.com/site/pueblonuevo/4009-large_default/azucar-montalban-1kg.jpg',
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 8),
-                          Image.network(
-                            'https://www.elbodegonactual.com/web/image/product.template/175169/image_512',
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 8),
-                          Image.network(
-                            'https://www.supermercadoluxor.com/wp-content/uploads/2020/11/SAL0485.jpg',
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 8),
-                          Image.network(
-                            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQO1b-Gfh7BpXM5y2H8h2dfA_OLHOkyBbJeHQ&s',
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 8),
-                          Image.network(
-                            'https://vallearriba.elplazas.com/media/catalog/product/cache/3e568157972a1320c1e54e4ca9aac161/1/6/16001800un_3.jpg',
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                          const SizedBox(width: 8),
-                          Image.network(
-                            'https://familybox.store/cdn/shop/products/mayonesa-cremosa-kraft-887-ml-enviar-a-venezuela-ship-to-venezuela-supermercado-online-venezuela-online-supermarket-624247_grande.jpg?v=1697811642',
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Divider(color: Colors.grey[300]),
-                    const SizedBox(height: 8),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ),
+                  const SizedBox(height: 8),
+                  Divider(color: Colors.grey[300]),
+                  const Text(
+                    'Productos Incluidos',
+                    style: TextStyle(fontSize: 16, color: Colors.black54),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 100,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
                       children: [
                         Text(
                           'Nombre',
@@ -219,12 +174,22 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                     ),
                     child: const Icon(Icons.remove, color: Colors.white),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      '$quantity',
-                      style: const TextStyle(fontSize: 20),
-                    ),
+                  const SizedBox(height: 8),
+                  Divider(color: Colors.grey[300]),
+                  const SizedBox(height: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Descripción',
+                        style: TextStyle(fontSize: 16, color: Colors.black54),
+                      ),
+                      const SizedBox(height: 4), // Espacio entre el título y el detalle
+                      Text(
+                        widget.combo.description, // Cambia esto a la descripción que corresponda
+                        style: const TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                    ],
                   ),
                   ElevatedButton(
                     onPressed: incrementQuantity,

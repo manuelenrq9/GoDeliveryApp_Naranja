@@ -22,7 +22,7 @@ class _CategoryCardState extends State<CategoryCard> {
     return  Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
-        width: 73,
+        width: 80,
         height: 97,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
@@ -40,15 +40,14 @@ class _CategoryCardState extends State<CategoryCard> {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(9),
-                child: Image.asset(
-                    'images/hamburger.png',
+                child: Image.asset(widget.iconPath,
                 ),
               ),
             ),
             const SizedBox(height: 5,),
-            const Text(
-              "Food",
-              style: TextStyle(
+            Text(
+              widget.title,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 13,
               ),
