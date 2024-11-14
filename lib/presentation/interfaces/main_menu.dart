@@ -53,8 +53,8 @@ class _MainMenuState extends State<MainMenu> {
       ),
         body: ListView( // 
           //mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-              const SingleChildScrollView(
+          children: const [
+              SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
@@ -68,9 +68,9 @@ class _MainMenuState extends State<MainMenu> {
                 ),
               ),
               TituloLista(titulo: "Combos de Productos"),
-              const ComboListScreen(),
+              ComboListScreen(),
               TituloLista(titulo: "Productos Populares"),
-              const ProductListScreen(),              
+              ProductListScreen(),              
           ],
         ),
       // Agregar CustomNavBar en el bottomNavigationBar

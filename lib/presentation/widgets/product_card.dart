@@ -1,28 +1,38 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/entities/product.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
 import 'package:godeliveryapp_naranja/product_detail.dart';
+import 'package:godeliveryapp_naranja/repositories/local_storage.repository.dart';
 import 'package:http/http.dart' as http;
 
 Future <List<Product>> fetchProducts() async {
-  final response = await http.get(Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/product'));
+  try{
+    final response = await http.get(Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/product'));
+    if (response.statusCode == 200) {
+      // If the server did return a 200 OK response,
+      // then parse the JSON.
+      final Map<String,dynamic> jsonData = jsonDecode(response.body);
+      final List<dynamic> productsData = jsonData['products'];
+      return productsData.map((productJson) => Product.fromJson(productJson)).toList();
+    } else {
+      // If the server did not return a 200 OK response,
+      // then throw an exception.
+      throw Exception('Failed to fetch products');
+    } 
+  }catch (e) {
+        if (e is SocketException) {
+          throw 'No tienes conexión a Internet';
+        } else {
+          throw Exception('Error al cargar los productos');
+        }
+      }
+  }  
 
-  print(response.body);
-  print(response.statusCode);
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    final Map<String,dynamic> jsonData = jsonDecode(response.body);
-    final List<dynamic> productsData = jsonData['products'];
-    return productsData.map((productJson) => Product.fromJson(productJson)).toList();
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to fetch products');
-  }
-}
+
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -32,13 +42,38 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  late Future<List<Product>> futureProducts;
+    // Inicializa futureProducts con un valor predeterminado (lista vacía)
+  late Future<List<Product>> futureProducts = Future.value([]);
+
+  final _productRepository = GenericRepository<Product>(
+    storageKey: 'products', // La clave de almacenamiento para productos
+    fromJson: (json) => Product.fromJson(json), // Función de deserialización
+    toJson: (product) => product.toJson(), // Función de serialización
+  );
 
   @override
   void initState() {
     super.initState();
-    futureProducts = fetchProducts();
-    print(futureProducts);
+    loadProducts();
+  }
+
+  // Método para cargar productos
+  void loadProducts() async {
+    // Intenta cargar productos del almacenamiento local
+    final savedProducts = await _productRepository.loadData();
+    if (savedProducts.isNotEmpty) {
+      setState(() {
+        futureProducts = Future.value(savedProducts);
+      });
+    } else {
+      // Si no hay productos guardados, haz la solicitud HTTP
+      futureProducts = fetchProducts();
+      futureProducts.then((products) {
+        // Guarda los productos recuperados para persistencia
+        _productRepository.saveData(products);
+      });
+      setState(() {});
+    }
   }
 
   @override
@@ -79,13 +114,13 @@ class ProductItem extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              Image.network(
-                product.image,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.error),
+              CachedNetworkImage(
+                  imageUrl: product.image,
+                  width: 60,
+                  height: 60, // Altura dinámica de la imagen
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: Colors.orange,)),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
               const SizedBox(width: 16),
               Expanded(

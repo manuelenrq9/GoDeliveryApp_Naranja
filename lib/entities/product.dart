@@ -21,31 +21,33 @@ class Product {
     required this.category,
   });
 
+  // Deserialización del JSON
   factory Product.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'id': String id,
-        'name': String name,
-        'description': String description,
-        'image': String image,
-        'price': num price,
-        'currency': String currency,
-        'weight': num weight,    
-        'stock': num stock,
-        'category': String category,                           
-      } =>
-        Product(
-          id: id,
-          name: name,
-          description: description,
-          image: image,
-          price: price,
-          currency: currency,
-          weight: weight,
-          stock: stock,
-          category: category,
-        ),
-      _ => throw const FormatException('Failed to load product.'),
+    return Product(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      image: json['image'] as String,
+      price: json['price'] as num,
+      currency: json['currency'] as String,
+      weight: json['weight'] as num,
+      stock: json['stock'] as num,
+      category: json['category'] as String,
+    );
+  }
+
+  // Serialización del objeto a JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'image': image,
+      'price': price,
+      'currency': currency,
+      'weight': weight,
+      'stock': stock,
+      'category': category,
     };
   }
 }

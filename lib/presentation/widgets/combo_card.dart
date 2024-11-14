@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/detallecombo.dart';
 import 'package:godeliveryapp_naranja/entities/combo.dart';
@@ -49,15 +50,14 @@ class ComboCard extends StatelessWidget {
               children: [
                 // Imagen del combo
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                      10), // Borde redondeado para la imagen
-                  child: Image.network(
-                    combo.comboImage,
+                  borderRadius: BorderRadius.circular(10), // Borde redondeado para la imagen
+                  child: CachedNetworkImage(
+                    imageUrl: combo.comboImage,
                     width: double.infinity,
                     height: imageHeight, // Altura dinámica de la imagen
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.error),
+                    placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: Colors.orange,)),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
                   ),
                 ),
                 const SizedBox(height: 8),
