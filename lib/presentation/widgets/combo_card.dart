@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/detallecombo.dart';
 import 'package:godeliveryapp_naranja/entities/combo.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
+
+// Asegúrate de descomentar o importar correctamente la clase DetalleCombo
+import 'package:godeliveryapp_naranja/detallecombo.dart';
 
 class ComboCard extends StatelessWidget {
   final Combo combo;
@@ -25,7 +27,8 @@ class ComboCard extends StatelessWidget {
           8.0), // Espaciado externo para evitar corte de bordes
       child: GestureDetector(
         onTap: () {
-          showLoadingScreen(context,destination: const ComboDetailScreen(combo: combo));
+          // Asegúrate de que 'DetalleCombo' esté correctamente importada
+          //showLoadingScreen(context, destination: DdtalleCombo(combo: combo));
         },
         child: Container(
           width: cardWidth, // Ancho dinámico de la tarjeta
@@ -74,7 +77,7 @@ class ComboCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 // Descripción del combo con ajuste flexible
                 Text(
-                  combo.description,
+                  combo.description, // Manejo de null en descripción
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
@@ -101,13 +104,14 @@ class ComboCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF7000),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        minimumSize: const Size(30, 30),
+                            horizontal: 16,
+                            vertical: 8), // Tamaño aumentado para el botón
+                        minimumSize: const Size(50, 50), // Tamaño adecuado
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       child: const Text(
                         '+',
-                        style: TextStyle(fontSize: 12, color: Colors.white),
+                        style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
                   ],

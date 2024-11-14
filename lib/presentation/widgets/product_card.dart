@@ -1,25 +1,32 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/entities/product.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
+import 'package:godeliveryapp_naranja/entities/product.dart'; // Asegúrate de tener esta clase
+import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart'; // Asegúrate de que esta función esté importada
 import 'package:godeliveryapp_naranja/product_detail.dart';
 import 'package:http/http.dart' as http;
 
-Future <List<Product>> fetchProducts() async {
-  final response = await http.get(Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/product'));
+// Función para obtener los productos
+Future<List<Product>> fetchProducts() async {
+  final response = await http.get(
+    Uri.parse(
+        'https://orangeteam-deliverybackend-production.up.railway.app/product'),
+  );
 
   print(response.body);
   print(response.statusCode);
+
   if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    final Map<String,dynamic> jsonData = jsonDecode(response.body);
-    final List<dynamic> productsData = jsonData['products'];
-    return productsData.map((productJson) => Product.fromJson(productJson)).toList();
+    try {
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
+      final List<dynamic> productsData = jsonData['products'];
+      return productsData
+          .map((productJson) => Product.fromJson(productJson))
+          .toList();
+    } catch (e) {
+      throw Exception('Error parsing products data: $e');
+    }
   } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
     throw Exception('Failed to fetch products');
   }
 }
@@ -46,15 +53,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return FutureBuilder<List<Product>>(
       future: futureProducts,
       builder: (context, snapshot) {
-        if (snapshot.hasData){
+        if (snapshot.hasData) {
           return Wrap(
-        children: snapshot.data!.map((product) => ProductItem(product: product)).toList(),
-      );
-        } else if (snapshot.hasError){
-          return Text('${snapshot.error}');
+            children: snapshot.data!
+                .map((product) => ProductItem(product: product))
+                .toList(),
+          );
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
         }
-        return const CircularProgressIndicator();
-      }
+        return const Center(child: CircularProgressIndicator());
+      },
     );
   }
 }
@@ -62,23 +71,21 @@ class _ProductListScreenState extends State<ProductListScreen> {
 class ProductItem extends StatelessWidget {
   final Product product;
 
-  const ProductItem({
-    super.key, 
-    required this.product
-  });
+  const ProductItem({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: (){
-          showLoadingScreen(context, destination: const ProductDetailScreen());
-        },
+      onTap: () {
+        showLoadingScreen(context, destination: const ProductDetailScreen());
+      },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 8.0),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
+              // Imagen del producto con manejo de errores
               Image.network(
                 product.image,
                 width: 60,
@@ -96,8 +103,11 @@ class ProductItem extends StatelessWidget {
                       product.name,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    // Descripción del producto con valor por defecto
                     Text(
-                      product.description,
+                      product.description.isNotEmpty
+                          ? product.description
+                          : 'No description available',
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Text(
@@ -110,8 +120,9 @@ class ProductItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  // Precio del producto
                   Text(
-                    product.price.toString(),
+                    '\$${product.price}',
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 16),
                   ),
@@ -124,30 +135,13 @@ class ProductItem extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  product.price.toString(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                Text(
-                  product.currency,
-                  style: const TextStyle(
-                    color:  Color(0xFFFF7000),
-                    decoration: TextDecoration.lineThrough,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            const Icon(
-              Icons.add,
-              color: Color(0xFFFF7000),
-            ),
-          ],
+              const SizedBox(width: 16),
+              const Icon(
+                Icons.add,
+                color: Color(0xFFFF7000),
+              ),
+            ],
+          ),
         ),
       ),
     );
