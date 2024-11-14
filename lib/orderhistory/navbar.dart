@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/carrito/cart_screen.dart';
+import 'package:godeliveryapp_naranja/orderhistory/order_history_screen.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/main_menu.dart';
 
 class CustomNavBar extends StatefulWidget {
   final int currentIndex;
@@ -37,6 +41,7 @@ class _CustomNavBarState extends State<CustomNavBar>
       onTap: (index) {
         _controller.forward().then((_) => _controller.reverse());
         widget.onTap(index);
+        _navigateToPage(index);
       },
       type: BottomNavigationBarType.fixed,
       items: [
@@ -65,6 +70,24 @@ class _CustomNavBarState extends State<CustomNavBar>
       unselectedItemColor: Colors.grey,
       showUnselectedLabels: true,
     );
+  }
+
+  void _navigateToPage(int index) {
+    switch (index) {
+      case 0:
+        showLoadingScreen(context, destination: const MainMenu());
+        break;
+      case 1:
+        break;
+      case 2:
+        showLoadingScreen(context, destination: const CartScreen());
+        break;
+      case 3:
+        showLoadingScreen(context, destination: const OrderHistoryScreen());
+        break;
+      case 4:
+        break;
+    }
   }
 
   Widget _buildCartIcon() {

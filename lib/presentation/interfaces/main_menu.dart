@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/presentation/widgets/combo_list.dart';
 import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
+import 'package:godeliveryapp_naranja/presentation/widgets/custom_drawer.dart';
 import '../widgets/combo_card.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
-// Asegúrate de importar el CustomNavBar
 
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
@@ -26,14 +26,19 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
+      // AppBar con el botón de menú
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            // Acción para abrir el menú
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                // Acción para abrir el menú (Drawer)
+                Scaffold.of(context)
+                    .openDrawer(); // Ahora Scaffold.of() funciona correctamente
+              },
+            );
           },
         ),
         title: Center(
@@ -51,38 +56,34 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-        body: ListView(
-          //mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-              const SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    CategoryCard(title: 'Comida', iconPath: 'images/Comida.png'),
-                    CategoryCard(title: 'Bebidas', iconPath: 'images/Bebidas.png'),
-                    CategoryCard(title: 'Postres', iconPath: 'images/Postres.png'),
-                    CategoryCard(title: 'Snacks', iconPath: 'images/Snacks.png'),
-                    CategoryCard(title: 'Mexicana', iconPath: 'images/Comida Mexicana.png'),
-                    CategoryCard(title: 'Licores', iconPath: 'images/Licores2.png'),
-                  ],
-                ),
-                ComboCard(
-                  title: 'Combo 4',
-                  imagePath:
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0iI_M5dxeG0D7k2EVAFCC0-edM8OqbIR36w&s',
-                  description: 'Variedades.',
-                  price: 14.99,
-                ),
-              ),
-              const ComboListScreen(),
-              const ProductListScreen(),              
-          ],
-        )
+      // Body de la pantalla
+      body: ListView(
+        children: const [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                CategoryCard(title: 'Comida', iconPath: 'images/Comida.png'),
+                CategoryCard(title: 'Bebidas', iconPath: 'images/Bebidas.png'),
+                CategoryCard(title: 'Postres', iconPath: 'images/Postres.png'),
+                CategoryCard(title: 'Snacks', iconPath: 'images/Snacks.png'),
+                CategoryCard(
+                    title: 'Mexicana', iconPath: 'images/Comida Mexicana.png'),
+                CategoryCard(title: 'Licores', iconPath: 'images/Licores2.png'),
+              ],
+            ),
+          ),
+          ComboListScreen(),
+          ProductListScreen(),
+        ],
+      ),
       // Agregar CustomNavBar en el bottomNavigationBar
       bottomNavigationBar: CustomNavBar(
         currentIndex: _currentIndex,
         onTap: _onTap,
       ),
+      // Aquí agregamos el CustomDrawer
+      drawer: CustomDrawer(),
     );
   }
 }
