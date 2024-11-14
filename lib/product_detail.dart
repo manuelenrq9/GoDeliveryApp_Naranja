@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
 import 'package:godeliveryapp_naranja/carrito/cart_screen.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
+
 
 class ProductDetailScreen extends StatefulWidget {
   const ProductDetailScreen({super.key});
@@ -16,6 +18,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   final String descripcion =
       "Delicioso cereal de chocolate para niños, perfecto para el desayuno o la merienda.";
   final String divisa = "USD"; // Divisa del precio
+
+  int _currentIndex = 0; // Variable para el índice de la barra de navegación
+
+  // Función para manejar el cambio de índice en el navbar
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   void incrementQuantity() {
     setState(() {
@@ -199,6 +210,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             const SizedBox(height: 16),
           ],
         ),
+      ),
+      // Agregar CustomNavBar en el bottomNavigationBar
+      bottomNavigationBar: CustomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onTap,
       ),
     );
   }

@@ -5,8 +5,22 @@ import 'package:godeliveryapp_naranja/ordersummary/order_header.dart';
 import 'package:godeliveryapp_naranja/ordersummary/order_summary.dart';
 import 'package:godeliveryapp_naranja/ordersummary/product_tile.dart';
 import 'package:godeliveryapp_naranja/ordersummary/reorder_button.dart';
+import 'package:godeliveryapp_naranja/orderhistory/navbar.dart'; // Asegúrate de importar la barra de navegación
 
-class OrderSummaryScreen extends StatelessWidget {
+class OrderSummaryScreen extends StatefulWidget {
+  @override
+  _OrderSummaryScreenState createState() => _OrderSummaryScreenState();
+}
+
+class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
+  int _selectedIndex = 0; // Para gestionar la selección del índice en el navbar
+
+  void _onNavBarTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,6 +80,10 @@ class OrderSummaryScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: CustomNavBar(
+        currentIndex: _selectedIndex,
+        onTap: _onNavBarTapped,
       ),
     );
   }
