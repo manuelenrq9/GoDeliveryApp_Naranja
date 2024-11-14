@@ -1,13 +1,3 @@
-/*
-{
-  "name": "Raquety Picante",
-  "description": "Snack en base de harina con picante",
-  "image": "Aqui iria el link de la imagen",
-  "price": 2,
-  "currency": "USD",
-  "weight": 100
-}
-*/
 class Product {
   final String id;
   final String name;
@@ -16,6 +6,8 @@ class Product {
   final num price;
   final String currency; 
   final num weight;
+  final num stock;
+  final String category;
 
   const Product({
     required this.id,
@@ -25,6 +17,8 @@ class Product {
     required this.price,
     required this.currency,
     required this.weight,
+    required this.stock,
+    required this.category,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -36,7 +30,9 @@ class Product {
         'image': String image,
         'price': num price,
         'currency': String currency,
-        'weight': num weight,                               
+        'weight': num weight,    
+        'stock': num stock,
+        'category': String category,                           
       } =>
         Product(
           id: id,
@@ -46,6 +42,8 @@ class Product {
           price: price,
           currency: currency,
           weight: weight,
+          stock: stock,
+          category: category,
         ),
       _ => throw const FormatException('Failed to load product.'),
     };

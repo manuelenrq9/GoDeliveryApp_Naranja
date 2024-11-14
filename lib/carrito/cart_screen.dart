@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/carrito/summary_row.dart';
+import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
 import 'cart_item_data.dart';
 import 'cart_items_list.dart';
 //import 'discount_section.dart'; // Comentado porque no se usará
@@ -68,6 +69,15 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
+  int _currentIndex = 0; // Variable para el índice de la barra de navegación
+
+  // Función para manejar el cambio de índice en el navbar
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -130,6 +140,11 @@ class _CartScreenState extends State<CartScreen> {
             ),
           ),
         ],
+      ),
+      // Agregar CustomNavBar en el bottomNavigationBar
+      bottomNavigationBar: CustomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onTap,
       ),
     );
   }

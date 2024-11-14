@@ -1,30 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/presentation/widgets/combo_list.dart';
+import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
+import '../widgets/combo_card.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
+// Asegúrate de importar el CustomNavBar
 
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
 
   @override
-
-   _MainMenuState createState() => _MainMenuState();
-
+  _MainMenuState createState() => _MainMenuState();
 }
 
-
 class _MainMenuState extends State<MainMenu> {
+  // Variable para controlar el índice seleccionado en el BottomNavigationBar
+  int _currentIndex = 0;
+
+  // Función para manejar el cambio de índice
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     
 
     return Scaffold(
-
-        appBar: AppBar( // Color de la barra superior
+      appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
-            // Accion para abrir el menu
+            // Acción para abrir el menú
           },
         ),
         title: Center(
@@ -37,7 +46,7 @@ class _MainMenuState extends State<MainMenu> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              // Accion para abrir el menu
+              // Acción para abrir la búsqueda
             },
           ),
         ],
@@ -57,33 +66,23 @@ class _MainMenuState extends State<MainMenu> {
                     CategoryCard(title: 'Licores', iconPath: 'images/Licores2.png'),
                   ],
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Combos de Productos',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Acción ver más combos
-                      },
-                      child: const Text(
-                        'Ver más',
-                        style: TextStyle(color: Color(0xFFFF7000)),
-                      ),
-                    ),
-                  ],
+                ComboCard(
+                  title: 'Combo 4',
+                  imagePath:
+                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0iI_M5dxeG0D7k2EVAFCC0-edM8OqbIR36w&s',
+                  description: 'Variedades.',
+                  price: 14.99,
                 ),
               ),
               const ComboListScreen(),
               const ProductListScreen(),              
           ],
         )
+      // Agregar CustomNavBar en el bottomNavigationBar
+      bottomNavigationBar: CustomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onTap,
+      ),
     );
-
   }
-  }
+}
