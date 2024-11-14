@@ -38,7 +38,7 @@ class LoadingScreen extends StatelessWidget {
                   height: 270,
             ),
             const SizedBox(height: 16),
-            const CircularProgressIndicator(),
+            const CircularProgressIndicator(color: Colors.orange),
           ],
         ),
       ),
