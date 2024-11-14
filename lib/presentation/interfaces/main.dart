@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'main_menu.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/register.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/login.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/main_menu.dart';
-import 'package:godeliveryapp_naranja/presentation/widgets/product_card.dart';
+import 'main_menu.dart';
 
 void main() {
   runApp(const MyApp());  
@@ -20,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const LoginScreen(),
     );
   }
 }
@@ -35,13 +32,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,16 +41,12 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
+      body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              'You have pushed the button this many times:',
             ),
           ],
         ),
@@ -67,8 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
-            context,
-
+            context, 
             MaterialPageRoute(builder: (context) => const MainMenu()),
 
           );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/carrito/cart_screen.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   const ProductDetailScreen({super.key});
@@ -55,7 +57,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           IconButton(
             icon: const Icon(Icons.shopping_cart,
                 color: Color.fromARGB(255, 175, 91, 7)),
-            onPressed: () {},
+            onPressed: () {
+              showLoadingScreen(context, destination: const CartScreen());
+            },
           ),
         ],
       ),
