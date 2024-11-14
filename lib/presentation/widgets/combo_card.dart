@@ -25,7 +25,7 @@ class ComboCard extends StatelessWidget {
           8.0), // Espaciado externo para evitar corte de bordes
       child: GestureDetector(
         onTap: () {
-          showLoadingScreen(context,destination: const ComboDetailScreen(combo: combo));
+          showLoadingScreen(context,destination:  ComboDetailScreen(combo: combo));
         },
         child: Container(
           width: cardWidth, // Ancho dinámico de la tarjeta

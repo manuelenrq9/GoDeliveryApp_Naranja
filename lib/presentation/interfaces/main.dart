@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/carrito/cart_screen.dart';
-import 'package:godeliveryapp_naranja/detallecombo.dart';
-import 'package:godeliveryapp_naranja/orderhistory/order_history_screen.dart';
-import 'package:godeliveryapp_naranja/ordersummary/OrderSummaryScreen.dart';
-import 'package:godeliveryapp_naranja/product_detail.dart';
 import 'main_menu.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/register.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/login.dart';
-import 'main_menu.dart';
 
 void main() {
   runApp(const MyApp());
