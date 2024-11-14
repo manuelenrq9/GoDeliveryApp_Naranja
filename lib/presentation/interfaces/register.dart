@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/presentation/interfaces/RegisterSuccessScreen.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
 import 'package:godeliveryapp_naranja/presentation/interfaces/login.dart';
 import 'package:intl/intl.dart';
-
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -16,7 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isConfirmPasswordVisible = false;
 
   //Controlador para el campo de fecha nacimiento
-  final TextEditingController _dateController = TextEditingController(); 
+  final TextEditingController _dateController = TextEditingController();
 
   @override
   void dispose() {
@@ -49,22 +49,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 16),
 
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child:
                     //Campo Usuario
                     TextField(
                         decoration: InputDecoration(
-                        hintText: 'Nombre de Usuario',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        prefixIcon: const Icon(Icons.person),
+                  hintText: 'Nombre de Usuario',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  prefixIcon: const Icon(Icons.person),
                 )),
               ),
               const SizedBox(height: 10),
-
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -72,15 +70,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     //Campo Correo Electronico
                     TextField(
                         decoration: InputDecoration(
-                        hintText: 'Correo Electronico',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        prefixIcon: const Icon(Icons.email),
-                    )),
+                  hintText: 'Correo Electronico',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  prefixIcon: const Icon(Icons.email),
+                )),
               ),
               const SizedBox(height: 10),
-
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -128,7 +125,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       onPressed: () {
                         setState(() {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible;
                         });
                       },
                     ),
@@ -137,31 +135,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 10),
 
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child:
-                    //Campo Region
-                    TextField(
-                        decoration: InputDecoration(
-                        hintText: 'Región',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        prefixIcon: const Icon(Icons.public),
-                    )),
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    hintText: 'Selecciona tu región',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    prefixIcon: const Icon(Icons.public),
+                  ),
+                  items: <String>[
+                    'América del Norte',
+                    'América Central',
+                    'América del Sur',
+                    'Europa',
+                    'Asia',
+                    'África',
+                    'Oceanía',
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    // Handle change here
+                  },
+                ),
               ),
               const SizedBox(height: 10),
 
-
-              // Campo Código de País | Teléfono
+              // Campo Prefijo y Teléfono
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: [
                     Flexible(
                       flex: 3,
-                      child: TextField(
+                      child: TextFormField(
                         decoration: InputDecoration(
                           hintText: 'Prefijo',
                           border: OutlineInputBorder(
@@ -169,26 +181,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           prefixIcon: const Icon(Icons.phone),
                         ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingrese el prefijo';
+                          }
+                          if (!RegExp(r'^\+\d+$').hasMatch(value)) {
+                            return 'Ingrese un prefijo válido (e.g., +1)';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                     const SizedBox(width: 10),
                     Flexible(
                       flex: 5,
-                      child: TextField(
+                      child: TextFormField(
                         decoration: InputDecoration(
                           hintText: 'Teléfono',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingrese el teléfono';
+                          }
+                          if (!RegExp(r'^\d+$').hasMatch(value)) {
+                            return 'Ingrese un teléfono válido';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 10),
-
-
 
               // Campo Fecha de Nacimiento
               Padding(
@@ -210,22 +240,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       firstDate: DateTime(1900),
                       lastDate: DateTime.now(),
                       builder: (BuildContext context, Widget? child) {
-                          return Theme(
-                            data: ThemeData.light().copyWith(
-                              colorScheme: const ColorScheme.light(
-                                primary: Color(0xFFFF7000), // Color naranja
-                                onPrimary: Color.fromARGB(255, 15, 15,
-                                    15), // Color del texto en el botón
-                                surface: Color.fromARGB(255, 255, 255,
-                                    255), // Color de fondo del calendario
-                                onSurface: Colors
-                                    .black, // Color del texto en el calendario
-                              ),
-                              dialogBackgroundColor: Colors.white,
+                        return Theme(
+                          data: ThemeData.light().copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: Color(0xFFFF7000), // Color naranja
+                              onPrimary: Color.fromARGB(255, 15, 15,
+                                  15), // Color del texto en el botón
+                              surface: Color.fromARGB(255, 255, 255,
+                                  255), // Color de fondo del calendario
+                              onSurface: Colors
+                                  .black, // Color del texto en el calendario
                             ),
-                            child: child!,
-                          );
-                        },
+                            dialogBackgroundColor: Colors.white,
+                          ),
+                          child: child!,
+                        );
+                      },
                     );
                     if (pickedDate != null) {
                       String formattedDate =
@@ -239,12 +269,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               const SizedBox(height: 20),
 
-
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF7000), // Color de fondo del botón (#FF7000)
+                    backgroundColor: const Color(
+                        0xFFFF7000), // Color de fondo del botón (#FF7000)
                     minimumSize:
                         const Size(double.infinity, 50), // Tamaño del botón
                     shape: RoundedRectangleBorder(
@@ -253,7 +283,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   onPressed: () {
-                    showLoadingScreen(context,destination: const LoginScreen());
+                    showLoadingScreen(context,
+                        destination: const RegisterSuccessScreen());
                   },
                   child: const Text(
                     'Crear Cuenta',
@@ -270,13 +301,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // Texto de ir al Login
               TextButton(
                 onPressed: () {
-                  showLoadingScreen(context,destination: const LoginScreen());
+                  showLoadingScreen(context, destination: const LoginScreen());
                 },
                 child: const Text(
                   '¿Ya tienes cuenta? Inicia sesión',
                   style: TextStyle(color: Color(0xFFFF7000)),
                 ),
-              ),              
+              ),
             ],
           ),
         ),
