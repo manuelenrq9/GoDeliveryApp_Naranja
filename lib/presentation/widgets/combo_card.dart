@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/detallecombo.dart';
 import 'package:godeliveryapp_naranja/entities/combo.dart';
 
 class ComboCard extends StatelessWidget {
   final Combo combo;
 
-  const ComboCard({
-    super.key,
-    required this.combo
-  });
+  const ComboCard({super.key, required this.combo});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +24,10 @@ class ComboCard extends StatelessWidget {
           8.0), // Espaciado externo para evitar corte de bordes
       child: GestureDetector(
         onTap: () {
-          
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ComboDetailScreen(combo: combo)),
+          );
         },
         child: Container(
           width: cardWidth, // Ancho dinámico de la tarjeta

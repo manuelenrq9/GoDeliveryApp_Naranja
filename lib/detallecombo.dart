@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/entities/combo.dart';
 
 class ComboDetailScreen extends StatefulWidget {
-  const ComboDetailScreen({super.key});
+  final Combo combo;
+  const ComboDetailScreen({super.key, required this.combo});
 
   @override
   _ComboDetailScreenState createState() => _ComboDetailScreenState();
@@ -9,12 +11,18 @@ class ComboDetailScreen extends StatefulWidget {
 
 class _ComboDetailScreenState extends State<ComboDetailScreen> {
   int quantity = 1;
-  double price = 25.0;
+  num price = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    price = widget.combo.specialPrice;
+  }
 
   void incrementQuantity() {
     setState(() {
       quantity++;
-      price = 25.0 * quantity;
+      price = widget.combo.specialPrice * quantity;
     });
   }
 
@@ -22,7 +30,7 @@ class _ComboDetailScreenState extends State<ComboDetailScreen> {
     setState(() {
       if (quantity > 1) {
         quantity--;
-        price = 25.0 * quantity;
+        price = widget.combo.specialPrice * quantity;
       }
     });
   }
@@ -78,22 +86,24 @@ class _ComboDetailScreenState extends State<ComboDetailScreen> {
                 children: [
                   Center(
                     child: Image.network(
-                      'https://quemantequilla.online/wp-content/uploads/2020/07/Combo-Mensual-1.jpg', // URL de la imagen
+                      widget.combo.comboImage,
                       height: 150,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.error),
                     ),
                   ),
                   const SizedBox(height: 18),
-                  const Center(
+                  Center(
                     child: Text(
-                      'Combo 2',
+                      widget.combo.name,
                       style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Divider(color: Colors.grey[300]),
                   const Text(
-                    'Productos Incluido',
+                    'Productos Incluidos',
                     style: TextStyle(fontSize: 16, color: Colors.black54),
                   ),
                   const SizedBox(height: 8),
@@ -147,16 +157,17 @@ class _ComboDetailScreenState extends State<ComboDetailScreen> {
                   const SizedBox(height: 8),
                   Divider(color: Colors.grey[300]),
                   const SizedBox(height: 8),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Nombre',
+                      const Text(
+                        'Descripción',
                         style: TextStyle(fontSize: 16, color: Colors.black54),
                       ),
+                      const SizedBox(height: 4), // Espacio entre el título y el detalle
                       Text(
-                        'Combo Mensual',
-                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                        widget.combo.description, // Cambia esto a la descripción que corresponda
+                        style: const TextStyle(fontSize: 16, color: Colors.black87),
                       ),
                     ],
                   ),
