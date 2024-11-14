@@ -53,7 +53,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         } else if (snapshot.hasError){
           return Text('${snapshot.error}');
         }
-        return const CircularProgressIndicator();
+        return const Center(child: CircularProgressIndicator(color: Colors.orange,));
       }
     );
   }
@@ -124,30 +124,13 @@ class ProductItem extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  product.price.toString(),
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                Text(
-                  product.currency,
-                  style: const TextStyle(
-                    color:  Color(0xFFFF7000),
-                    decoration: TextDecoration.lineThrough,
-                  ),
-                ),
-              ],
-            ),
             const SizedBox(width: 16),
             const Icon(
               Icons.add,
               color: Color(0xFFFF7000),
             ),
-          ],
+            ]
+            ),
         ),
       ),
     );

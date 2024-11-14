@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/presentation/widgets/combo_list.dart';
 import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
-import '../widgets/combo_card.dart';
+import 'package:godeliveryapp_naranja/presentation/widgets/titulo_lista.dart';
 import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 // Asegúrate de importar el CustomNavBar
@@ -51,7 +51,7 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-        body: ListView(
+        body: ListView( // 
           //mainAxisAlignment: MainAxisAlignment.center,
           children: [
               const SingleChildScrollView(
@@ -66,18 +66,13 @@ class _MainMenuState extends State<MainMenu> {
                     CategoryCard(title: 'Licores', iconPath: 'images/Licores2.png'),
                   ],
                 ),
-                ComboCard(
-                  title: 'Combo 4',
-                  imagePath:
-                      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0iI_M5dxeG0D7k2EVAFCC0-edM8OqbIR36w&s',
-                  description: 'Variedades.',
-                  price: 14.99,
-                ),
               ),
+              TituloLista(titulo: "Combos de Productos"),
               const ComboListScreen(),
+              TituloLista(titulo: "Productos Populares"),
               const ProductListScreen(),              
           ],
-        )
+        ),
       // Agregar CustomNavBar en el bottomNavigationBar
       bottomNavigationBar: CustomNavBar(
         currentIndex: _currentIndex,

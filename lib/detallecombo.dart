@@ -128,16 +128,65 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        Text(
-                          'Nombre',
-                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                        Image.network(
+                          //azuncar Montalban
+                          'https://www.supergarzon.com/site/pueblonuevo/4009-large_default/azucar-montalban-1kg.jpg',
+                          width: 50,
+                          height: 50,
                         ),
-                        Text(
-                          'Combo Mensual',
-                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        const SizedBox(width: 8),
+                        Image.network(
+                          // harina pan
+                          'https://www.elbodegonactual.com/web/image/product.template/175169/image_512',
+                          width: 40,
+                          height: 30,
+                        ),
+                        const SizedBox(width: 8),
+                        Image.network(
+                          // salsa iglesa
+                          'https://www.supermercadoluxor.com/wp-content/uploads/2020/11/SAL0485.jpg',
+                          width: 50,
+                          height: 50,
+                        ),
+                        const SizedBox(width: 8),
+                        Image.network(
+                          //pasta ronco
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQO1b-Gfh7BpXM5y2H8h2dfA_OLHOkyBbJeHQ&s',
+                          width: 50,
+                          height: 50,
+                        ),
+                        const SizedBox(width: 8),
+                        Image.network(
+                          'https://vallearriba.elplazas.com/media/catalog/product/cache/3e568157972a1320c1e54e4ca9aac161/1/6/16001800un_3.jpg',
+                          width: 50,
+                          height: 50,
+                        ),
+                        const SizedBox(width: 8),
+                        Image.network(
+                          'https://familybox.store/cdn/shop/products/mayonesa-cremosa-kraft-887-ml-enviar-a-venezuela-ship-to-venezuela-supermercado-online-venezuela-online-supermarket-624247_grande.jpg?v=1697811642',
+                          width: 50,
+                          height: 50,
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  Divider(color: Colors.grey[300]),
+                  const SizedBox(height: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Descripción',
+                        style: TextStyle(fontSize: 16, color: Colors.black54),
+                      ),
+                      const SizedBox(height: 4), // Espacio entre el título y el detalle
+                      Text(
+                        widget.combo.description, // Cambia esto a la descripción que corresponda
+                        style: const TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                    ],
+                  ),
                     const SizedBox(height: 8),
                     Divider(color: Colors.grey[300]),
                     const SizedBox(height: 8),
@@ -161,7 +210,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+             const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -174,23 +223,13 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                     ),
                     child: const Icon(Icons.remove, color: Colors.white),
                   ),
-                  const SizedBox(height: 8),
-                  Divider(color: Colors.grey[300]),
-                  const SizedBox(height: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Descripción',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                      ),
-                      const SizedBox(height: 4), // Espacio entre el título y el detalle
-                      Text(
-                        widget.combo.description, // Cambia esto a la descripción que corresponda
-                        style: const TextStyle(fontSize: 16, color: Colors.black87),
-                      ),
-                    ],
+                  Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    '$quantity',
+                    style: const TextStyle(fontSize: 20),
                   ),
+                ),
                   ElevatedButton(
                     onPressed: incrementQuantity,
                     style: ElevatedButton.styleFrom(
@@ -225,12 +264,10 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
             ],
           ),
         ),
-      ),
-      // Agregar CustomNavBar en el bottomNavigationBar
-      bottomNavigationBar: CustomNavBar(
+        bottomNavigationBar: CustomNavBar(
         currentIndex: _currentIndex,
         onTap: _onTap,
       ),
-    );
+      );
   }
 }
