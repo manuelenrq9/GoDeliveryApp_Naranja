@@ -4,7 +4,6 @@ import 'package:godeliveryapp_naranja/core/titulo_lista.dart';
 import 'package:godeliveryapp_naranja/features/category/presentation/widgets/category_card.dart';
 import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
-import 'package:godeliveryapp_naranja/features/sidebar/presentation/custom_drawer.dart';
 // Asegúrate de importar el CustomNavBar
 
 class MainMenu extends StatefulWidget {
@@ -27,19 +26,14 @@ class _MainMenuState extends State<MainMenu> {
 
   @override
   Widget build(BuildContext context) {
-  
-    return Scaffold(// AppBar con el botón de menú
+    
+
+    return Scaffold(
       appBar: AppBar(
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                // Acción para abrir el menú (Drawer)
-                Scaffold.of(context)
-                    .openDrawer(); // Ahora Scaffold.of() funciona correctamente
-              },
-            );
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            // Acción para abrir el menú
           },
         ),
         title: Center(
@@ -57,10 +51,10 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-        body: ListView(
+        body: ListView( // 
           //mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-              SingleChildScrollView(
+          children: [
+              const SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
@@ -72,12 +66,11 @@ class _MainMenuState extends State<MainMenu> {
                     CategoryCard(title: 'Licores', iconPath: 'images/Licores2.png'),
                   ],
                 ),
-                ),
+              ),
               TituloLista(titulo: "Combos de Productos"),
-               ComboListScreen(),
+              const ComboListScreen(),
               TituloLista(titulo: "Productos Populares"),
-              ProductListScreen(),
-                           
+              const ProductListScreen(),              
           ],
         ),
       // Agregar CustomNavBar en el bottomNavigationBar
@@ -85,8 +78,6 @@ class _MainMenuState extends State<MainMenu> {
         currentIndex: _currentIndex,
         onTap: _onTap,
       ),
-      // Aquí agregamos el CustomDrawer
-      drawer: CustomDrawer(),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
@@ -101,12 +102,12 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Image.network(
-                      widget.combo.comboImage,
-                      height: 150,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.error),
-                    ),
+                    child: CachedNetworkImage(
+                    imageUrl: widget.combo.comboImage,
+                    height: 150,
+                    placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: Colors.orange,)),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                  ),
                   ),
                   const SizedBox(height: 18),
                   Center(
