@@ -4,7 +4,7 @@ import 'package:godeliveryapp_naranja/core/titulo_lista.dart';
 import 'package:godeliveryapp_naranja/features/category/presentation/widgets/category_card.dart';
 import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
-import 'package:godeliveryapp_naranja/presentation/widgets/custom_drawer.dart';
+import 'package:godeliveryapp_naranja/features/sidebar/presentation/custom_drawer.dart';
 // Asegúrate de importar el CustomNavBar
 
 class MainMenu extends StatefulWidget {
