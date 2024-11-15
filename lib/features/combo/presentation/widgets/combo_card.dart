@@ -30,7 +30,7 @@ class ComboCard extends StatelessWidget {
         child: Container(
           width: cardWidth, // Ancho dinámico de la tarjeta
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Color.fromARGB(230, 228, 227, 227),
             borderRadius: BorderRadius.circular(12), // Borde redondeado
             boxShadow: [
               BoxShadow(
@@ -84,33 +84,24 @@ class ComboCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 // Precio y botón en extremos
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '\$${combo.specialPrice.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${combo.currency}  ${combo.specialPrice.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Acción para agregar al carrito
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF7000),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        minimumSize: const Size(30, 30),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      const Icon(
+                        Icons.add,
+                        color: Color(0xFFFF7000),
                       ),
-                      child: const Text(
-                        '+',
-                        style: TextStyle(fontSize: 12, color: Colors.white),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

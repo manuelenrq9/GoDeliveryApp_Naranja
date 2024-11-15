@@ -127,9 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     showLoadingScreen(context,
                         destination: const RegisterScreen());
                   },
-                  child: const Text(
-                    'No tienes cuenta? Regístrate',
-                    style: TextStyle(color: Color(0xFFFF7000)),
+                  child: const Text(       
+                  '¿No tienes cuenta? Regístrate',
+                  style: TextStyle(color: Color(0xFFFF7000)),
                   ),
                 ),
               ),
