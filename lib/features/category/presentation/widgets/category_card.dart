@@ -12,20 +12,21 @@ class CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(7.0),
       child: Container(
-        width: 80,
-        height: 97,
+        width: 87,
+        height: 70,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: const Color(0xFFFF7000),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 12),
             Container(
-              width: 49,
-              height: 49,
+              width: 55,
+              height: 55,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: const Color.fromARGB(255, 255, 255, 255),
@@ -38,12 +39,17 @@ class CategoryCard extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 5),
-            Text(
-              category.name, // Usamos el nombre de la categoría
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Center(
+                child: Text(
+                  category.name, // Usamos el nombre de la categoría
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13, fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
