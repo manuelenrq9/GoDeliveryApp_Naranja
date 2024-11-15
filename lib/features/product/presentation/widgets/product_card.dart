@@ -22,12 +22,15 @@ class ProductItem extends StatelessWidget {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+
         showLoadingScreen(context,
             destination: ProductDetailScreen(product: product));
+
       },
       child: Card(
         color: Color.fromARGB(230, 228, 227, 227),
@@ -51,6 +54,7 @@ class ProductItem extends StatelessWidget {
                       color: Colors.orange,
                     )),
                     errorWidget: (context, url, error) =>
+
                         const Icon(Icons.error),
                   ),
                 ),
@@ -102,6 +106,7 @@ class ProductItem extends StatelessWidget {
                       Icons.add,
                       color: Color(0xFFFF7000),
                     ),
+
                   ),
                 ]),
               ),

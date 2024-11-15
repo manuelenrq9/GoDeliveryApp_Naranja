@@ -1,60 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/category/domain/category.dart';
 
-class CategoryCard extends StatefulWidget {
-  final String title;
-  final String iconPath;
-    const CategoryCard({
-      super.key,
-      required this.title,
-      required this.iconPath,
-    });
+class CategoryCard extends StatelessWidget {
+  final Category category;
 
-
-  @override
-  State<CategoryCard> createState() => _CategoryCardState();
-}
-
-class _CategoryCardState extends State<CategoryCard> {
+  const CategoryCard({
+    super.key,
+    required this.category,
+  });
 
   @override
   Widget build(BuildContext context) {
-
-    return  Padding(
-      padding: const EdgeInsets.all(10.0),
+    return Padding(
+      padding: const EdgeInsets.all(7.0),
       child: Container(
-        width: 80,
-        height: 97,
+        width: 87,
+        height: 70,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color:const Color(0xFFFF7000),
+          color: const Color(0xFFFF7000),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 12,),
+            const SizedBox(height: 12),
             Container(
-              width: 49,
-              height: 49,
+              width: 55,
+              height: 55,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
-                color:const Color.fromARGB(255, 255, 255, 255),
+                color: const Color.fromARGB(255, 255, 255, 255),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(9),
-                child: Image.asset(widget.iconPath,
+                child: Image.network(
+                  category.image, // Usamos la URL de la categoría
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(height: 5,),
-            Text(
-              widget.title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
+            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Center(
+                child: Text(
+                  category.name, // Usamos el nombre de la categoría
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13, fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            )
-          ],),
-       // decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(50) ),),
-          ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
