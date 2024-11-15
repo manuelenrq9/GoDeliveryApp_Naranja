@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/ForgotPasswordScreen/presentation/pages/recoveryPasswordMessague.dart'; // Asegúrate de importar correctamente el mensaje
+import 'package:godeliveryapp_naranja/features/log_In/presentation/widgets/recoveryPasswordMessague.dart'; // Asegúrate de importar correctamente el mensaje
 
 class ForgotPasswordScreen extends StatefulWidget {
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
-import 'package:godeliveryapp_naranja/features/ForgotPasswordScreen/presentation/pages/ForgotPasswordScreen.dart';
+import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/ForgotPasswordScreen.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/register.dart';
 
