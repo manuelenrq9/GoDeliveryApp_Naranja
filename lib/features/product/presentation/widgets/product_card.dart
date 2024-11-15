@@ -33,7 +33,7 @@ class ProductItem extends StatelessWidget {
 
       },
       child: Card(
-        color: Color.fromARGB(230, 228, 227, 227),
+        color: Colors.white,
         margin: const EdgeInsets.symmetric(vertical: 8.0),
         child: Padding(
           padding: const EdgeInsets.all(14.0),

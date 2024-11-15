@@ -40,9 +40,10 @@ class ComboCard extends StatelessWidget {
           showLoadingScreen(context,destination:  ComboDetailScreen(combo: combo));
         },
         child: Container(
+          
           width: cardWidth, // Ancho dinámico de la tarjeta
           decoration: BoxDecoration(
-            color: Color.fromARGB(230, 228, 227, 227),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12), // Borde redondeado
             boxShadow: [
               BoxShadow(
