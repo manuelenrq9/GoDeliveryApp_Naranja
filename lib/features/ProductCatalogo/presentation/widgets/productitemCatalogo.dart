@@ -14,7 +14,7 @@ class ProductItemCatalogo extends StatelessWidget {
         // Cuando se toque el producto, navegamos a la pantalla de detalles del producto
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ProductDetailScreen()),
+          MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)),
         );
       },
       child: Card(
