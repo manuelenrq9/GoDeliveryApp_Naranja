@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/entities/category.dart';
+import 'package:godeliveryapp_naranja/features/category/domain/category.dart';
 
 class CategoryCard extends StatelessWidget {
   final Category category;
