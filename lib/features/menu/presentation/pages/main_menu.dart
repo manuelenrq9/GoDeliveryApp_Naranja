@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/titulo_lista.dart';
+import 'package:godeliveryapp_naranja/features/combo/presentation/pages/comboCatalog.dart';
+import 'package:godeliveryapp_naranja/features/product/presentation/pages/ProductCatalago.dart';
 import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
 import 'package:godeliveryapp_naranja/features/sidebar/presentation/custom_drawer.dart';
@@ -72,9 +74,9 @@ class _MainMenuState extends State<MainMenu> {
         child: ListView(
           children: [
               CategoryListScreen(),
-              TituloLista(titulo: "Combos de Productos"),
+              TituloLista(titulo: "Combos de Productos", next: ComboCatalogScreen(),),
               const ComboListScreen(),
-              TituloLista(titulo: "Productos Populares"),
+              TituloLista(titulo: "Productos Populares", next: ProductCatalogScreen(),),
               const ProductListScreen(),              
           ],
         ),

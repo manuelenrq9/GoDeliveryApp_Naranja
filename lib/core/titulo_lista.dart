@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
-import 'package:godeliveryapp_naranja/features/ProductCatalogo/presentation/pages/ProductCatalago.dart';
 
 class TituloLista extends StatefulWidget {
   final String titulo;
-  const TituloLista({super.key, required this.titulo});
+  final Widget next;
+  const TituloLista({super.key, required this.titulo, required this.next});
 
   @override
   State<TituloLista> createState() => _MyWidgetState();
@@ -24,7 +24,7 @@ class _MyWidgetState extends State<TituloLista> {
           ),
           TextButton(
             onPressed: () {
-              showLoadingScreen(context, destination: ProductCatalogScreen());
+              showLoadingScreen(context, destination: widget.next);
             },
             child: const Text(
               'Ver más',

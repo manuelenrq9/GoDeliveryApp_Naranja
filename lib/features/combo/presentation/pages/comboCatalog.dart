@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/ProductCatalogo/presentation/widgets/productitemCatalogo.dart';
-import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
+import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
+import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
+import 'package:godeliveryapp_naranja/features/combo/presentation/widgets/comboItemCatalog.dart';
 
 // Asegúrate de tener este archivo
 
-class ProductCatalogScreen extends StatefulWidget {
-  const ProductCatalogScreen({super.key}); // Nombre actualizado
+class ComboCatalogScreen extends StatefulWidget {
+  const ComboCatalogScreen({super.key}); // Nombre actualizado
 
   @override
-  State<ProductCatalogScreen> createState() =>
-      _ProductCatalogScreenState(); // Nombre actualizado
+  State<ComboCatalogScreen> createState() =>
+      _ComboCatalogScreenState(); // Nombre actualizado
 }
 
-class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
+class _ComboCatalogScreenState extends State<ComboCatalogScreen> {
   // Nombre actualizado
-  late Future<List<Product>> futureProducts;
+  late Future<List<Combo>> futureCombos;
 
   @override
   void initState() {
     super.initState();
-    futureProducts = fetchProducts(); // Cargar los productos desde el API
+    futureCombos = fetchCombos(); // Cargar los productos desde el API
   }
 
   @override
@@ -30,7 +30,7 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
         centerTitle: true,
         title: const Center(
           child: Text(
-            'Productos',
+            'Combos',
             style: TextStyle(
               color: Color.fromARGB(255, 175, 91, 7),
               fontSize: 24,
@@ -46,8 +46,8 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
           },
         ),
       ),
-      body: FutureBuilder<List<Product>>(
-        future: futureProducts,
+      body: FutureBuilder<List<Combo>>(
+        future: futureCombos,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -55,10 +55,10 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No hay productos disponibles'));
+            return const Center(child: Text('No hay combos disponibles'));
           } else {
             // Si hay productos, los mostramos
-            final products = snapshot.data!;
+            final combos = snapshot.data!;
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, // Número de columnas
@@ -66,10 +66,10 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
                 mainAxisSpacing: 10, // Espaciado vertical entre filas
                 childAspectRatio: 0.75, // Relación de aspecto de las tarjetas
               ),
-              itemCount: products.length,
+              itemCount: combos.length,
               itemBuilder: (context, index) {
-                return ProductItemCatalogo(
-                    product: products[
+                return ComboItemCatalogo(
+                    combo: combos[
                         index]); // Este es el widget que muestra el producto
               },
             );
