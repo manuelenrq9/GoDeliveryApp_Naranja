@@ -26,15 +26,10 @@ class _MainMenuState extends State<MainMenu> {
       _currentIndex = index;
     });
   }
-
-  // Función para manejar la acción de refrescar
   Future<void> _refresh() async {
-    // Aquí puedes poner tu lógica de recarga de datos, por ejemplo, volver a cargar los productos
-    await Future.delayed(
-        const Duration(seconds: 2)); // Simula la espera para refrescar
-    setState(() {
-      // Aquí actualizas el estado, si tienes algún dato que necesite ser actualizado.
-    });
+    // Forzar la reconstrucción completa del widget MainMenu utilizando una nueva clave global
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (BuildContext context) => const MainMenu()));
   }
 
   @override
