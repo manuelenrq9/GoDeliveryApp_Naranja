@@ -3,8 +3,9 @@ import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/titulo_lista.dart';
 import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
+import 'package:godeliveryapp_naranja/features/sidebar/presentation/custom_drawer.dart';
 import 'package:godeliveryapp_naranja/features/category/data/categoryListScreen.dart';
-// Asegúrate de importar el CustomNavBar
+
 
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
@@ -24,16 +25,30 @@ class _MainMenuState extends State<MainMenu> {
     });
   }
 
+  // Función para manejar la acción de refrescar
+  Future<void> _refresh() async {
+    // Aquí puedes poner tu lógica de recarga de datos, por ejemplo, volver a cargar los productos
+    await Future.delayed(
+        const Duration(seconds: 2)); // Simula la espera para refrescar
+    setState(() {
+      // Aquí actualizas el estado, si tienes algún dato que necesite ser actualizado.
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {
-            // Acción para abrir el menú
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                // Acción para abrir el menú (Drawer)
+                Scaffold.of(context)
+                    .openDrawer(); // Ahora Scaffold.of() funciona correctamente
+              },
+            );
           },
         ),
         title: Center(
@@ -51,8 +66,10 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-        body: ListView( // 
-          //mainAxisAlignment: MainAxisAlignment.center,
+      body: RefreshIndicator(
+        onRefresh: _refresh, // Asocia la función de refresco
+        color: Colors.orange, // Establece el color del refresco a naranja
+        child: ListView(
           children: [
               CategoryListScreen(),
               TituloLista(titulo: "Combos de Productos"),
@@ -61,11 +78,12 @@ class _MainMenuState extends State<MainMenu> {
               const ProductListScreen(),              
           ],
         ),
-      // Agregar CustomNavBar en el bottomNavigationBar
+      ),
       bottomNavigationBar: CustomNavBar(
         currentIndex: _currentIndex,
         onTap: _onTap,
       ),
+      drawer: CustomDrawer(),
     );
   }
 }
