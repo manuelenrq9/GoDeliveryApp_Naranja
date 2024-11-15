@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/combo/presentation/pages/detallecombo.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
@@ -49,15 +50,14 @@ class ComboCard extends StatelessWidget {
               children: [
                 // Imagen del combo
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                      10), // Borde redondeado para la imagen
-                  child: Image.network(
-                    combo.comboImage,
+                  borderRadius: BorderRadius.circular(10), // Borde redondeado para la imagen
+                  child: CachedNetworkImage(
+                    imageUrl: combo.comboImage,
                     width: double.infinity,
                     height: imageHeight, // Altura dinámica de la imagen
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.error),
+                    placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: Colors.orange,)),
+                    errorWidget: (context, url, error) => const Icon(Icons.error),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -74,7 +74,7 @@ class ComboCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 // Descripción del combo con ajuste flexible
                 Text(
-                  combo.description,
+                  combo.description, // Manejo de null en descripción
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
@@ -95,7 +95,7 @@ class ComboCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
-                      ),
+                      ),                                    
                       const Icon(
                         Icons.add,
                         color: Color(0xFFFF7000),

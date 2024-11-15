@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/titulo_lista.dart';
+import 'package:godeliveryapp_naranja/features/category/presentation/widgets/category_card.dart';
+import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
-import '../../../category/presentation/widgets/category_card.dart';
 // Asegúrate de importar el CustomNavBar
 
 class MainMenu extends StatefulWidget {
@@ -53,8 +53,8 @@ class _MainMenuState extends State<MainMenu> {
       ),
         body: ListView( // 
           //mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-              SingleChildScrollView(
+          children: [
+              const SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
@@ -68,9 +68,9 @@ class _MainMenuState extends State<MainMenu> {
                 ),
               ),
               TituloLista(titulo: "Combos de Productos"),
-              ComboListScreen(),
+              const ComboListScreen(),
               TituloLista(titulo: "Productos Populares"),
-              ProductListScreen(),              
+              const ProductListScreen(),              
           ],
         ),
       // Agregar CustomNavBar en el bottomNavigationBar
