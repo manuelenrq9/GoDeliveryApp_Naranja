@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/entities/product.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
-import 'package:godeliveryapp_naranja/product_detail.dart';
+import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
+import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
 import 'package:godeliveryapp_naranja/repositories/local_storage.repository.dart';
 import 'package:http/http.dart' as http;
 
