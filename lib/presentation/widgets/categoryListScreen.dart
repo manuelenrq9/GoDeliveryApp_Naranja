@@ -5,7 +5,7 @@ import 'package:godeliveryapp_naranja/presentation/widgets/category_card.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Category>> fetchCategories() async {
-  final response = await http.get(Uri.parse(''));
+  final response = await http.get(Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/category'));
   if (response.statusCode == 200) {
     // Parseamos la respuesta JSON
     final Map<String, dynamic> jsonData = jsonDecode(response.body);
@@ -35,29 +35,30 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
   void initState() {
     super.initState();
     futureCategories =
-        fetchCategories(); // Llamamos a la función que obtiene las categorías
-    print(futureCategories); // Para debug
+        fetchCategories(); // Llamamos a la función que obtiene las categorías// 
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Categories')),
-      body: FutureBuilder<List<Category>>(
+    return Container(
+      height: 150,
+      child:FutureBuilder<List<Category>>(
         future: futureCategories,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return Wrap(
-              children: snapshot.data!
-                  .map((category) => CategoryCard(category: category))
-                  .toList(),
+            final categories = snapshot.data!;
+            return ListView(
+              scrollDirection: Axis.horizontal,
+              children: categories.map((category) {
+                return CategoryCard(category: category);
+              }).toList(),
             );
-          } else if (snapshot.hasError) {
+          } else if (snapshot.hasError) { 
             // Si hay un error, mostramos el mensaje de error
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           // Si está esperando la respuesta, mostramos un indicador de carga
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(color: Colors.orange,));
         },
       ),
     );

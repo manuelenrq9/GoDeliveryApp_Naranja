@@ -14,8 +14,8 @@ class CategoryCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
-        width: 150,
-        height: 150,
+        width: 80,
+        height: 97,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: const Color(0xFFFF7000),
@@ -24,8 +24,8 @@ class CategoryCard extends StatelessWidget {
           children: [
             const SizedBox(height: 12),
             Container(
-              width: 80,
-              height: 80,
+              width: 49,
+              height: 49,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(50),
                 color: const Color.fromARGB(255, 255, 255, 255),

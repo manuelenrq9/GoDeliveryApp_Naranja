@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/presentation/widgets/CategoryListScreen.dart';
+import 'package:godeliveryapp_naranja/presentation/widgets/categoryListScreen.dart';
 import '../widgets/combo_card.dart';
-import '../widgets/category_card.dart';
 import '../widgets/product_card.dart';
 
 class MainMenu extends StatefulWidget {
