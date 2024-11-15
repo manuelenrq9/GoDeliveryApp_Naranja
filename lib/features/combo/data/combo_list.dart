@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/combo/presentation/widgets/combo_card.dart';
 import 'package:http/http.dart' as http;
-import 'package:godeliveryapp_naranja/repositories/local_storage.repository.dart';
+import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 
 Future<List<Combo>> fetchCombos() async {
   try {
