@@ -74,7 +74,7 @@ class ComboCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 // Descripción del combo con ajuste flexible
                 Text(
-                  combo.description,
+                  combo.description, // Manejo de null en descripción
                   style: const TextStyle(
                     fontSize: 12,
                     color: Colors.grey,
@@ -95,7 +95,7 @@ class ComboCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
-                      ),
+                      ),                                    
                       const Icon(
                         Icons.add,
                         color: Color(0xFFFF7000),
