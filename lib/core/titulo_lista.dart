@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
-import 'package:godeliveryapp_naranja/features/CatalogoProduct/presentation/pages/CatalogoProduct.dart';
+import 'package:godeliveryapp_naranja/features/ProductCatalogo/presentation/pages/ProductCatalago.dart';
 
 class TituloLista extends StatefulWidget {
   final String titulo;
@@ -24,7 +24,7 @@ class _MyWidgetState extends State<TituloLista> {
           ),
           TextButton(
             onPressed: () {
-              showLoadingScreen(context, destination: CatalogoPage());
+              showLoadingScreen(context, destination: ProductCatalogScreen());
             },
             child: const Text(
               'Ver más',
