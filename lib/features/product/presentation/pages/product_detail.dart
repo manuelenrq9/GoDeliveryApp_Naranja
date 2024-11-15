@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
-import 'package:godeliveryapp_naranja/carrito/cart_screen.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
+import 'package:godeliveryapp_naranja/core/navbar.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
+import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 
 
 class ProductDetailScreen extends StatefulWidget {

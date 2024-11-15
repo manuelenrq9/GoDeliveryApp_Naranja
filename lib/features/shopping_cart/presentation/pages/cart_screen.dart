@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/carrito/summary_row.dart';
-import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
-import 'cart_item_data.dart';
-import 'cart_items_list.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
+import 'package:godeliveryapp_naranja/core/navbar.dart';
+import '../../domain/cart_item_data.dart';
+import '../widgets/cart_items_list.dart';
 //import 'discount_section.dart'; // Comentado porque no se usará
-import 'summary_product.dart';
+import '../widgets/summary_product.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});

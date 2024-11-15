@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/entities/combo.dart';
-import 'package:godeliveryapp_naranja/presentation/widgets/combo_card.dart';
+import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
+import 'package:godeliveryapp_naranja/features/combo/presentation/widgets/combo_card.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Combo>> fetchCombos() async {
@@ -57,7 +57,7 @@ class _ComboListScreenState extends State<ComboListScreen> {
               return Center(child: Text('Error: ${snapshot.error}'));
             } 
 
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator(color: Colors.orange,));
           },
         ),
     );

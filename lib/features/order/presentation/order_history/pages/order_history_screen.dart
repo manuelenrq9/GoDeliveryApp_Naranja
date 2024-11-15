@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/orderhistory/navbar.dart';
+import 'package:godeliveryapp_naranja/core/navbar.dart';
 
-import 'custom_tab_bar.dart';
+import '../widgets/custom_tab_bar.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});

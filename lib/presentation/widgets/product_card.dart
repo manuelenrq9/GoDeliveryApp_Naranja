@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/entities/product.dart'; // Asegúrate de tener esta clase
-import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart'; // Asegúrate de que esta función esté importada
-import 'package:godeliveryapp_naranja/product_detail.dart';
+import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
+import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
 import 'package:http/http.dart' as http;
 
 // Función para obtener los productos

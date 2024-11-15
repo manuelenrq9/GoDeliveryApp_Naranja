@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/ordersummary/delivery_address.dart';
-import 'package:godeliveryapp_naranja/ordersummary/delivery_time.dart';
-import 'package:godeliveryapp_naranja/ordersummary/order_header.dart';
-import 'package:godeliveryapp_naranja/ordersummary/order_summary.dart';
-import 'package:godeliveryapp_naranja/ordersummary/product_tile.dart';
-import 'package:godeliveryapp_naranja/ordersummary/reorder_button.dart';
-import 'package:godeliveryapp_naranja/orderhistory/navbar.dart'; // Asegúrate de importar la barra de navegación
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/delivery_address.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/delivery_time.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/order_header.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/pages/order_summary.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/product_tile.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/reorder_button.dart';
+import 'package:godeliveryapp_naranja/core/navbar.dart'; // Asegúrate de importar la barra de navegación
 
 class OrderSummaryScreen extends StatefulWidget {
   @override

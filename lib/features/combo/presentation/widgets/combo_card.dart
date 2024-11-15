@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/entities/combo.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
-
-// Asegúrate de descomentar o importar correctamente la clase DetalleCombo
-import 'package:godeliveryapp_naranja/detallecombo.dart';
+import 'package:godeliveryapp_naranja/features/combo/presentation/pages/detallecombo.dart';
+import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
+import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 
 class ComboCard extends StatelessWidget {
   final Combo combo;
@@ -27,13 +25,12 @@ class ComboCard extends StatelessWidget {
           8.0), // Espaciado externo para evitar corte de bordes
       child: GestureDetector(
         onTap: () {
-          // Asegúrate de que 'DetalleCombo' esté correctamente importada
-          //showLoadingScreen(context, destination: DdtalleCombo(combo: combo));
+          showLoadingScreen(context,destination:  ComboDetailScreen(combo: combo));
         },
         child: Container(
           width: cardWidth, // Ancho dinámico de la tarjeta
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Color.fromARGB(230, 228, 227, 227),
             borderRadius: BorderRadius.circular(12), // Borde redondeado
             boxShadow: [
               BoxShadow(
@@ -87,34 +84,24 @@ class ComboCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 // Precio y botón en extremos
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '\$${combo.specialPrice.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '${combo.currency}  ${combo.specialPrice.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),                                    
+                      const Icon(
+                        Icons.add,
+                        color: Color(0xFFFF7000),
                       ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Acción para agregar al carrito
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF7000),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8), // Tamaño aumentado para el botón
-                        minimumSize: const Size(50, 50), // Tamaño adecuado
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: const Text(
-                        '+',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
