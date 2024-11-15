@@ -1,11 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 
-
 class ProductDetailScreen extends StatefulWidget {
-  const ProductDetailScreen({super.key});
+  final Product product;
+  const ProductDetailScreen({super.key, required this.product});
 
   @override
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
@@ -13,11 +15,7 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int quantity = 1;
-  double price = 25.0;
-  final String productName = "Nestle Koko Krunch Duo (Kids Pack)";
-  final String descripcion =
-      "Delicioso cereal de chocolate para niños, perfecto para el desayuno o la merienda.";
-  final String divisa = "USD"; // Divisa del precio
+  num price = 0;// Divisa del precio
 
   int _currentIndex = 0; // Variable para el índice de la barra de navegación
 
@@ -27,11 +25,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       _currentIndex = index;
     });
   }
+  @override
+  void initState() {
+    super.initState();
+    price = widget.product.price;
+  }
 
   void incrementQuantity() {
     setState(() {
       quantity++;
-      price = 25.0 * quantity;
+      price = widget.product.price * quantity;
     });
   }
 
@@ -39,7 +42,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     setState(() {
       if (quantity > 1) {
         quantity--;
-        price = 25.0 * quantity;
+        price = widget.product.price * quantity;
       }
     });
   }
@@ -96,15 +99,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Image.network(
-                      'https://media.nedigital.sg/fairprice/fpol/media/images/product/XL/13206550_XL1_20240903.jpg?w=400&q=70',
+                    child: CachedNetworkImage(
+                      imageUrl: widget.product.image,
                       height: 150,
+                      placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: Colors.orange,)),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
                     ),
                   ),
                   const SizedBox(height: 18),
                   Center(
                     child: Text(
-                      productName,
+                      widget.product.name,
                       style: const TextStyle(
                           fontSize: 20, fontWeight: FontWeight.bold),
                     ),
@@ -112,7 +117,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   const SizedBox(height: 8),
                   Center(
                     child: Text(
-                      descripcion,
+                      widget.product.description,
                       style:
                           const TextStyle(fontSize: 16, color: Colors.black54),
                       textAlign: TextAlign.center,
@@ -121,7 +126,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   const SizedBox(height: 8),
                   Divider(color: Colors.grey[300]),
                   const SizedBox(height: 8),
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -129,7 +134,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.black54),
                       ),
                       Text(
-                        '550 gm',
+                        '${widget.product.weight} gramos',
                         style: TextStyle(fontSize: 16, color: Colors.black87),
                       ),
                     ],
@@ -145,7 +150,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.black54),
                       ),
                       Text(
-                        '$divisa $price', // Añadimos la divisa junto con el precio
+                        '${widget.product.currency} ${price}', // Añadimos la divisa junto con el precio
                         style: const TextStyle(
                           fontSize: 22,
                           color: Color(0xFFFF9027),
@@ -189,7 +194,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Añadir carrito en futuras actualizaciones :c'),
+                          duration: Duration(seconds: 2), 
+                          backgroundColor: Colors.green,// Duración del mensaje
+                        ),
+                      );
+                    },
                     icon: const Icon(Icons.shopping_cart, color: Colors.white),
                     label: const Text(
                       'Añadir al carrito',

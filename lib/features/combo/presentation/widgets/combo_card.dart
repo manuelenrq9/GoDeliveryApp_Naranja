@@ -9,6 +9,17 @@ class ComboCard extends StatelessWidget {
 
   const ComboCard({super.key, required this.combo});
 
+  void _onAddPressed(BuildContext context) {
+    // Mostrar un SnackBar indicando que el producto se agregó al carrito
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Añadir carrito en futuras actualizaciones :c'),
+        duration: Duration(seconds: 2), 
+        backgroundColor: Colors.green,// Duración del mensaje
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Obtener ancho y alto de la pantalla
@@ -96,10 +107,13 @@ class ComboCard extends StatelessWidget {
                           fontSize: 16,
                         ),
                       ),                                    
-                      const Icon(
+                      GestureDetector(
+                      onTap: () => _onAddPressed(context), // Acción personalizada para el icono "add"
+                      child: const Icon(
                         Icons.add,
                         color: Color(0xFFFF7000),
                       ),
+                    ),
                     ],
                   ),
                 ),
