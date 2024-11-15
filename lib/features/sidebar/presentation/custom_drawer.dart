@@ -1,6 +1,7 @@
 // custom_drawer.dart
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+import 'package:godeliveryapp_naranja/features/category/data/categoryScreen.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/pages/order_history_screen.dart';
@@ -66,7 +67,9 @@ class CustomDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.category),
             title: const Text('Categoria'),
-            onTap: () {},
+            onTap: () {
+              showLoadingScreen(context, destination: const CategoryScreen());
+            },
           ),
           ListTile(
             leading: const Icon(Icons.exit_to_app),
