@@ -18,33 +18,33 @@ class _CartScreenState extends State<CartScreen> {
     // Ejemplo de datos
     CartItemData(
       imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc3i5PZdcQy1GR0AXBEle6uYNYjjpFXr_pew&s',
-      name: 'Fresh Refined Sugar',
-      presentation: '1 kg',
+          'https://lh3.googleusercontent.com/FirLkhJG0YgVeX_aQkP2tF7KWV6_CRHV8fX-9C-isPcpeUwK8MUAHtAruNBCuIds-NZyy9tu-hg3O6xblN5bUsT8wfg5a-aWVTIvMUqJpgDY0Ws',
+      name: 'Galletas Oreo',
+      presentation: '150 gr',
       price: 230,
       quantity: 3,
     ),
     CartItemData(
       imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkhe7ppjYw4_fYOPIFwQx0wZhEP4e3hjaEBw&s',
-      name: 'Nestle Koko Krunch Duo (Kids pack)',
+          'https://amarket.com.bo/cdn/shop/files/07591057001025_700x700.jpg?v=1712344200',
+      name: 'Cereal corn flakes kellogg´s',
       presentation: '550 gm',
       price: 550,
       quantity: 1,
     ),
     CartItemData(
       imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpy_hK5395xzH2ZhTKAKzVt1-Dgbpiy2u35Q&s',
-      name: 'Ispahani Mirzapore Tea (best tea bag)',
+          'https://mi3monline.com/Productos/Imagen?codigo=368&ancho=150&alto=150',
+      name: 'Lentejas la criolla',
       presentation: '50 gm',
       price: 120,
       quantity: 1,
     ),
     CartItemData(
       imageUrl:
-          'https://sadinbazar.com/wp-content/uploads/2020/12/Rupchanda-Soyabean-Oil-5.jpeg',
-      name: 'Rupchanda Soyabean Oil',
-      presentation: '5 litres',
+          'https://www.tiendashoppi.com/cdn/shop/files/tienda-shoppi-barrita-de-avena-miel-y-granola-min.jpg?v=1697057321',
+      name: 'Granola Nature Valley',
+      presentation: '400 gr',
       price: 480,
       quantity: 2,
     ),
