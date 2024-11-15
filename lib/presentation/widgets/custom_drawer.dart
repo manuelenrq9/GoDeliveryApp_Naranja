@@ -1,12 +1,11 @@
 // custom_drawer.dart
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/carrito/cart_screen.dart';
-import 'package:godeliveryapp_naranja/orderhistory/order_history_screen.dart';
-import 'package:godeliveryapp_naranja/ordersummary/OrderSummaryScreen.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/loading_screen.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/login.dart';
-import 'package:godeliveryapp_naranja/presentation/interfaces/main_menu.dart';
-
+import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
+import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_history/pages/order_history_screen.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/OrderSummaryScreen.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
