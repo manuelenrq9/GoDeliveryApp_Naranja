@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,8 +7,6 @@ Future<Product> fetchProductById(String productId) async {
   try {
     final response = await http.get(Uri.parse(
         'https://orangeteam-deliverybackend-production.up.railway.app/product/$productId'));
-    print("Response Status: ${response.statusCode}");
-    print("Response Body: ${response.body}");
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);

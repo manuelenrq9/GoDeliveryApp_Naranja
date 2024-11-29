@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import '../../domain/cart_item_data.dart';
@@ -14,69 +15,124 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  final List<CartItemData> cartItems = [
-    // Ejemplo de datos
-    CartItemData(
-      imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc3i5PZdcQy1GR0AXBEle6uYNYjjpFXr_pew&s',
-      name: 'Fresh Refined Sugar',
-      presentation: '1 kg',
-      price: 230,
-      quantity: 3,
-    ),
-    CartItemData(
-      imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkhe7ppjYw4_fYOPIFwQx0wZhEP4e3hjaEBw&s',
-      name: 'Nestle Koko Krunch Duo (Kids pack)',
-      presentation: '550 gm',
-      price: 550,
-      quantity: 1,
-    ),
-    CartItemData(
-      imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpy_hK5395xzH2ZhTKAKzVt1-Dgbpiy2u35Q&s',
-      name: 'Ispahani Mirzapore Tea (best tea bag)',
-      presentation: '50 gm',
-      price: 120,
-      quantity: 1,
-    ),
-    CartItemData(
-      imageUrl:
-          'https://sadinbazar.com/wp-content/uploads/2020/12/Rupchanda-Soyabean-Oil-5.jpeg',
-      name: 'Rupchanda Soyabean Oil',
-      presentation: '5 litres',
-      price: 480,
-      quantity: 2,
-    ),
-    // Agrega más productos aquí
-  ];
+  late final CartRepository _cartRepository;
+  List<CartItemData> cartItems = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _cartRepository = CartRepository();
+    _loadCart();
+  }
+
+  // Cargar los datos del carrito desde el almacenamiento local
+  Future<void> _loadCart() async {
+    final items = await _cartRepository.loadData();
+    setState(() {
+      cartItems = items;
+    });
+  }
+
+  // Actualizar el carrito en el almacenamiento local
+  Future<void> _updateCart() async {
+    await _cartRepository.saveData(cartItems);
+  }
+
+  // Calcular el total del carrito
   double get totalAmount {
     return cartItems.fold(0, (sum, item) => sum + item.price * item.quantity);
   }
 
+  // Incrementar la cantidad de un producto
   void increaseQuantity(int index) {
     setState(() {
       cartItems[index].quantity++;
     });
+    _updateCart();
   }
 
+  // Decrementar la cantidad de un producto
   void decreaseQuantity(int index) {
     setState(() {
       if (cartItems[index].quantity > 1) {
         cartItems[index].quantity--;
       }
     });
+    _updateCart();
   }
 
-  int _currentIndex = 0; // Variable para el índice de la barra de navegación
-
-  // Función para manejar el cambio de índice en el navbar
-  void _onTap(int index) {
+  // Eliminar un producto del carrito
+  void removeItem(int index) {
     setState(() {
-      _currentIndex = index;
+      cartItems.removeAt(index);
+    });
+    _updateCart();
+  }
+
+  // Limpiar el carrito (vaciar)
+  Future<void> clearCart() async {
+    await _cartRepository.clearCart();
+    setState(() {
+      cartItems.clear();
     });
   }
+
+  // Mostrar un AlertDialog para confirmar si desea eliminar todos los artículos
+void _showClearCartDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text(
+          '¿Eliminar todos los artículos?',
+          style: TextStyle(
+            color: Color(0xFFFF7000), // Un color similar al que usas en botones
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        // Contenido del diálogo
+        content: const Text(
+          'Se eliminaran todos los artículos de tu carrito',
+          style: TextStyle(fontSize: 16),
+        ),
+        // Botones
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cerrar el diálogo
+            },
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Color(0xFFFF7000), // Color del texto que armoniza con la interfaz
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              clearCart(); // Vaciar el carrito
+              Navigator.of(context).pop(); // Cerrar el diálogo
+            },
+            child: const Text(
+              'Eliminar todo',
+              style: TextStyle(
+                color: Color(0xFFFF7000), // Color para el botón "Eliminar todo"
+              ),
+            ),
+          ),
+        ],
+        // Personalización del fondo y bordes del AlertDialog
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15), // Bordes redondeados
+        ),
+        backgroundColor: Colors.white, // Fondo blanco
+        elevation: 5, // Sombra para darle más profundidad
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,11 +140,14 @@ class _CartScreenState extends State<CartScreen> {
       appBar: AppBar(
         title: const Text('Carrito'),
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              '${cartItems.length} artículos',
-              style: const TextStyle(color: Color(0xFFFF7000)),
+          GestureDetector(
+            onTap: _showClearCartDialog,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                '${cartItems.length} artículos',
+                style: const TextStyle(color: Color(0xFFFF7000)),
+              ),
             ),
           ),
         ],
@@ -100,6 +159,7 @@ class _CartScreenState extends State<CartScreen> {
               cartItems: cartItems,
               onIncreaseQuantity: increaseQuantity,
               onDecreaseQuantity: decreaseQuantity,
+              onRemoveItem: removeItem,
             ),
           ),
           const Divider(),
@@ -108,13 +168,11 @@ class _CartScreenState extends State<CartScreen> {
             child: Column(
               children: [
                 ProductSummary(totalAmount: totalAmount),
-                //DiscountSection(),
-                const Divider(),
                 const SummaryRow(label: 'Tarifa de envío', amount: '\$50'),
                 const Divider(),
                 SummaryRow(
                   label: 'Total',
-                  amount: '\$${(totalAmount + 50 - 20).toStringAsFixed(2)}',
+                  amount: '\$${(totalAmount + 50).toStringAsFixed(2)}',
                   isTotal: true,
                 ),
               ],
@@ -124,7 +182,7 @@ class _CartScreenState extends State<CartScreen> {
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
               onPressed: () {
-                // Acción para proceder al checkout
+               // Procesar la orden
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFF7000),
@@ -141,10 +199,11 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ],
       ),
-      // Agregar CustomNavBar en el bottomNavigationBar
       bottomNavigationBar: CustomNavBar(
-        currentIndex: _currentIndex,
-        onTap: _onTap,
+        currentIndex: 0,
+        onTap: (index) {
+          // Aquí puedes manejar el cambio de navegación si es necesario
+        },
       ),
     );
   }

@@ -2,12 +2,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
+import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_detail.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetchID.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';  // Importar el paquete
+import 'package:connectivity_plus/connectivity_plus.dart'; // Importar el paquete
 
 class ComboDetailScreen extends StatefulWidget {
   final Combo combo;
@@ -22,6 +23,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
   num price = 0;
   late Future<List<Product>> _productsFuture;  // Future para cargar los productos
   List<Product> _productList = []; 
+  bool isAddedToCart = false;
 
   @override
   void initState() {
@@ -53,6 +55,13 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
         quantity--;
         price = widget.combo.specialPrice * quantity;
       }
+    });
+  }
+
+  void resetQuantity() {
+    setState(() {
+      quantity = 1;
+      price = widget.combo.specialPrice; // Vuelve al precio original del combo
     });
   }
 
@@ -239,7 +248,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                         style: TextStyle(fontSize: 16, color: Colors.black54),
                       ),
                       Text(
-                        '\$$price',
+                        '\$${(price).toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 22,
                           color: Color(0xFFFF9027),
@@ -282,29 +291,11 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Añadir carrito en futuras actualizaciones :c'),
-                        duration: Duration(seconds: 2), 
-                        backgroundColor: Colors.green,// Duración del mensaje
-                      ),
-                    );
-                    },
-                    icon: const Icon(Icons.shopping_cart, color: Colors.white),
-                    label: const Text(
-                      'Añadir al carrito',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF9027),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      textStyle: const TextStyle(fontSize: 18),
-                    ),
+                  child: AddToCartButton(
+                    combo: widget.combo,  // Pasamos el combo como parámetro
+                    quantity: quantity,   // Pasamos la cantidad seleccionada
+                    price: price,
+                    resetQuantity: resetQuantity,        // Pasamos el precio calculado
                   ),
                 ),
               ],

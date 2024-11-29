@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_menu.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
@@ -9,31 +10,20 @@ class ProductItem extends StatelessWidget {
 
   const ProductItem({super.key, required this.product});
 
-  void _onAddPressed(BuildContext context) {
-    // Mostrar un SnackBar indicando que el producto se agregó al carrito
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Añadir carrito en futuras actualizaciones :c'),
-        duration: Duration(seconds: 2), 
-        backgroundColor: Colors.green,// Duración del mensaje
-      ),
-    );
-  }
-
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-
         showLoadingScreen(context,
             destination: ProductDetailScreen(product: product));
-
       },
       child: Card(
         color: Colors.white,
         margin: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Padding(
+        child: Stack(
+        children: [
+        Padding(
           padding: const EdgeInsets.all(14.0),
           child: Row(
             children: [
@@ -52,7 +42,6 @@ class ProductItem extends StatelessWidget {
                       color: Colors.orange,
                     )),
                     errorWidget: (context, url, error) =>
-
                         const Icon(Icons.error),
                   ),
                 ),
@@ -78,7 +67,12 @@ class ProductItem extends StatelessWidget {
               )),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Column(children: [
+                child: Container(
+                height: 50, 
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start, // Alineamos el contenido arriba
+                  crossAxisAlignment: CrossAxisAlignment.end, // Alineamos el precio a la derecha
+                  children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -89,7 +83,7 @@ class ProductItem extends StatelessWidget {
                         width: 7,
                       ),
                       Text(
-                        product.price.toString(),
+                        product.price.toStringAsFixed(2),
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 14),
                       ),
@@ -98,18 +92,20 @@ class ProductItem extends StatelessWidget {
                   SizedBox(
                     height: 6,
                   ),
-                  GestureDetector(
-                    onTap:() => _onAddPressed(context),  // Acción personalizada para el icono "add"
-                    child: const Icon(
-                      Icons.add,
-                      color: Color(0xFFFF7000),
-                    ),
-
-                  ),
-                ]),
+                  
+                ]
+               ),
+                ),
               ),
             ],
           ),
+        ),
+        Positioned(
+              bottom: 15, // Puedes ajustar la distancia desde la parte inferior
+              right: 20, // Ajusta la distancia desde el lado derecho
+              child: ButtonAddCartMenu(product: product),
+            ),
+        ]
         ),
       ),
     );
