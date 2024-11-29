@@ -1,31 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/category/domain/category.dart';
 import 'package:godeliveryapp_naranja/features/category/presentation/widgets/category_card.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
-import 'package:http/http.dart' as http;
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:godeliveryapp_naranja/features/sidebar/presentation/custom_drawer.dart';
-
-Future<List<Category>> fetchCategories() async {
-  try {
-    final response = await http.get(Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/category'));
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonData = jsonDecode(response.body);
-      final List<dynamic> categoriesData = jsonData['categories'];
-      return categoriesData.map((categoryJson) => Category.fromJson(categoryJson)).toList();
-    } else {
-      throw Exception('Failed to fetch categories');
-    }
-  } catch (e) {
-    if (e is SocketException) {
-      throw 'No tienes conexión a Internet';
-    } else {
-      throw Exception('Error al cargar las categorías');
-    }
-  }
-}
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({Key? key}) : super(key: key);
@@ -35,14 +13,18 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  late Future<List<Category>> futureCategories = Future.value([]);
 
-  // Repositorio para manejar las categorías en almacenamiento local
-  final _categoryRepository = GenericRepository<Category>(
-    storageKey: 'categories', // Clave para el almacenamiento local
-    fromJson: (json) => Category.fromJson(json), // Función de deserialización
-    toJson: (category) => category.toJson(), // Función de serialización
-  );
+  late Future<List<Category>> futureCategories = Future.value([]);
+  late final DataService<Category> _categoryService= DataService<Category>(
+      endpoint: '/category',
+      repository: GenericRepository<Category>(
+        storageKey: 'categories',
+        fromJson: (json) => Category.fromJson(json),
+        toJson: (category) => category.toJson(),
+      ),
+      fromJson: (json) => Category.fromJson(json),
+    );
+    
 
   @override
   void initState() {
@@ -50,31 +32,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
     loadCategories(); // Cargar categorías al inicio
   }
 
-  // Método que carga las categorías desde la API o desde el almacenamiento local
   void loadCategories() async {
-    ConnectivityResult connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult != ConnectivityResult.none) {
-      // Si hay conexión, obtenemos las categorías desde la API
-      try {
-        final categories = await fetchCategories();
-        await _categoryRepository.saveData(categories); // Guardamos en el almacenamiento local
-        setState(() {
-          futureCategories = Future.value(categories); // Actualizamos el future con los datos obtenidos
-        });
-      } catch (error) {
-        setState(() {
-          futureCategories = Future.value([]); // Si hay error, mostramos una lista vacía
-        });
-        print('Error al obtener categorías desde la API: $error');
-      }
-    } else {
-      // Si no hay conexión, cargamos las categorías desde el almacenamiento local
-      final savedCategories = await _categoryRepository.loadData();
-      setState(() {
-        futureCategories = Future.value(savedCategories.isNotEmpty ? savedCategories : []);
-      });
-    }
+    futureCategories = _categoryService.loadData();
+    setState(() {});
   }
 
   // Método para refrescar las categorías (simula una actualización de datos)

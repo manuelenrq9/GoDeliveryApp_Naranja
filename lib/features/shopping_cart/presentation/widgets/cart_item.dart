@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../domain/cart_item_data.dart';
 
@@ -5,28 +6,37 @@ class CartItem extends StatelessWidget {
   final CartItemData data;
   final VoidCallback onIncrease;
   final VoidCallback onDecrease;
+  final VoidCallback onRemove;
 
   const CartItem({
     super.key,
     required this.data,
     required this.onIncrease,
     required this.onDecrease,
+    required this.onRemove,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 2.0),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            Image.network(
-              data.imageUrl,
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-            ),
+            CachedNetworkImage(
+                    imageUrl: data.imageUrl,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(
+                      color: Colors.orange,
+                    )),
+                    errorWidget: (context, url, error) =>
+
+                        const Icon(Icons.error),
+                  ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -47,7 +57,7 @@ class CartItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '\$${data.price}',
+                  '\$${(data.price * data.quantity).toStringAsFixed(2)}',
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 16),
                 ),
@@ -61,12 +71,6 @@ class CartItem extends StatelessWidget {
                     IconButton(
                       onPressed: onIncrease,
                       icon: const Icon(Icons.add, color: Color(0xFFFF7000)),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        // Acción para eliminar el producto
-                      },
-                      icon: const Icon(Icons.delete, color: Color(0xFFFF7000)),
                     ),
                   ],
                 ),

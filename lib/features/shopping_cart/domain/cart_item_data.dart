@@ -1,16 +1,20 @@
 class CartItemData {
+  final String id;
   final String name;
   final String imageUrl;
   final String presentation;
   final num price;
   int quantity;
+  final bool isCombo;
 
   CartItemData({
+    required this.id,
     required this.name,
     required this.imageUrl,
     required this.presentation,
     required this.price,
     this.quantity = 1,
+    this.isCombo = false,
   });
 
   bool isEqual(CartItemData other) {
@@ -19,21 +23,25 @@ class CartItemData {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'imageUrl': imageUrl,
       'presentation': presentation,
       'price': price,
       'quantity': quantity,
+      'isCombo': isCombo,
     };
   }
 
   factory CartItemData.fromJson(Map<String, dynamic> json) {
     return CartItemData(
+      id: json['id'] as String,
       name: json['name'],
       imageUrl: json['imageUrl'],
       presentation: json['presentation'],
       price: json['price'],
       quantity: json['quantity'],
+      isCombo: json['isCombo'] ?? false,
     );
   }
 }
