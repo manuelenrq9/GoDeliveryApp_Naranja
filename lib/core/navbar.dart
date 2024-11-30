@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/pages/RecoveryPorfilemessague.dart';
+import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/pages/RecoverySearchmessague.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/pages/order_history_screen.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
+
 class CustomNavBar extends StatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
@@ -35,48 +38,70 @@ class _CustomNavBarState extends State<CustomNavBar>
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: widget.currentIndex,
-      onTap: (index) {
-        _controller.forward().then((_) => _controller.reverse());
-        widget.onTap(index);
-        _navigateToPage(index);
-      },
-      type: BottomNavigationBarType.fixed,
-      items: [
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
-        ),
-        BottomNavigationBarItem(
-          icon: _buildCartIcon(),
-          label: 'Cart',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.history),
-          label: 'History',
-        ),
-        const BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
-        ),
-      ],
-      selectedItemColor: const Color(0xFFFF9027),
-      unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: BottomNavigationBar(
+        currentIndex: widget.currentIndex,
+        onTap: (index) {
+          if (widget.currentIndex == index)
+            return; // Evita navegación innecesaria
+
+          if (index == 0) {
+            _controller.forward().then((_) => _controller.reverse());
+          }
+
+          widget.onTap(index); // Actualiza el índice en el widget principal
+          _navigateToPage(index); // Navegar a la página correspondiente
+        },
+        type: BottomNavigationBarType.fixed,
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: _buildCartIcon(),
+            label: 'Cart',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'History',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        selectedItemColor: const Color(0xFFFF9027),
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
+      ),
     );
   }
 
   void _navigateToPage(int index) {
     switch (index) {
       case 0:
+        // Cuando navegas al home, asegúrate de que se coloree el ícono correctamente
+        widget.onTap(0); // Actualiza el índice en el widget principal
         showLoadingScreen(context, destination: const MainMenu());
         break;
       case 1:
+        showLoadingScreen(context, destination: RecoverySearchmessagueScreen());
         break;
       case 2:
         showLoadingScreen(context, destination: const CartScreen());
@@ -85,6 +110,8 @@ class _CustomNavBarState extends State<CustomNavBar>
         showLoadingScreen(context, destination: const OrderHistoryScreen());
         break;
       case 4:
+        showLoadingScreen(context,
+            destination: RecoveryProfiledmessagueScreen());
         break;
     }
   }
