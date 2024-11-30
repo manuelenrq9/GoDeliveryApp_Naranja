@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_menu.dart';
 import 'package:godeliveryapp_naranja/features/combo/presentation/pages/detallecombo.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
@@ -9,16 +10,6 @@ class ComboCard extends StatelessWidget {
 
   const ComboCard({super.key, required this.combo});
 
-  void _onAddPressed(BuildContext context) {
-    // Mostrar un SnackBar indicando que el producto se agregó al carrito
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Añadir carrito en futuras actualizaciones :c'),
-        duration: Duration(seconds: 2), 
-        backgroundColor: Colors.green,// Duración del mensaje
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +31,10 @@ class ComboCard extends StatelessWidget {
           showLoadingScreen(context,destination:  ComboDetailScreen(combo: combo));
         },
         child: Container(
+          
           width: cardWidth, // Ancho dinámico de la tarjeta
           decoration: BoxDecoration(
-            color: Color.fromARGB(230, 228, 227, 227),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12), // Borde redondeado
             boxShadow: [
               BoxShadow(
@@ -54,71 +46,73 @@ class ComboCard extends StatelessWidget {
               ),
             ],
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(6.0), // Espaciado interno reducido
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Imagen del combo
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10), // Borde redondeado para la imagen
-                  child: CachedNetworkImage(
-                    imageUrl: combo.comboImage,
-                    width: double.infinity,
-                    height: imageHeight, // Altura dinámica de la imagen
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: Colors.orange,)),
-                    errorWidget: (context, url, error) => const Icon(Icons.error),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Título del combo
-                Text(
-                  combo.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                // Descripción del combo con ajuste flexible
-                Text(
-                  combo.description, // Manejo de null en descripción
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const Spacer(),
-                // Precio y botón en extremos
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${combo.currency}  ${combo.specialPrice.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),                                    
-                      GestureDetector(
-                      onTap: () => _onAddPressed(context), // Acción personalizada para el icono "add"
-                      child: const Icon(
-                        Icons.add,
-                        color: Color(0xFFFF7000),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(6.0), // Espaciado interno reducido
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Imagen del combo
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10), // Borde redondeado para la imagen
+                      child: CachedNetworkImage(
+                        imageUrl: combo.comboImage,
+                        width: double.infinity,
+                        height: imageHeight, // Altura dinámica de la imagen
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: Colors.orange,)),
+                        errorWidget: (context, url, error) => const Icon(Icons.error),
                       ),
                     ),
-                    ],
-                  ),
+                    const SizedBox(height: 8),
+                    // Título del combo
+                    Text(
+                      combo.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    // Descripción del combo con ajuste flexible
+                    Text(
+                      combo.description, // Manejo de null en descripción
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const Spacer(),
+                    // Precio y botón en extremos
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${combo.currency}  ${combo.specialPrice.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),    
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Positioned(
+                bottom: 10, // Ajusta la distancia desde la parte inferior
+                right: 10, // Ajusta la distancia desde el lado derecho
+                child: ButtonAddCartMenu(combo: combo), // Usamos el botón flotante para el combo
+              ),
+            ]
           ),
         ),
       ),

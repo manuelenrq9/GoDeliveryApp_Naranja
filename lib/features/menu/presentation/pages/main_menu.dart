@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/titulo_lista.dart';
+import 'package:godeliveryapp_naranja/features/combo/presentation/pages/comboCatalog.dart';
+import 'package:godeliveryapp_naranja/features/product/presentation/pages/ProductCatalago.dart';
 import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
 import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/pages/RecoverySearchmessague.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
@@ -25,15 +27,10 @@ class _MainMenuState extends State<MainMenu> {
       _currentIndex = index;
     });
   }
-
-  // Función para manejar la acción de refrescar
   Future<void> _refresh() async {
-    // Aquí puedes poner tu lógica de recarga de datos, por ejemplo, volver a cargar los productos
-    await Future.delayed(
-        const Duration(seconds: 2)); // Simula la espera para refrescar
-    setState(() {
-      // Aquí actualizas el estado, si tienes algún dato que necesite ser actualizado.
-    });
+    // Forzar la reconstrucción completa del widget MainMenu utilizando una nueva clave global
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (BuildContext context) => const MainMenu()));
   }
 
   @override
@@ -73,11 +70,11 @@ class _MainMenuState extends State<MainMenu> {
         color: Colors.orange, // Establece el color del refresco a naranja
         child: ListView(
           children: [
-            CategoryListScreen(),
-            TituloLista(titulo: "Combos de Productos"),
-            const ComboListScreen(),
-            TituloLista(titulo: "Productos Populares"),
-            const ProductListScreen(),
+              CategoryListScreen(),
+              TituloLista(titulo: "Combos de Productos", next: ComboCatalogScreen(),),
+              const ComboListScreen(),
+              TituloLista(titulo: "Productos Populares", next: ProductCatalogScreen(),),
+              const ProductListScreen(),              
           ],
         ),
       ),

@@ -12,10 +12,10 @@ class ProductItemCatalogo extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         // Cuando se toque el producto, navegamos a la pantalla de detalles del producto
-        //Navigator.push(
-        //context,
-        //MaterialPageRoute(builder: (context) => ProductDetailScreen()),
-        //);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProductDetailScreen(product: product)),
+        );
       },
       child: Card(
         color: Color.fromARGB(255, 255, 253, 253),

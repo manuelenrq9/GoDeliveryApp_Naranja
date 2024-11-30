@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
+import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_detail.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
@@ -44,6 +45,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         quantity--;
         price = widget.product.price * quantity;
       }
+    });
+  }
+
+  void resetQuantity() {
+    setState(() {
+      quantity = 1;
+      price = widget.product.price; // Vuelve al precio original del combo
     });
   }
 
@@ -193,29 +201,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Añadir carrito en futuras actualizaciones :c'),
-                          duration: Duration(seconds: 2), 
-                          backgroundColor: Colors.green,// Duración del mensaje
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.shopping_cart, color: Colors.white),
-                    label: const Text(
-                      'Añadir al carrito',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF7000),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      textStyle: const TextStyle(fontSize: 18),
-                    ),
+                  child: AddToCartButton(
+                    product: widget.product,  // Pasamos el combo como parámetro
+                    quantity: quantity,   // Pasamos la cantidad seleccionada
+                    price: price,      // Pasamos el precio calculado
+                    resetQuantity: resetQuantity,
                   ),
                 ),
               ],

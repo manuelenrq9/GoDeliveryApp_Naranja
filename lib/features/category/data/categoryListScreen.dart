@@ -1,25 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/category/domain/category.dart';
 import 'package:godeliveryapp_naranja/features/category/presentation/widgets/category_card.dart';
-import 'package:http/http.dart' as http;
+import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 
-Future<List<Category>> fetchCategories() async {
-  final response = await http.get(Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/category'));
-  if (response.statusCode == 200) {
-    // Parseamos la respuesta JSON
-    final Map<String, dynamic> jsonData = jsonDecode(response.body);
-    final List<dynamic> categoriesData = jsonData[
-        'categories']; // Cambia 'categories' según la respuesta de tu API
-    return categoriesData
-        .map((categoryJson) => Category.fromJson(
-            categoryJson)) // Convierte el JSON a instancias de Category
-        .toList();
-  } else {
-    // Si el servidor no devuelve una respuesta 200 OK
-    throw Exception('Failed to fetch categories');
-  }
-}
 
 class CategoryListScreen extends StatefulWidget {
   const CategoryListScreen({super.key});
@@ -29,13 +13,27 @@ class CategoryListScreen extends StatefulWidget {
 }
 
 class _CategoryListScreenState extends State<CategoryListScreen> {
-  late Future<List<Category>> futureCategories;
+
+  late Future<List<Category>> futureCategories = Future.value([]);
+  late final DataService<Category> _categoryService= DataService<Category>(
+      endpoint: '/category',
+      repository: GenericRepository<Category>(
+        storageKey: 'categories',
+        fromJson: (json) => Category.fromJson(json),
+        toJson: (category) => category.toJson(),
+      ),
+      fromJson: (json) => Category.fromJson(json),
+    );
 
   @override
   void initState() {
     super.initState();
-    futureCategories =
-        fetchCategories(); // Llamamos a la función que obtiene las categorías// 
+    loadCategories();
+  }
+
+  void loadCategories() async {
+    futureCategories = _categoryService.loadData();
+    setState(() {});
   }
 
   @override
