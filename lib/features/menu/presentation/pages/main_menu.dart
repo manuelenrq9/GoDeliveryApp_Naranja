@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/titulo_lista.dart';
 import 'package:godeliveryapp_naranja/features/combo/presentation/pages/comboCatalog.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/ProductCatalago.dart';
 import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
+import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/pages/RecoverySearchmessague.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
 import 'package:godeliveryapp_naranja/features/sidebar/presentation/custom_drawer.dart';
 import 'package:godeliveryapp_naranja/features/category/data/categoryListScreen.dart';
-
 
 class MainMenu extends StatefulWidget {
   const MainMenu({super.key});
@@ -58,7 +59,8 @@ class _MainMenuState extends State<MainMenu> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              // Acción para abrir la búsqueda
+              showLoadingScreen(context,
+                  destination: RecoverySearchmessagueScreen());
             },
           ),
         ],
