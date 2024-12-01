@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 
 class DataService<T> {
-  static const String baseUrl = 'https://orangeteam-deliverybackend-production.up.railway.app';
+  static const String baseUrl =
+      'https://orangeteam-deliverybackend-production.up.railway.app';
 
   final String endpoint;
   final GenericRepository<T> repository;
@@ -23,11 +24,9 @@ class DataService<T> {
   Future<List<T>> fetchDataFromApi() async {
     try {
       final response = await http.get(Uri.parse(apiUrl));
-
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        final List<dynamic> items =
-            jsonData['${T.toString().toLowerCase()}s']; // Asume plural
+        final List<dynamic> items = jsonData['${repository.storageKey}'];
         return items.map((item) => fromJson(item)).toList();
       } else {
         throw Exception('Failed to fetch data');
