@@ -7,15 +7,14 @@ class CartItemsList extends StatelessWidget {
   final List<CartItemData> cartItems;
   final Function(int) onIncreaseQuantity;
   final Function(int) onDecreaseQuantity;
-  final Function(int) onRemoveItem; 
+  final Function(int) onRemoveItem;
 
   const CartItemsList({
     super.key,
     required this.cartItems,
     required this.onIncreaseQuantity,
     required this.onDecreaseQuantity,
-    required this.onRemoveItem, 
-    
+    required this.onRemoveItem,
   });
 
   @override
@@ -24,7 +23,7 @@ class CartItemsList extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       itemCount: cartItems.length,
       itemBuilder: (context, index) {
-         final item = cartItems[index];
+        final item = cartItems[index];
 
         return Slidable(
           key: ValueKey(item.id), // Identificador único para cada ítem
@@ -44,19 +43,16 @@ class CartItemsList extends StatelessWidget {
                 // El botón de eliminar tendrá el mismo estilo que el de la lista de productos
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 borderRadius: BorderRadius.circular(8),
-                
               ),
             ],
           ),
           child: CartItem(
-            data: item,
-            onIncrease: () => onIncreaseQuantity(index),
-            onDecrease: () => onDecreaseQuantity(index),
-            onRemove: () => onRemoveItem(index),
-          ),
+              data: item,
+              onIncrease: () => onIncreaseQuantity(index),
+              onDecrease: () => onDecreaseQuantity(index),
+              onRemove: () => onRemoveItem(index)),
         );
       },
     );
   }
 }
-

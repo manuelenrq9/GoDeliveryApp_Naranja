@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/pages/RecoveryPorfilemessague.dart';
 import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/pages/RecoverySearchmessague.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
@@ -98,20 +97,38 @@ class _CustomNavBarState extends State<CustomNavBar>
       case 0:
         // Cuando navegas al home, asegúrate de que se coloree el ícono correctamente
         widget.onTap(0); // Actualiza el índice en el widget principal
-        showLoadingScreen(context, destination: const MainMenu());
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainMenu()),
+        );
         break;
       case 1:
-        showLoadingScreen(context, destination: RecoverySearchmessagueScreen());
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RecoverySearchmessagueScreen()),
+        );
+
         break;
       case 2:
-        showLoadingScreen(context, destination: const CartScreen());
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const CartScreen()),
+        );
+
         break;
       case 3:
-        showLoadingScreen(context, destination: const OrderHistoryScreen());
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const OrderHistoryScreen()),
+        );
         break;
       case 4:
-        showLoadingScreen(context,
-            destination: RecoveryProfiledmessagueScreen());
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RecoveryProfiledmessagueScreen()),
+        );
         break;
     }
   }
