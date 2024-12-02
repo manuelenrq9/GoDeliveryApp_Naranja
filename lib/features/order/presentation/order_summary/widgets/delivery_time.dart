@@ -48,20 +48,13 @@ class DeliveryTime extends StatelessWidget {
             ),
           ),
           // Botón de cambiar hora
-          TextButton.icon(
+          TextButton(
             onPressed: () {
-              // Lógica para cambiar la hora de entrega
+              // Acción al presionar el botón
             },
-            icon: const Icon(
+            child: const Icon(
               Icons.edit,
               color: Color(0xFFCD5B06),
-            ),
-            label: const Text(
-              'Cambiar hora',
-              style: TextStyle(
-                color: Color(0xFFCD5B06),
-                fontWeight: FontWeight.bold,
-              ),
             ),
             style: TextButton.styleFrom(
               padding: EdgeInsets.zero,

@@ -47,22 +47,11 @@ class DeliveryAddress extends StatelessWidget {
             ),
           ),
           // Botón de editar
-          TextButton.icon(
+          IconButton(
             onPressed: () {
               // Lógica para cambiar la dirección
             },
             icon: const Icon(Icons.edit, color: Color(0xFFCD5B06)),
-            label: const Text(
-              'Editar',
-              style: TextStyle(
-                color: Color(0xFFCD5B06),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              minimumSize: Size(0, 30),
-            ),
           ),
         ],
       ),
