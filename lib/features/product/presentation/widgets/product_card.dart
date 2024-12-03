@@ -99,7 +99,7 @@ class ProductItem extends StatelessWidget {
                                 product.currency,
                                 style: const TextStyle(
                                   fontSize: 14,
-                                  color: Color.fromARGB(255, 175, 91, 7),
+                                  color: Color(0xFFFF7000),
                                 ),
                               ),
                               const SizedBox(width: 4),
