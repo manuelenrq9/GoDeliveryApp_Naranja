@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/discount/data/discount_fetchID.dart';
 import 'package:godeliveryapp_naranja/features/discount/domain/discount.dart';
 import 'discount_logic.dart'; // Importamos la lógica de descuento
-import 
 
 class DiscountPriceDisplay extends StatelessWidget {
   final num specialPrice;
