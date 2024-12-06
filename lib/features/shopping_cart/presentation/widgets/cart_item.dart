@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/discount/data/discount_fetchID.dart';
+import 'package:godeliveryapp_naranja/features/discount/discount_logic.dart';
 import 'package:photo_view/photo_view.dart';
 
 import '../../domain/cart_item_data.dart';
 
-class CartItem extends StatelessWidget {
+class CartItem extends StatefulWidget {
   final CartItemData data;
   final VoidCallback onIncrease;
   final VoidCallback onDecrease;
@@ -17,6 +19,133 @@ class CartItem extends StatelessWidget {
     required this.onDecrease,
     required this.onRemove,
   });
+
+  @override
+  _CartItemState createState() => _CartItemState();
+}
+
+class _CartItemState extends State<CartItem> {
+  num? discountedPrice;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDiscount();
+  }
+
+  Future<void> _fetchDiscount() async {
+    if (widget.data.discount != null) {
+      final discount = await fetchDiscountById(widget.data.discount);
+      setState(() {
+        discountedPrice = getDiscountedPrice(widget.data.price, discount);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white,
+      elevation: 4.0,
+      shadowColor: Colors.grey,
+      margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16), // Añadir efecto ripple
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row( // Usamos Row para alinear los elementos horizontalmente
+            children: [
+              // Imagen y nombre del producto a la izquierda
+              GestureDetector(
+                onTap: () => _showLargeImage(context, widget.data.imageUrl),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.data.imageUrl,
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.orange,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.data.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.data.presentation,
+                      style: const TextStyle(
+                          color: Color.fromARGB(255, 175, 91, 7)),
+                    ),
+                  ],
+                ),
+              ),
+              // Precio y cantidad a la derecha
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (discountedPrice != null &&
+                      discountedPrice != widget.data.price)
+                    Text(
+                      '${widget.data.currency} ${(widget.data.price * widget.data.quantity).toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                  Text(
+                    '${widget.data.currency} ${(discountedPrice ?? widget.data.price) * widget.data.quantity}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFFF9027),
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min, // Evitar que el Row ocupe todo el espacio
+                    children: [
+                      IconButton(
+                        onPressed: widget.onDecrease,
+                        icon: const Icon(Icons.remove, color: Color(0xFFFF7000)),
+                      ),
+                      Text(
+                        widget.data.quantity.toString(),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      IconButton(
+                        onPressed: widget.onIncrease,
+                        icon: const Icon(Icons.add, color: Color(0xFFFF7000)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   void _showLargeImage(BuildContext context, String imageUrl) {
     showDialog(
@@ -66,102 +195,6 @@ class CartItem extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 4.0,
-      shadowColor: Colors.grey, // Agrega esta línea para la sombra gris
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16), // Añadir efecto ripple
-
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            children: [
-              Center(
-                child: GestureDetector(
-                  onTap: () => _showLargeImage(context, data.imageUrl),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: CachedNetworkImage(
-                      imageUrl: data.imageUrl,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.orange,
-                        ),
-                      ),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.error),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      data.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      data.presentation,
-                      style: const TextStyle(
-                          color: Color.fromARGB(255, 175, 91, 7)),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '\$${(data.price * data.quantity).toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: onDecrease,
-                        icon:
-                            const Icon(Icons.remove, color: Color(0xFFFF7000)),
-                      ),
-                      Text(
-                        data.quantity.toString(),
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      IconButton(
-                        onPressed: onIncrease,
-                        icon: const Icon(Icons.add, color: Color(0xFFFF7000)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

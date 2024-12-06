@@ -27,6 +27,8 @@ class AddToCartLogic {
         price: price,
         quantity: quantity,
         isCombo: false,
+        currency: product.currency,
+        discount: null,
       );
 
       // Añadir el producto al carrito
@@ -36,11 +38,13 @@ class AddToCartLogic {
       final cartItem = CartItemData(
         id: combo.id,
         name: combo.name,
-        imageUrl: combo.comboImage,
+        imageUrl: combo.comboImage[0],
         presentation: "Combo de ${combo.products.length} productos",
         price: price,
         quantity: quantity,
         isCombo: true,
+        currency: combo.currency,
+        discount: combo.discount
       );
 
       // Añadir el combo al carrito

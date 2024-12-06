@@ -7,8 +7,8 @@ import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.r
 
 class DataService<T> {
   static const String baseUrl =
-      'https://orangeteam-deliverybackend-production.up.railway.app';
-
+      //'https://orangeteam-deliverybackend-production.up.railway.app';
+      'http://192.168.68.113:3000';
   final String endpoint;
   final GenericRepository<T> repository;
   final T Function(Map<String, dynamic>) fromJson;
@@ -23,10 +23,13 @@ class DataService<T> {
 
   Future<List<T>> fetchDataFromApi() async {
     try {
+      print(apiUrl);
       final response = await http.get(Uri.parse(apiUrl));
+
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         final List<dynamic> items = jsonData['${repository.storageKey}'];
+        print(items);
         return items.map((item) => fromJson(item)).toList();
       } else {
         throw Exception('Failed to fetch data');

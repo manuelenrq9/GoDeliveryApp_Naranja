@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 Future<Product> fetchProductById(String productId) async {
   try {
     final response = await http.get(Uri.parse(
-        'https://orangeteam-deliverybackend-production.up.railway.app/product/$productId'));
+        //'https://orangeteam-deliverybackend-production.up.railway.app/product/$productId'));
+        'http://192.168.68.113:3000/product/$productId'));
 
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
@@ -27,4 +28,3 @@ Future<Product> fetchProductById(String productId) async {
     }
   }
 }
-
