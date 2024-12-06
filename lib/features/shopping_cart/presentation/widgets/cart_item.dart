@@ -114,7 +114,7 @@ class _CartItemState extends State<CartItem> {
                       ),
                     ),
                   Text(
-                    '${widget.data.currency} ${(discountedPrice ?? widget.data.price) * widget.data.quantity}',
+                    '${widget.data.currency} ${((discountedPrice ?? widget.data.price) * widget.data.quantity).toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
