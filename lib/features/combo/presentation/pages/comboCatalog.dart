@@ -32,6 +32,7 @@ class _ComboCatalogScreenState extends State<ComboCatalogScreen> {
   @override
   void initState() {
     super.initState();
+    print("AQUI ESTAMOS EN COMBO");
     loadCombos(); // Cargar los productos desde el API
   }
 
