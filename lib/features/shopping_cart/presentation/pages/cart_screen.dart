@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/usecases/create_order.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
@@ -17,6 +21,9 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   late final CartRepository _cartRepository;
   List<CartItemData> cartItems = [];
+  List<Product> products = [];
+  List<Combo> combos = [];
+  ProcessOrder orderProcessor = ProcessOrder();
 
   @override
   void initState() {
@@ -61,6 +68,48 @@ class _CartScreenState extends State<CartScreen> {
       cartItems.removeAt(index);
     });
     _updateCart();
+    }
+
+    void getProducts(){
+      void getProducts() {
+          products = cartItems.map((cartItem) => Product(
+              id: cartItem.id,
+              name: cartItem.name,
+              // Handle missing description (consider default value or logic)
+              description:'', // Might not be ideal description
+              image: [], // Assuming no image information in CartItemData
+              price: cartItem.price,
+              currency: cartItem.currency,
+              // Handle missing weight, stock, category, measurement, caducityDate, discount
+              weight: 0.0, // Set default value or handle based on your needs
+              stock: 0,
+              category: [],
+              measurement: "",
+              caducityDate: DateTime.now(),
+              discount: cartItem.discount,
+          )).toList();
+      }
+  }
+
+  void getCombos(){
+    combos = cartItems.map((cartItem) => Combo(
+              id: cartItem.id,
+              name: cartItem.name,
+              specialPrice: 0,
+              currency: cartItem.currency,
+              description: '',
+              weight: 0.0, // Set default value or handle based on your needs
+              stock: 0,
+              category: [],
+              measurement: "",
+              caducityDate: DateTime.now(),
+              discount: cartItem.discount,
+          )).toList();
+  }
+
+  Order createOrder(String address,List<Product> products ,List<Combo> combos ,String paymentMethod){
+    Order order = orderProcessor.createOrder(address, products, combos, paymentMethod);
+    return order;
   }
 
   Future<void> clearCart() async {
@@ -246,6 +295,9 @@ class _CartScreenState extends State<CartScreen> {
                     onPressed: cartItems.isEmpty
                         ? null
                         : () {
+                            getProducts();
+                            getCombos();
+                            createOrder('Caracas', products, combos, paymentMethod)
                             // Procesar la orden
                           },
                     style: ElevatedButton.styleFrom(
