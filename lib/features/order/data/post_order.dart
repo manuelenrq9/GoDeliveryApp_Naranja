@@ -1,33 +1,77 @@
 import 'dart:convert';
-import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-class PostOrder{
-  Future<http.Response> postOrder(Order order) async {
-  final url = Uri.parse('YOUR_BACKEND_ENDPOINT'); // Replace with your actual endpoint
+Future<String?> _getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token'); // Obtén el token almacenado
+  }
 
-  // Convert order object to JSON
-  final body = json.encode({
-    'address': order.address,
-    'products': order.products.map((product) => {
-      'id': product.id, 
+Future<void> processOrder({
+  required String address,
+  required List<CartProduct> products,
+  required List<CartCombo> combos,
+  required String paymentMethod,
+  required String currency,
+  required num totalDecimal,
+  required String userId,
+}) async {
+  final int total = totalDecimal.toInt();
+  // Estructura de la orden que se enviará al backend
+  final orderData = {
+    'userId': userId,
+    'address': address,
+    'products': products.map((product) {
+      return {
+        'id': product.id,
+        'quantity': product.quantity,
+      };
     }).toList(),
-    'combos': order.combos.map((combo) => {
-      'id': combo.id,
-      'quantity': 1, // Replace with quantity if applicable
+    'combos': combos.map((combo) {
+      return {
+        'id': combo.id,
+        'quantity': combo.quantity,
+      };
     }).toList(),
-    'paymentMethod': order.paymentMethod,
-    // Include 'currency' if required by your backend
-    // 'currency': 'USD', // Example
-  });
+    'paymentMethod': paymentMethod,
+    'currency': currency,
+    'total': total,
+  };
 
-  // Create POST request
+  try {
+  final token = await _getToken();
+  
+  if (token == null) {
+    throw Exception('No hay token de autenticación');
+  }
+  
+  // Imprimir datos antes de hacer la solicitud
+  print('Datos de la solicitud: ${json.encode(orderData)}');
+  
   final response = await http.post(
-    url,
-    headers: {'Content-Type': 'application/json'},
-    body: body,
+    Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/order'),
+    headers: {
+      'accept': '*/*',
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+    body: json.encode(orderData),
   );
 
-  return response;
+  // Imprimir la respuesta completa para ver el error detallado
+  print('Response Status: ${response.statusCode}');
+  print('Response Body: ${response.body}');
+  
+  if (response.statusCode == 201) {
+    print('Orden procesada correctamente');
+  } else {
+    print('Error al procesar la orden: ${response.body}');
+  }
+} catch (e) {
+  print('Error al hacer la solicitud: $e');
 }
+
+
 }

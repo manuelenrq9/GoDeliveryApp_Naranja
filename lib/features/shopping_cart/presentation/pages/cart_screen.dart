@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
-import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/data/post_order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/usecases/create_order.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/cart_item_data.dart';
 import '../widgets/cart_items_list.dart';
 import '../widgets/summary_product.dart';
@@ -68,49 +71,31 @@ class _CartScreenState extends State<CartScreen> {
       cartItems.removeAt(index);
     });
     _updateCart();
-    }
-
-    void getProducts(){
-      void getProducts() {
-          products = cartItems.map((cartItem) => Product(
-              id: cartItem.id,
-              name: cartItem.name,
-              // Handle missing description (consider default value or logic)
-              description:'', // Might not be ideal description
-              image: [], // Assuming no image information in CartItemData
-              price: cartItem.price,
-              currency: cartItem.currency,
-              // Handle missing weight, stock, category, measurement, caducityDate, discount
-              weight: 0.0, // Set default value or handle based on your needs
-              stock: 0,
-              category: [],
-              measurement: "",
-              caducityDate: DateTime.now(),
-              discount: cartItem.discount,
-          )).toList();
-      }
   }
 
-  void getCombos(){
-    combos = cartItems.map((cartItem) => Combo(
-              id: cartItem.id,
-              name: cartItem.name,
-              specialPrice: 0,
-              currency: cartItem.currency,
-              description: '',
-              weight: 0.0, // Set default value or handle based on your needs
-              stock: 0,
-              category: [],
-              measurement: "",
-              caducityDate: DateTime.now(),
-              discount: cartItem.discount,
-          )).toList();
-  }
+List<CartProduct> getProducts() {
+  return cartItems
+      .where((item) => !item.isCombo) // Filtrar solo productos
+      .map((cartItem) => CartProduct(
+            id: cartItem.id,
+            quantity: cartItem.quantity,
+          ))
+      .toList(); // Devolver la lista de productos
+}
 
-  Order createOrder(String address,List<Product> products ,List<Combo> combos ,String paymentMethod){
-    Order order = orderProcessor.createOrder(address, products, combos, paymentMethod);
-    return order;
-  }
+
+List<CartCombo> getCombos() {
+  return cartItems
+      .where((item) => item.isCombo) // Filtrar solo combos
+      .map((cartItem) => CartCombo(
+            id: cartItem.id,
+            quantity: cartItem.quantity,
+          ))
+      .toList(); // Devolver la lista de combos
+}
+
+
+ 
 
   Future<void> clearCart() async {
     await _cartRepository.clearCart();
@@ -169,6 +154,11 @@ class _CartScreenState extends State<CartScreen> {
         );
       },
     );
+  }
+
+  Future<String?> _getUserID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id'); 
   }
 
   @override
@@ -294,10 +284,22 @@ class _CartScreenState extends State<CartScreen> {
                   ElevatedButton(
                     onPressed: cartItems.isEmpty
                         ? null
-                        : () {
+                        : () async {
                             getProducts();
                             getCombos();
-                            createOrder('Caracas', products, combos, paymentMethod)
+                            final userId = await _getUserID();
+                            if (userId == null) {
+                              throw Exception('No hay usuario ID');
+                            }
+                            await processOrder(
+                              address: 'San Antonio de los Altos, Miranda, Venezuela',  // Dirección predeterminada
+                              products: getProducts(),
+                              combos: getCombos(),
+                              paymentMethod: "Credit Card",
+                              currency: 'USD',  // La moneda
+                              totalDecimal: totalAmount,
+                              userId: userId,
+                            );
                             // Procesar la orden
                           },
                     style: ElevatedButton.styleFrom(
