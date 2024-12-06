@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import '../../domain/cart_item_data.dart';
 import '../widgets/cart_items_list.dart';
+//import 'discount_section.dart'; // Comentado porque no se usará
 import '../widgets/summary_product.dart';
 
 class CartScreen extends StatefulWidget {
@@ -25,6 +25,7 @@ class _CartScreenState extends State<CartScreen> {
     _loadCart();
   }
 
+  // Cargar los datos del carrito desde el almacenamiento local
   Future<void> _loadCart() async {
     final items = await _cartRepository.loadData();
     setState(() {
@@ -32,14 +33,17 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
+  // Actualizar el carrito en el almacenamiento local
   Future<void> _updateCart() async {
     await _cartRepository.saveData(cartItems);
   }
 
+  // Calcular el total del carrito
   double get totalAmount {
     return cartItems.fold(0, (sum, item) => sum + item.price * item.quantity);
   }
 
+  // Incrementar la cantidad de un producto
   void increaseQuantity(int index) {
     setState(() {
       cartItems[index].quantity++;
@@ -47,6 +51,7 @@ class _CartScreenState extends State<CartScreen> {
     _updateCart();
   }
 
+  // Decrementar la cantidad de un producto
   void decreaseQuantity(int index) {
     setState(() {
       if (cartItems[index].quantity > 1) {
@@ -56,6 +61,7 @@ class _CartScreenState extends State<CartScreen> {
     _updateCart();
   }
 
+  // Eliminar un producto del carrito
   void removeItem(int index) {
     setState(() {
       cartItems.removeAt(index);
@@ -63,6 +69,7 @@ class _CartScreenState extends State<CartScreen> {
     _updateCart();
   }
 
+  // Limpiar el carrito (vaciar)
   Future<void> clearCart() async {
     await _cartRepository.clearCart();
     setState(() {
@@ -70,204 +77,133 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
-  void _showClearCartDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            '¿Eliminar todos los artículos?',
-            style: TextStyle(
-              color: Color(0xFFFF7000),
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+  // Mostrar un AlertDialog para confirmar si desea eliminar todos los artículos
+void _showClearCartDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text(
+          '¿Eliminar todos los artículos?',
+          style: TextStyle(
+            color: Color(0xFFFF7000), // Un color similar al que usas en botones
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
-          content: const Text(
-            'Se eliminaran todos los artículos de tu carrito',
-            style: TextStyle(fontSize: 16),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'Cancelar',
-                style: TextStyle(
-                  color: Color(0xFFFF7000),
-                ),
+        ),
+        // Contenido del diálogo
+        content: const Text(
+          'Se eliminaran todos los artículos de tu carrito',
+          style: TextStyle(fontSize: 16),
+        ),
+        // Botones
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Cerrar el diálogo
+            },
+            child: const Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Color(0xFFFF7000), // Color del texto que armoniza con la interfaz
               ),
             ),
-            TextButton(
-              onPressed: () {
-                clearCart();
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'Eliminar todo',
-                style: TextStyle(
-                  color: Color(0xFFFF7000),
-                ),
+          ),
+          TextButton(
+            onPressed: () {
+              clearCart(); // Vaciar el carrito
+              Navigator.of(context).pop(); // Cerrar el diálogo
+            },
+            child: const Text(
+              'Eliminar todo',
+              style: TextStyle(
+                color: Color(0xFFFF7000), // Color para el botón "Eliminar todo"
               ),
             ),
-          ],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
           ),
-          backgroundColor: Colors.white,
-          elevation: 5,
-        );
-      },
-    );
-  }
+        ],
+        // Personalización del fondo y bordes del AlertDialog
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15), // Bordes redondeados
+        ),
+        backgroundColor: Colors.white, // Fondo blanco
+        elevation: 5, // Sombra para darle más profundidad
+      );
+    },
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Carrito',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color.fromARGB(255, 175, 91, 7),
-          ),
-        ),
-        centerTitle: true,
+        title: const Text('Carrito'),
         actions: [
           GestureDetector(
             onTap: _showClearCartDialog,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: const Icon(
-                Icons.delete_outline,
-                color: Color(0xFFFF7000),
+              child: Text(
+                '${cartItems.length} artículos',
+                style: const TextStyle(color: Color(0xFFFF7000)),
               ),
             ),
           ),
         ],
-        iconTheme: const IconThemeData(
-          color: Color.fromARGB(
-              255, 175, 91, 7), // Set the color of the back icon here
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const MainMenu()),
-            );
-          },
-        ),
       ),
       body: Column(
         children: [
-          // Lista de productos
           Expanded(
-            child: cartItems.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.shopping_cart_outlined,
-                            size: 60, color: Color(0xFFFF7000)),
-                        const Text(
-                          "Tu carrito está vacío.",
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Color.fromARGB(255, 175, 91, 7)),
-                        ),
-                        const Text(
-                          "¡Explora nuestros productos te esperamos !",
-                          style: TextStyle(
-                              fontSize: 16,
-                              color: Color.fromARGB(255, 175, 91, 7)),
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const MainMenu()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFF7000),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          child: const Text(
-                            'Explorar productos',
-                            style: TextStyle(fontSize: 18, color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : CartItemsList(
-                    cartItems: cartItems,
-                    onIncreaseQuantity: increaseQuantity,
-                    onDecreaseQuantity: decreaseQuantity,
-                    onRemoveItem: removeItem,
-                  ),
+            child: CartItemsList(
+              cartItems: cartItems,
+              onIncreaseQuantity: increaseQuantity,
+              onDecreaseQuantity: decreaseQuantity,
+              onRemoveItem: removeItem,
+            ),
           ),
-          // Resumen del carrito
-          if (cartItems.isNotEmpty) ...[
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Colors.grey[50],
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [
+                ProductSummary(totalAmount: totalAmount),
+                const SummaryRow(label: 'Tarifa de envío', amount: '\$50'),
+                const Divider(),
+                SummaryRow(
+                  label: 'Total',
+                  amount: '\$${(totalAmount + 50).toStringAsFixed(2)}',
+                  isTotal: true,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromARGB(248, 177, 175, 173).withOpacity(0.4),
-                    blurRadius: 10,
-                    spreadRadius: 5,
-                  ),
-                ],
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () {
+               // Procesar la orden
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF7000),
+                minimumSize: const Size(double.infinity, 50),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              child: Column(
-                children: [
-                  ProductSummary(totalAmount: totalAmount),
-                  const SummaryRow(label: 'Tarifa de envío', amount: '\$50'),
-                  const Divider(),
-                  SummaryRow(
-                    label: 'Total',
-                    amount: '\$${(totalAmount + 50).toStringAsFixed(2)}',
-                    isTotal: true,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: cartItems.isEmpty
-                        ? null
-                        : () {
-                            // Procesar la orden
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF7000),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'Procesar Orden',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                  ),
-                ],
+              child: const Text(
+                'Procesar Orden',
+                style: TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
-          ],
+          ),
         ],
       ),
       bottomNavigationBar: CustomNavBar(
-        currentIndex: 2,
-        onTap: (index) {},
+        currentIndex: 0,
+        onTap: (index) {
+          // Aquí puedes manejar el cambio de navegación si es necesario
+        },
       ),
     );
   }
