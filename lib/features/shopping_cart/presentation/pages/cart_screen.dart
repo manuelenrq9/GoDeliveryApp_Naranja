@@ -73,29 +73,25 @@ class _CartScreenState extends State<CartScreen> {
     _updateCart();
   }
 
-List<CartProduct> getProducts() {
-  return cartItems
-      .where((item) => !item.isCombo) // Filtrar solo productos
-      .map((cartItem) => CartProduct(
-            id: cartItem.id,
-            quantity: cartItem.quantity,
-          ))
-      .toList(); // Devolver la lista de productos
-}
+  List<CartProduct> getProducts() {
+    return cartItems
+        .where((item) => !item.isCombo) // Filtrar solo productos
+        .map((cartItem) => CartProduct(
+              id: cartItem.id,
+              quantity: cartItem.quantity,
+            ))
+        .toList(); // Devolver la lista de productos
+  }
 
-
-List<CartCombo> getCombos() {
-  return cartItems
-      .where((item) => item.isCombo) // Filtrar solo combos
-      .map((cartItem) => CartCombo(
-            id: cartItem.id,
-            quantity: cartItem.quantity,
-          ))
-      .toList(); // Devolver la lista de combos
-}
-
-
- 
+  List<CartCombo> getCombos() {
+    return cartItems
+        .where((item) => item.isCombo) // Filtrar solo combos
+        .map((cartItem) => CartCombo(
+              id: cartItem.id,
+              quantity: cartItem.quantity,
+            ))
+        .toList(); // Devolver la lista de combos
+  }
 
   Future<void> clearCart() async {
     await _cartRepository.clearCart();
@@ -158,7 +154,7 @@ List<CartCombo> getCombos() {
 
   Future<String?> _getUserID() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_id'); 
+    return prefs.getString('user_id');
   }
 
   @override
@@ -292,15 +288,17 @@ List<CartCombo> getCombos() {
                               throw Exception('No hay usuario ID');
                             }
                             await processOrder(
-                              address: 'San Antonio de los Altos, Miranda, Venezuela',  // Dirección predeterminada
+                              address:
+                                  'San Antonio de los Altos, Miranda, Venezuela', // Dirección predeterminada
                               products: getProducts(),
                               combos: getCombos(),
                               paymentMethod: "Credit Card",
-                              currency: 'USD',  // La moneda
+                              currency: 'USD', // La moneda
                               totalDecimal: totalAmount,
                               userId: userId,
+                              context: context,
                             );
-                            // Procesar la orden
+                            clearCart();
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF7000),

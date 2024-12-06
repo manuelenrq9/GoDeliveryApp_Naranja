@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:http/http.dart' as http;
@@ -17,6 +19,7 @@ Future<void> processOrder({
   required String currency,
   required num totalDecimal,
   required String userId,
+  required BuildContext context, 
 }) async {
   final int total = totalDecimal.toInt();
   // Estructura de la orden que se enviará al backend
@@ -66,11 +69,40 @@ Future<void> processOrder({
   
   if (response.statusCode == 201) {
     print('Orden procesada correctamente');
+    // Si la orden fue procesada con éxito, muestra un mensaje
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Orden creada con éxito!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Espera un momento y redirige al menú principal
+      await Future.delayed(Duration(seconds: 2));
+
+      // Redirigir al menú principal
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainMenu()),
+      );
+    
   } else {
     print('Error al procesar la orden: ${response.body}');
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al procesar la orden'),
+          backgroundColor: Colors.red,
+        ),
+      );
   }
 } catch (e) {
   print('Error al hacer la solicitud: $e');
+  ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error en la conexión, por favor intente nuevamente'),
+        backgroundColor: Colors.red,
+      ),
+    );
 }
 
 
