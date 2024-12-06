@@ -4,6 +4,7 @@ import 'package:godeliveryapp_naranja/features/category/domain/category.dart';
 import 'package:godeliveryapp_naranja/features/category/presentation/widgets/category_card.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 
+
 class CategoryListScreen extends StatefulWidget {
   const CategoryListScreen({super.key});
 
@@ -12,16 +13,17 @@ class CategoryListScreen extends StatefulWidget {
 }
 
 class _CategoryListScreenState extends State<CategoryListScreen> {
+
   late Future<List<Category>> futureCategories = Future.value([]);
-  late final DataService<Category> _categoryService = DataService<Category>(
-    endpoint: '/category',
-    repository: GenericRepository<Category>(
-      storageKey: 'categories',
+  late final DataService<Category> _categoryService= DataService<Category>(
+      endpoint: '/category',
+      repository: GenericRepository<Category>(
+        storageKey: 'categories',
+        fromJson: (json) => Category.fromJson(json),
+        toJson: (category) => category.toJson(),
+      ),
       fromJson: (json) => Category.fromJson(json),
-      toJson: (category) => category.toJson(),
-    ),
-    fromJson: (json) => Category.fromJson(json),
-  );
+    );
 
   @override
   void initState() {
@@ -38,7 +40,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
   Widget build(BuildContext context) {
     return Container(
       height: 150,
-      child: FutureBuilder<List<Category>>(
+      child:FutureBuilder<List<Category>>(
         future: futureCategories,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -49,15 +51,12 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                 return CategoryCard(category: category);
               }).toList(),
             );
-          } else if (snapshot.hasError) {
+          } else if (snapshot.hasError) { 
             // Si hay un error, mostramos el mensaje de error
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           // Si está esperando la respuesta, mostramos un indicador de carga
-          return const Center(
-              child: CircularProgressIndicator(
-            color: Colors.orange,
-          ));
+          return const Center(child: CircularProgressIndicator(color: Colors.orange,));
         },
       ),
     );
