@@ -22,7 +22,7 @@ class AddToCartLogic {
       final cartItem = CartItemData(
         id: product.id,
         name: product.name,
-        imageUrl: product.image,
+        imageUrl: product.image[0],
         presentation: "${product.weight} gr",
         price: price,
         quantity: quantity,

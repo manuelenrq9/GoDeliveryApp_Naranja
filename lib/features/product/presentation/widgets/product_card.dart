@@ -48,7 +48,7 @@ class ProductItem extends StatelessWidget {
                       borderRadius:
                           BorderRadius.circular(12), // Bordes redondeados
                       child: CachedNetworkImage(
-                        imageUrl: product.image,
+                        imageUrl: product.image[0],
                         fit: BoxFit.cover,
                         placeholder: (context, url) => const Center(
                             child: CircularProgressIndicator(

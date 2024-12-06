@@ -285,7 +285,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                                             product: product));
                                   },
                                   child: CachedNetworkImage(
-                                    imageUrl: product.image,
+                                    imageUrl: product.image[0],
                                     width: 80,
                                     height: 80,
                                     placeholder: (context, url) => const Center(

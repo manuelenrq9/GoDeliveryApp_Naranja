@@ -16,14 +16,14 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   // Nombre actualizado
   late Future<List<Product>> futureProducts;
   late final DataService<Product> productService = DataService<Product>(
-      endpoint: '/product',
-      repository: GenericRepository<Product>(
-        storageKey: 'products',
-        fromJson: (json) => Product.fromJson(json),
-        toJson: (product) => product.toJson(),
-      ),
+    endpoint: '/product',
+    repository: GenericRepository<Product>(
+      storageKey: 'products',
       fromJson: (json) => Product.fromJson(json),
-    );
+      toJson: (product) => product.toJson(),
+    ),
+    fromJson: (json) => Product.fromJson(json),
+  );
 
   @override
   void initState() {
