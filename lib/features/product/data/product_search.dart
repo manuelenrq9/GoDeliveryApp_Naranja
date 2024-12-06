@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/widgets/product_card.dart';
 
 class ProductListSearch extends StatefulWidget {
