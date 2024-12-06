@@ -28,7 +28,7 @@ class AddToCartLogic {
         quantity: quantity,
         isCombo: false,
         currency: product.currency,
-        discount: null,
+        discount: product.discount,
       );
 
       // Añadir el producto al carrito
