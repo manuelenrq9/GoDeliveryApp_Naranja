@@ -8,11 +8,9 @@ num getDiscountedPrice(num price, Discount? discount) {
 
   // Verificar si el descuento es válido (dentro de las fechas de validez)
   final currentDate = DateTime.now();
-
   if (currentDate.isAfter(discount.initDate) &&
       currentDate.isBefore(discount.expireDate)) {
     // Descuento válido, aplicar el descuento
-
     double discountPercentage = discount.percentage;
     double discountedPrice = price / (1 + discountPercentage);
     return discountedPrice;
