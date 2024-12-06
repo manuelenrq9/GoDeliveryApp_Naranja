@@ -27,11 +27,10 @@ class _MainMenuState extends State<MainMenu> {
       _currentIndex = index;
     });
   }
-
   Future<void> _refresh() async {
     // Forzar la reconstrucción completa del widget MainMenu utilizando una nueva clave global
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (BuildContext context) => const MainMenu()));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (BuildContext context) => const MainMenu()));
   }
 
   @override
@@ -71,17 +70,11 @@ class _MainMenuState extends State<MainMenu> {
         color: Colors.orange, // Establece el color del refresco a naranja
         child: ListView(
           children: [
-            CategoryListScreen(),
-            TituloLista(
-              titulo: "Combos de Productos",
-              next: ComboCatalogScreen(),
-            ),
-            const ComboListScreen(),
-            TituloLista(
-              titulo: "Productos Populares",
-              next: ProductCatalogScreen(),
-            ),
-            const ProductListScreen(),
+              CategoryListScreen(),
+              TituloLista(titulo: "Combos de Productos", next: ComboCatalogScreen(),),
+              const ComboListScreen(),
+              TituloLista(titulo: "Productos Populares", next: ProductCatalogScreen(),),
+              const ProductListScreen(),              
           ],
         ),
       ),

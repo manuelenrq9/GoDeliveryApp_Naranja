@@ -4,12 +4,11 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DataService<T> {
   static const String baseUrl =
       'https://orangeteam-deliverybackend-production.up.railway.app';
-  //'http://192.168.68.113:3000';
+
   final String endpoint;
   final GenericRepository<T> repository;
   final T Function(Map<String, dynamic>) fromJson;
@@ -22,34 +21,12 @@ class DataService<T> {
 
   String get apiUrl => '$baseUrl$endpoint';
 
-  // Método para obtener el token de SharedPreferences
-  Future<String?> _getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token'); // Obtén el token almacenado
-  }
-
   Future<List<T>> fetchDataFromApi() async {
     try {
-      final token = await _getToken();
-
-      // Si no hay token, puede que quieras manejarlo, como redirigir al login
-      if (token == null) {
-        throw Exception('No hay token de autenticación');
-      }
-
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          'Authorization':
-              'Bearer $token', // Incluimos el token en el encabezado
-          'Content-Type': 'application/json',
-        },
-      );
+      final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         final List<dynamic> items = jsonData['${repository.storageKey}'];
-        print(endpoint);
-        print(items);
         return items.map((item) => fromJson(item)).toList();
       } else {
         throw Exception('Failed to fetch data');
