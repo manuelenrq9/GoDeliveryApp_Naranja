@@ -4,6 +4,7 @@ import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_menu.dart';
 import 'package:godeliveryapp_naranja/features/combo/presentation/pages/detallecombo.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+import 'package:godeliveryapp_naranja/features/discount/discount_price_menu.dart';
 
 class ComboCard extends StatelessWidget {
   final Combo combo;
@@ -56,7 +57,7 @@ class ComboCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(
                         10), // Borde redondeado para la imagen
                     child: CachedNetworkImage(
-                      imageUrl: combo.comboImage,
+                      imageUrl: combo.comboImage[0],
                       width: double.infinity,
                       height: imageHeight, // Altura dinámica de la imagen
                       fit: BoxFit.cover,
@@ -92,23 +93,11 @@ class ComboCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   // Precio y botón en extremos
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${combo.currency}  ${combo.specialPrice.toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Color.fromARGB(
-                                255, 0, 0, 0), // Color del precio
-                          ),
-                        ),
-                      ],
+                  DiscountPriceMenu(
+                      specialPrice: combo.specialPrice,
+                      discountId: combo.discount,
+                      currency: combo.currency
                     ),
-                  ),
                 ],
               ),
             ),

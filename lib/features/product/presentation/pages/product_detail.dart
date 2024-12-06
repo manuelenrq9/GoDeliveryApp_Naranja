@@ -3,7 +3,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_detail.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
+import 'package:godeliveryapp_naranja/features/discount/discount_price_display.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:photo_view/photo_view.dart';
@@ -21,7 +22,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   num price = 0; // Divisa del precio
 
   int _currentIndex = 0; // Variable para el índice de la barra de navegación
-  late List<String> imageList; // Lista de imágenes para el carrusel
 
   // Función para manejar el cambio de índice en el navbar
   void _onTap(int index) {
@@ -34,13 +34,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void initState() {
     super.initState();
     price = widget.product.price;
-
-    // Inicializar la lista de imágenes
-    imageList = [
-      widget.product.image, // Imagen principal del producto
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCnxscokC2q3t-X8IZOyOGjxDxwu6JFSznVg&s',
-      'https://m.media-amazon.com/images/I/817Aqccr3gL._AC_UF350,350_QL80_.jpg',
-    ];
   }
 
   void incrementQuantity() {
@@ -171,7 +164,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   // Carrusel de imágenes
                   CarouselSlider(
-                    items: imageList.map((imageUrl) {
+                    items: widget.product.image.map((imageUrl) {
                       return GestureDetector(
                         onTap: () {
                           _showLargeImage(context, imageUrl);

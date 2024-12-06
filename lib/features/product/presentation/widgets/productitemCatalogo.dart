@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_menu.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
 
 class ProductItemCatalogo extends StatefulWidget {
@@ -45,9 +45,9 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      widget.product.image,
-                      width: 100,
-                      height: 100,
+                      widget.product.image[0],
+                      width: 75,
+                      height: 75,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) => Container(
                         color: Colors.grey[300],

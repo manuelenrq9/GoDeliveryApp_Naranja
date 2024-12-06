@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/widgets/productitemCatalogo.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 
 class ProductCatalogScreen extends StatefulWidget {
   const ProductCatalogScreen({super.key}); // Nombre actualizado
-
   @override
   State<ProductCatalogScreen> createState() =>
       _ProductCatalogScreenState(); // Nombre actualizado
@@ -16,14 +15,14 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
   // Nombre actualizado
   late Future<List<Product>> futureProducts;
   late final DataService<Product> productService = DataService<Product>(
-      endpoint: '/product',
-      repository: GenericRepository<Product>(
-        storageKey: 'products',
-        fromJson: (json) => Product.fromJson(json),
-        toJson: (product) => product.toJson(),
-      ),
+    endpoint: '/product',
+    repository: GenericRepository<Product>(
+      storageKey: 'products',
       fromJson: (json) => Product.fromJson(json),
-    );
+      toJson: (product) => product.toJson(),
+    ),
+    fromJson: (json) => Product.fromJson(json),
+  );
 
   @override
   void initState() {
