@@ -233,33 +233,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   const SizedBox(height: 8),
                   Divider(color: Colors.grey[300]),
                   const SizedBox(height: 8),
-                  DiscountPriceDisplay(
-                      specialPrice: widget.product.price,
-                      discountId: widget.product.discount,
-                      currency: widget.product.currency,
-                    ),
-                  // // Precio con estilo destacado
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   children: [
-                  //     const Text(
-                  //       'Precio',
-                  //       style: TextStyle(
-                  //         fontSize: 16,
-                  //         color: Color.fromARGB(255, 175, 91, 7),
-                  //         fontWeight: FontWeight.bold,
-                  //       ),
-                  //     ),
-                  //     Text(
-                  //       '${widget.product.currency} ${price}',
-                  //       style: const TextStyle(
-                  //         fontSize: 24,
-                  //         color: Color(0xFFFF9027),
-                  //         fontWeight: FontWeight.bold,
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
+                  // Precio con estilo destacado
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Precio',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color.fromARGB(255, 175, 91, 7),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '${widget.product.currency} ${price}',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          color: Color(0xFFFF9027),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
