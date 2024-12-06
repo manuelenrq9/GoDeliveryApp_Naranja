@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/add_to_cart.dart';
 
