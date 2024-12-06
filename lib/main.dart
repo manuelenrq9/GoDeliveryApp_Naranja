@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
