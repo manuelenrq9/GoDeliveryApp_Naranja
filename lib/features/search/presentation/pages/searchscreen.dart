@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/product/presentation/pages/ProductCatalago.dart';
+import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
+import 'package:godeliveryapp_naranja/features/product/data/product_search.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -9,6 +12,12 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
+
+  void dispose() {
+    _debounce?.cancel(); // Cancelar el timer si el widget es destruido
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +64,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             const EdgeInsets.symmetric(vertical: 10.0),
                       ),
                       onChanged: (_) {
-                        setState(() {});
+                        _onSearchChanged(_searchController.text);
                       },
                     ),
                   ),
@@ -85,17 +94,34 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: ListView(
+          shrinkWrap: true, // Esto hace que la lista se ajuste al contenido
+          physics:
+              NeverScrollableScrollPhysics(), // Deshabilita el desplazamiento interno de ListView
           children: [
-            Expanded(
-              child: ProductCatalogScreen(),
+            if (_searchController.text.isNotEmpty)
+            ProductListSearch(
+              searchText: _searchController.text,
             ),
-            // Otros widgets de la pantalla
           ],
         ),
       ),
     );
+  }
+
+  // Método para manejar los cambios en el campo de búsqueda
+  void _onSearchChanged(String query) {
+    print("DENTRO DEL SEARCH CHANGED");
+    if (query.isNotEmpty) {
+      if (_debounce?.isActive ?? false)
+      _debounce?.cancel(); // Cancela el timer anterior si lo hay
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      print("Dentro del debounce");
+      setState(() {
+      });
+    });
+    }
   }
 }
