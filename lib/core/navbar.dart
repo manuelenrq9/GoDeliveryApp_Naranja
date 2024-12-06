@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/pages/RecoveryPorfilemessague.dart';
-import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/pages/RecoverySearchmessague.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/pages/order_history_screen.dart';
+import 'package:godeliveryapp_naranja/features/search/presentation/pages/searchscreen.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 
 class CustomNavBar extends StatefulWidget {
@@ -105,8 +105,7 @@ class _CustomNavBarState extends State<CustomNavBar>
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-              builder: (context) => RecoverySearchmessagueScreen()),
+          MaterialPageRoute(builder: (context) => SearchScreen()),
         );
 
         break;
