@@ -1,9 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
+import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_detail.dart';
+import 'package:godeliveryapp_naranja/features/discount/discount_price_display.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+import 'package:photo_view/photo_view.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -15,7 +19,7 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int quantity = 1;
-  num price = 0;// Divisa del precio
+  num price = 0; // Divisa del precio
 
   int _currentIndex = 0; // Variable para el índice de la barra de navegación
 
@@ -25,6 +29,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       _currentIndex = index;
     });
   }
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +50,65 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         price = widget.product.price * quantity;
       }
     });
+  }
+
+  void resetQuantity() {
+    setState(() {
+      quantity = 1;
+      price = widget.product.price; // Vuelve al precio original del combo
+    });
+  }
+
+  // Función para mostrar la imagen en tamaño grande con zoom
+  void _showLargeImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Color(0xFFFF9027),
+                    width: 4,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.grey,
+                      blurRadius: 10,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: PhotoView(
+                    imageProvider: NetworkImage(imageUrl),
+                    loadingBuilder: (context, event) => Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFFF9027),
+                      ),
+                    ),
+                    minScale: PhotoViewComputedScale.contained,
+                    maxScale: PhotoViewComputedScale.covered * 2,
+                    backgroundDecoration: const BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -89,7 +153,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: const [
                   BoxShadow(
-                    color: Colors.black12,
+                    color: Colors.grey,
                     blurRadius: 8,
                     offset: Offset(0, 4),
                   ),
@@ -98,67 +162,104 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
-                    child: CachedNetworkImage(
-                      imageUrl: widget.product.image,
-                      height: 150,
-                      placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: Colors.orange,)),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                  // Carrusel de imágenes
+                  CarouselSlider(
+                    items: widget.product.image.map((imageUrl) {
+                      return GestureDetector(
+                        onTap: () {
+                          _showLargeImage(context, imageUrl);
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            height: 180,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(
+                                child: CircularProgressIndicator(
+                                    color: Colors.orange)),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    options: CarouselOptions(
+                      height: 200,
+                      autoPlay: true,
+                      enlargeCenterPage: true,
+                      aspectRatio: 16 / 9,
+                      enableInfiniteScroll: true,
+                      initialPage: 0,
                     ),
                   ),
                   const SizedBox(height: 18),
+                  // Nombre del producto más destacado
                   Center(
                     child: Text(
                       widget.product.name,
                       style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
+                          fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Center(
-                    child: Text(
-                      widget.product.description,
-                      style:
-                          const TextStyle(fontSize: 16, color: Colors.black54),
-                      textAlign: TextAlign.center,
-                    ),
+                  // Descripción
+                  Text(
+                    widget.product.description,
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Divider(color: Colors.grey[300]),
                   const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Presentación',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                      ),
-                      Text(
-                        '${widget.product.weight} gramos',
-                        style: TextStyle(fontSize: 16, color: Colors.black87),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Divider(color: Colors.grey[300]),
-                  const SizedBox(height: 8),
+                  // Presentación
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        'Precio',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
+                        'Presentación',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: Color.fromARGB(255, 175, 91, 7),
+                            fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        '${widget.product.currency} ${price}', // Añadimos la divisa junto con el precio
+                        '${widget.product.weight} gramos',
                         style: const TextStyle(
-                          fontSize: 22,
-                          color: Color(0xFFFF9027),
-                          fontWeight: FontWeight.bold,
-                        ),
+                            fontSize: 16, color: Colors.black87),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 8),
+                  Divider(color: Colors.grey[300]),
+                  const SizedBox(height: 8),
+                  DiscountPriceDisplay(
+                      specialPrice: widget.product.price,
+                      discountId: widget.product.discount,
+                      currency: widget.product.currency,
+                    ),
+                  // // Precio con estilo destacado
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //   children: [
+                  //     const Text(
+                  //       'Precio',
+                  //       style: TextStyle(
+                  //         fontSize: 16,
+                  //         color: Color.fromARGB(255, 175, 91, 7),
+                  //         fontWeight: FontWeight.bold,
+                  //       ),
+                  //     ),
+                  //     Text(
+                  //       '${widget.product.currency} ${price}',
+                  //       style: const TextStyle(
+                  //         fontSize: 24,
+                  //         color: Color(0xFFFF9027),
+                  //         fontWeight: FontWeight.bold,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
@@ -170,7 +271,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   onPressed: decrementQuantity,
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
-                    backgroundColor: const Color.fromARGB(255, 175, 91, 7),
+                    backgroundColor: quantity > 1
+                        ? Color.fromARGB(255, 206, 205, 204)
+                        : Color(0xFFFF9027),
                     padding: const EdgeInsets.all(12),
                   ),
                   child: const Icon(Icons.remove, color: Colors.white),
@@ -179,43 +282,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
                     '$quantity',
-                    style: const TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 24),
                   ),
                 ),
                 ElevatedButton(
                   onPressed: incrementQuantity,
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
-                    backgroundColor: const Color.fromARGB(255, 175, 91, 7),
+                    backgroundColor: Color(0xFFFF9027),
                     padding: const EdgeInsets.all(12),
                   ),
                   child: const Icon(Icons.add, color: Colors.white),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Añadir carrito en futuras actualizaciones :c'),
-                          duration: Duration(seconds: 2), 
-                          backgroundColor: Colors.green,// Duración del mensaje
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.shopping_cart, color: Colors.white),
-                    label: const Text(
-                      'Añadir al carrito',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF7000),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      textStyle: const TextStyle(fontSize: 18),
-                    ),
+                  child: AddToCartButton(
+                    product: widget.product,
+                    quantity: quantity,
+                    price: price,
+                    resetQuantity: resetQuantity,
                   ),
                 ),
               ],
@@ -224,7 +309,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ],
         ),
       ),
-      // Agregar CustomNavBar en el bottomNavigationBar
       bottomNavigationBar: CustomNavBar(
         currentIndex: _currentIndex,
         onTap: _onTap,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
+import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/combo/presentation/widgets/comboItemCatalog.dart';
+import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 
 // Asegúrate de tener este archivo
 
@@ -17,10 +18,28 @@ class _ComboCatalogScreenState extends State<ComboCatalogScreen> {
   // Nombre actualizado
   late Future<List<Combo>> futureCombos;
 
+  // Instancia de DataService<Combo>
+  final DataService<Combo> comboService = DataService<Combo>(
+    endpoint: '/combo',
+    repository: GenericRepository<Combo>(
+      storageKey: 'combos',
+      fromJson: Combo.fromJson,
+      toJson: (combo) => combo.toJson(),
+    ),
+    fromJson: Combo.fromJson,
+  );
+
   @override
   void initState() {
     super.initState();
-    futureCombos = fetchCombos(); // Cargar los productos desde el API
+    print("AQUI ESTAMOS EN COMBO");
+    loadCombos(); // Cargar los productos desde el API
+  }
+
+  void loadCombos() {
+    setState(() {
+      futureCombos = comboService.loadData();
+    });
   }
 
   @override

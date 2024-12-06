@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import '../../domain/cart_item_data.dart';
 import '../widgets/cart_items_list.dart';
-//import 'discount_section.dart'; // Comentado porque no se usará
 import '../widgets/summary_product.dart';
 
 class CartScreen extends StatefulWidget {
@@ -14,42 +15,26 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  final List<CartItemData> cartItems = [
-    // Ejemplo de datos
-    CartItemData(
-      imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc3i5PZdcQy1GR0AXBEle6uYNYjjpFXr_pew&s',
-      name: 'Fresh Refined Sugar',
-      presentation: '1 kg',
-      price: 230,
-      quantity: 3,
-    ),
-    CartItemData(
-      imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkhe7ppjYw4_fYOPIFwQx0wZhEP4e3hjaEBw&s',
-      name: 'Nestle Koko Krunch Duo (Kids pack)',
-      presentation: '550 gm',
-      price: 550,
-      quantity: 1,
-    ),
-    CartItemData(
-      imageUrl:
-          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpy_hK5395xzH2ZhTKAKzVt1-Dgbpiy2u35Q&s',
-      name: 'Ispahani Mirzapore Tea (best tea bag)',
-      presentation: '50 gm',
-      price: 120,
-      quantity: 1,
-    ),
-    CartItemData(
-      imageUrl:
-          'https://sadinbazar.com/wp-content/uploads/2020/12/Rupchanda-Soyabean-Oil-5.jpeg',
-      name: 'Rupchanda Soyabean Oil',
-      presentation: '5 litres',
-      price: 480,
-      quantity: 2,
-    ),
-    // Agrega más productos aquí
-  ];
+  late final CartRepository _cartRepository;
+  List<CartItemData> cartItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _cartRepository = CartRepository();
+    _loadCart();
+  }
+
+  Future<void> _loadCart() async {
+    final items = await _cartRepository.loadData();
+    setState(() {
+      cartItems = items;
+    });
+  }
+
+  Future<void> _updateCart() async {
+    await _cartRepository.saveData(cartItems);
+  }
 
   double get totalAmount {
     return cartItems.fold(0, (sum, item) => sum + item.price * item.quantity);
@@ -59,6 +44,7 @@ class _CartScreenState extends State<CartScreen> {
     setState(() {
       cartItems[index].quantity++;
     });
+    _updateCart();
   }
 
   void decreaseQuantity(int index) {
@@ -67,84 +53,221 @@ class _CartScreenState extends State<CartScreen> {
         cartItems[index].quantity--;
       }
     });
+    _updateCart();
   }
 
-  int _currentIndex = 0; // Variable para el índice de la barra de navegación
-
-  // Función para manejar el cambio de índice en el navbar
-  void _onTap(int index) {
+  void removeItem(int index) {
     setState(() {
-      _currentIndex = index;
+      cartItems.removeAt(index);
     });
+    _updateCart();
+  }
+
+  Future<void> clearCart() async {
+    await _cartRepository.clearCart();
+    setState(() {
+      cartItems.clear();
+    });
+  }
+
+  void _showClearCartDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            '¿Eliminar todos los artículos?',
+            style: TextStyle(
+              color: Color(0xFFFF7000),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: const Text(
+            'Se eliminaran todos los artículos de tu carrito',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(
+                  color: Color(0xFFFF7000),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                clearCart();
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Eliminar todo',
+                style: TextStyle(
+                  color: Color(0xFFFF7000),
+                ),
+              ),
+            ),
+          ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          backgroundColor: Colors.white,
+          elevation: 5,
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Carrito'),
+        title: const Text(
+          'Carrito',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 175, 91, 7),
+          ),
+        ),
+        centerTitle: true,
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              '${cartItems.length} artículos',
-              style: const TextStyle(color: Color(0xFFFF7000)),
+          GestureDetector(
+            onTap: _showClearCartDialog,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: const Icon(
+                Icons.delete_outline,
+                color: Color(0xFFFF7000),
+              ),
             ),
           ),
         ],
+        iconTheme: const IconThemeData(
+          color: Color.fromARGB(
+              255, 175, 91, 7), // Set the color of the back icon here
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const MainMenu()),
+            );
+          },
+        ),
       ),
       body: Column(
         children: [
+          // Lista de productos
           Expanded(
-            child: CartItemsList(
-              cartItems: cartItems,
-              onIncreaseQuantity: increaseQuantity,
-              onDecreaseQuantity: decreaseQuantity,
-            ),
+            child: cartItems.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.shopping_cart_outlined,
+                            size: 60, color: Color(0xFFFF7000)),
+                        const Text(
+                          "Tu carrito está vacío.",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Color.fromARGB(255, 175, 91, 7)),
+                        ),
+                        const Text(
+                          "¡Explora nuestros productos te esperamos !",
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Color.fromARGB(255, 175, 91, 7)),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const MainMenu()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFFF7000),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: const Text(
+                            'Explorar productos',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : CartItemsList(
+                    cartItems: cartItems,
+                    onIncreaseQuantity: increaseQuantity,
+                    onDecreaseQuantity: decreaseQuantity,
+                    onRemoveItem: removeItem,
+                  ),
           ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [
-                ProductSummary(totalAmount: totalAmount),
-                //DiscountSection(),
-                const Divider(),
-                const SummaryRow(label: 'Tarifa de envío', amount: '\$50'),
-                const Divider(),
-                SummaryRow(
-                  label: 'Total',
-                  amount: '\$${(totalAmount + 50 - 20).toStringAsFixed(2)}',
-                  isTotal: true,
+          // Resumen del carrito
+          if (cartItems.isNotEmpty) ...[
+            Container(
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
                 ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Acción para proceder al checkout
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF7000),
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromARGB(248, 177, 175, 173).withOpacity(0.4),
+                    blurRadius: 10,
+                    spreadRadius: 5,
+                  ),
+                ],
               ),
-              child: const Text(
-                'Procesar Orden',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+              child: Column(
+                children: [
+                  ProductSummary(totalAmount: totalAmount),
+                  const SummaryRow(label: 'Tarifa de envío', amount: '\$50'),
+                  const Divider(),
+                  SummaryRow(
+                    label: 'Total',
+                    amount: '\$${(totalAmount + 50).toStringAsFixed(2)}',
+                    isTotal: true,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: cartItems.isEmpty
+                        ? null
+                        : () {
+                            // Procesar la orden
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF7000),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Procesar Orden',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
+          ],
         ],
       ),
-      // Agregar CustomNavBar en el bottomNavigationBar
       bottomNavigationBar: CustomNavBar(
-        currentIndex: _currentIndex,
-        onTap: _onTap,
+        currentIndex: 2,
+        onTap: (index) {},
       ),
     );
   }
