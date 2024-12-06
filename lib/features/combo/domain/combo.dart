@@ -6,14 +6,8 @@ class Combo {
   final num specialPrice;
   final String currency;
   final String description;
-  final List<String> comboImage;
+  final String comboImage;
   final List<String> products;
-  final num weight;
-  final String measurement;
-  final num stock;
-  final List<String> categories;
-  final DateTime? caducityDate;
-  final String? discount;
 
   Combo({
     required this.id,
@@ -23,12 +17,6 @@ class Combo {
     required this.description,
     required this.comboImage,
     required this.products,
-    required this.weight,
-    required this.measurement,
-    required this.stock,
-    required this.categories,
-    this.caducityDate,
-    this.discount,
   });
 
   // Deserialización del JSON
@@ -42,14 +30,8 @@ class Combo {
     specialPrice: json['specialPrice'] as num,
     currency: json['currency'] as String,
     description: json['description'] as String,
-    comboImage: List<String>.from(json['comboImages'] ?? []),
-    products: List<String>.from(json['products'] ?? []),
-    weight: json['weight'] as num,
-    measurement: json['measurement'] as String,
-    stock: json['stock'] as num,
-    categories: List<String>.from(json['categories'] ?? []),
-    caducityDate: json['caducityDate'] != null ? DateTime.parse(json['caducityDate']) : null,
-    discount: json['discount'] as String?,
+    comboImage: json['comboImage'] as String,
+    products: List<String>.from(json['Products'] ?? []),
   );
 }
 
@@ -65,12 +47,6 @@ class Combo {
       'description': description,
       'comboImage': comboImage,
       'products': products,
-      'weight': weight,
-      'measurement': measurement,
-      'stock': stock,
-      'categories': categories,
-      'caducityDate': caducityDate?.toIso8601String(),
-      'discount': discount,
     };
   }
 }

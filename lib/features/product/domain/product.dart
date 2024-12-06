@@ -2,15 +2,12 @@ class Product {
   final String id;
   final String name;
   final String description; //falta
-  final List<String> image;
+  final String image;
   final num price;
-  final String currency;
+  final String currency; 
   final num weight;
   final num stock;
-  final List<String> category;
-  final String measurement;
-  final DateTime? caducityDate;
-  final String? discount;
+  final String category;
 
   const Product({
     required this.id,
@@ -22,27 +19,21 @@ class Product {
     required this.weight,
     required this.stock,
     required this.category,
-    required this.measurement,
-    this.caducityDate,
-    this.discount,
   });
 
   // Deserialización del JSON
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        description: json['description'] as String,
-        image: List<String>.from(json['images'] ?? []),
-        price: json['price'] as num,
-        currency: json['currency'] as String,
-        weight: json['weight'] as num,
-        stock: json['stock'] as num,
-        category: List<String>.from(json['categories'] ?? []),
-        measurement: json['measurement'] as String,
-        caducityDate: json['caducityDate'] != null ? DateTime.parse(json['caducityDate']) : null,
-        discount: json['discount'] as String?,
-        );
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      image: json['image'] as String,
+      price: json['price'] as num,
+      currency: json['currency'] as String,
+      weight: json['weight'] as num,
+      stock: json['stock'] as num,
+      category: json['category'] as String,
+    );
   }
 
   // Serialización del objeto a JSON
@@ -51,15 +42,13 @@ class Product {
       'id': id,
       'name': name,
       'description': description,
-      'images': image,
+      'image': image,
       'price': price,
       'currency': currency,
       'weight': weight,
       'stock': stock,
-      'categories': category,
-      'measurement': measurement,      
-      'caducityDate': caducityDate?.toIso8601String(),
-      'discount': discount,
+      'category': category,
     };
   }
 }
+

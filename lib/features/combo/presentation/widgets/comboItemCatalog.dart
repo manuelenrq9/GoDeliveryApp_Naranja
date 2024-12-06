@@ -48,7 +48,7 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
                   borderRadius: BorderRadius.circular(12),
                   image: DecorationImage(
                     image: Image.network(
-                      widget.combo.comboImage[0],
+                      widget.combo.comboImage,
                       fit: BoxFit.cover,
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;

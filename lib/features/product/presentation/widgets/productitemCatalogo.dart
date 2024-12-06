@@ -56,7 +56,7 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
-                      widget.product.image[0],
+                      widget.product.image,
                       width: 75,
                       height: 75,
                       fit: BoxFit.cover,

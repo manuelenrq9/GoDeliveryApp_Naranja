@@ -5,7 +5,6 @@ import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_detail.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
-import 'package:godeliveryapp_naranja/features/discount/discount_price_display.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetchID.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
@@ -25,14 +24,21 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
   int quantity = 1;
   num price = 0;
   late Future<List<Product>> _productsFuture;
+  late List<String> imageList;
   bool isAddedToCart = false;
-  
 
   @override
   void initState() {
     super.initState();
     price = widget.combo.specialPrice;
     _productsFuture = getProductsForCombo();
+    // Inicializar la lista de imágenes
+    imageList = [
+      widget.combo.comboImage, // Imagen del combo
+      'https://images.rappi.com/products/e0118025-4b6d-43aa-b8b4-793a4041700c.png?e=webp&q=80&d=130x130',
+      'https://villavoexpress.com/rails/active_storage/representations/proxy/eyJfcmFpbHMiOnsiZGF0YSI6MzUxNzUsInB1ciI6ImJsb2JfaWQifX0=--a22ddc15c3c41739e28a3e3c9d1b36ff1b3aea77/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemVfdG9fZml0IjpbODAwLDgwMF19LCJwdXIiOiJ2YXJpYXRpb24ifX0=--1420d7fd3d20057726f0ef3c0043db24ca0403be/combo-coca-cola-1,5-litros-mas-papas-margarita-limon-105-gr.jpg?locale=es',
+      'https://http2.mlstatic.com/D_NQ_NP_902211-MCO77116569339_062024-O.webp',
+    ];
   }
 
   // Variable para el índice de la barra de navegación
@@ -194,7 +200,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                   children: [
                     // Carrusel de imágenes
                     CarouselSlider(
-                      items: widget.combo.comboImage.map((imageUrl) {
+                      items: imageList.map((imageUrl) {
                         return GestureDetector(
                           onTap: () {
                             _showLargeImage(context, imageUrl);
@@ -285,7 +291,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                                             product: product));
                                   },
                                   child: CachedNetworkImage(
-                                    imageUrl: product.image[0],
+                                    imageUrl: product.image,
                                     width: 80,
                                     height: 80,
                                     placeholder: (context, url) => const Center(
@@ -323,10 +329,22 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                     Divider(color: Colors.grey[300]),
                     const SizedBox(height: 4),
                     // Precio
-                    DiscountPriceDisplay(
-                      specialPrice: widget.combo.specialPrice,
-                      discountId: widget.combo.discount,
-                      currency: widget.combo.currency,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Precio',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Color.fromARGB(255, 175, 91, 7),
+                                fontWeight: FontWeight.bold)),
+                        Text(
+                          '\$${(price).toStringAsFixed(2)}',
+                          style: const TextStyle(
+                              fontSize: 22,
+                              color: Color(0xFFFF9027),
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                   ],
                 ),
