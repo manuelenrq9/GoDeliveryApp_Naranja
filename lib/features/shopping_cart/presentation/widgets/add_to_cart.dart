@@ -1,5 +1,5 @@
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/domain/cart_item_data.dart';
 

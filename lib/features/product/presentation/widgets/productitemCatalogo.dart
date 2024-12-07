@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_menu.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
 import 'dart:math';
 

@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_menu.dart';
-import 'package:godeliveryapp_naranja/features/discount/discount_price_menu.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
 
