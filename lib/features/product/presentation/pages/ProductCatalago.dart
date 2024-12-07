@@ -6,7 +6,6 @@ import 'package:godeliveryapp_naranja/features/product/domain/entities/product.d
 
 class ProductCatalogScreen extends StatefulWidget {
   const ProductCatalogScreen({super.key}); // Nombre actualizado
-
   @override
   State<ProductCatalogScreen> createState() =>
       _ProductCatalogScreenState(); // Nombre actualizado
