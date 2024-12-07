@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
+import 'package:godeliveryapp_naranja/features/order/data/post_order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/usecases/create_order.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/cart_item_data.dart';
 import '../widgets/cart_items_list.dart';
 import '../widgets/summary_product.dart';
@@ -17,6 +24,9 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   late final CartRepository _cartRepository;
   List<CartItemData> cartItems = [];
+  List<Product> products = [];
+  List<Combo> combos = [];
+  ProcessOrder orderProcessor = ProcessOrder();
 
   @override
   void initState() {
@@ -61,6 +71,26 @@ class _CartScreenState extends State<CartScreen> {
       cartItems.removeAt(index);
     });
     _updateCart();
+  }
+
+  List<CartProduct> getProducts() {
+    return cartItems
+        .where((item) => !item.isCombo) // Filtrar solo productos
+        .map((cartItem) => CartProduct(
+              id: cartItem.id,
+              quantity: cartItem.quantity,
+            ))
+        .toList(); // Devolver la lista de productos
+  }
+
+  List<CartCombo> getCombos() {
+    return cartItems
+        .where((item) => item.isCombo) // Filtrar solo combos
+        .map((cartItem) => CartCombo(
+              id: cartItem.id,
+              quantity: cartItem.quantity,
+            ))
+        .toList(); // Devolver la lista de combos
   }
 
   Future<void> clearCart() async {
@@ -120,6 +150,11 @@ class _CartScreenState extends State<CartScreen> {
         );
       },
     );
+  }
+
+  Future<String?> _getUserID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
   }
 
   @override
@@ -245,8 +280,25 @@ class _CartScreenState extends State<CartScreen> {
                   ElevatedButton(
                     onPressed: cartItems.isEmpty
                         ? null
-                        : () {
-                            // Procesar la orden
+                        : () async {
+                            getProducts();
+                            getCombos();
+                            final userId = await _getUserID();
+                            if (userId == null) {
+                              throw Exception('No hay usuario ID');
+                            }
+                            await processOrder(
+                              address:
+                                  'San Antonio de los Altos, Miranda, Venezuela', // Dirección predeterminada
+                              products: getProducts(),
+                              combos: getCombos(),
+                              paymentMethod: "Credit Card",
+                              currency: 'USD', // La moneda
+                              totalDecimal: totalAmount,
+                              userId: userId,
+                              context: context,
+                            );
+                            clearCart();
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF7000),

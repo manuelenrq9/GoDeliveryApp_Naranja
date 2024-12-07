@@ -105,7 +105,8 @@ class _CustomNavBarState extends State<CustomNavBar>
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => SearchScreen()),
+          MaterialPageRoute(
+              builder: (context) => SearchScreen()),
         );
 
         break;

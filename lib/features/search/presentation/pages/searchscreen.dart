@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
+import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_search.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 
@@ -36,7 +36,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 IconButton(
                   icon: const Icon(Icons.arrow_back, color: Color(0xFFFF7000)),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    // Navigator.of(context).pop();
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainMenu()));
                   },
                 ),
                 Expanded(
