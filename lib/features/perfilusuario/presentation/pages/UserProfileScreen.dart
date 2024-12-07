@@ -99,7 +99,7 @@ class UserProfileScreen extends StatelessWidget {
                 child: ListTile(
                   leading: const Icon(Icons.lock, color: Color(0xFFFF7000)),
                   title: const Text('Contraseña'),
-                  subtitle: Text('jhonny07'),
+                  subtitle: Text('......'),
                 ),
               ),
 
