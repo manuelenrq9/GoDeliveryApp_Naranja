@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/order/data/fetch_orders.dart';
 import 'order_card.dart';
 
 class CustomTabBar extends StatelessWidget {
@@ -26,11 +27,15 @@ class CustomTabBar extends StatelessWidget {
             ),
           ],
         ),
+
         Expanded(
           child: TabBarView(
             controller: tabController,
             children: [
               // Active Orders
+
+              OrderListScreen(),
+              /*
               ListView(
                 padding: const EdgeInsets.all(16.0),
                 children: [
@@ -39,18 +44,16 @@ class CustomTabBar extends StatelessWidget {
                     orderId: '26754523',
                     price: 3560,
                     status: 'Delivered',
-                    items: [
-                      'Fanta (2)',
-                      'Golden Harvest Samosa (3)',
-                      'Pringles Sour Cream Onion (2)',
-                      'Wasabi Green Peas (2)',
-                      'Creamo Wafer Rolls (2)',
-                    ],
                     deliveryTime: '12:45 pm',
                   ),
                 ],
               ),
+              */
+
               // Past Orders
+
+              OrderListScreen(),
+              /*
               ListView(
                 padding: const EdgeInsets.all(16.0),
                 children: [
@@ -82,7 +85,7 @@ class CustomTabBar extends StatelessWidget {
                     deliveryTime: '3:34 pm',
                   ),
                 ],
-              ),
+              ), */
             ],
           ),
         ),

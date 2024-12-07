@@ -1,26 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 
 class OrderCard extends StatelessWidget {
-  final String date;
-  final String orderId;
-  final int price;
-  final String status;
-  final List<String> items;
-  final String deliveryTime;
+  final Order order;
 
   const OrderCard({
     Key? key,
-    required this.date,
-    required this.orderId,
-    required this.price,
-    required this.status,
-    required this.items,
-    required this.deliveryTime,
+    required this.order,
   }) : super(key: key);
+
+  List<String> orderItemsToString (){
+    List<String> items = [];
+    List<Product> products = order.products; 
+    List<Combo> combos = order.combos;
+    products.forEach((product){
+      String name = product.name;
+      items.add(name);
+    });
+    combos.forEach((combo){
+      String name = combo.name;
+      items.add(name);
+    });
+    return items;
+  }
+
+  num getPrice(){
+    num total = 0;
+    List<Product> products = order.products;
+    products.forEach((product){
+      total += product.price;
+    });
+    return total;
+  }
 
   @override
   Widget build(BuildContext context) {
+    String orderId = order.id;
+    num price = getPrice();
+    List<String> items = orderItemsToString();
+    String status = order.status;
     final isDelivered = status == 'Delivered';
+    String deliveryTime = order.receivedDate.toString();
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       elevation: 3,
@@ -36,7 +58,7 @@ class OrderCard extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    date,
+                    order.createdDate.toString(),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

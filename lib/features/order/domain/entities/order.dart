@@ -10,7 +10,7 @@ class Order{
   final List<Combo> combos;
   final DateTime receivedDate;
   final String paymentMethod;
-  final String report;
+  final String? report;
 
   const Order({
     required this.id,
@@ -21,7 +21,7 @@ class Order{
     required this.combos,
     required this.receivedDate,
     required this.paymentMethod,
-    required this.report
+    this.report
   });
 
 // Deserialización del JSON
@@ -35,7 +35,7 @@ factory Order.fromJson(Map<String, dynamic> json) {
         combos: List<Combo>.from(json['combo'] ?? []),
         receivedDate: json['receivedDate'] as DateTime,
         paymentMethod: json['paymentMethod'] as String,
-        report: json['report'] as String,
+        //report: json['report'],
         );
   }
 
