@@ -26,7 +26,6 @@ class _CartScreenState extends State<CartScreen> {
   List<CartItemData> cartItems = [];
   List<Product> products = [];
   List<Combo> combos = [];
-  ProcessOrder orderProcessor = ProcessOrder();
 
   @override
   void initState() {

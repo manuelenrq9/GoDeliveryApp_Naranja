@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 
 class OrderCard extends StatelessWidget {
   final Order order;
@@ -13,24 +13,16 @@ class OrderCard extends StatelessWidget {
 
   List<String> orderItemsToString (){
     List<String> items = [];
-    List<Product> products = order.products; 
-    List<Combo> combos = order.combos;
-    products.forEach((product){
-      String name = product.name;
-      items.add(name);
-    });
-    combos.forEach((combo){
-      String name = combo.name;
-      items.add(name);
-    });
+    List<CartProduct> products = order.products; 
+    List<CartCombo> combos = order.combos;
     return items;
   }
 
   num getPrice(){
     num total = 0;
-    List<Product> products = order.products;
+    List<CartProduct> products = order.products;
     products.forEach((product){
-      total += product.price;
+      // total += product.price;
     });
     return total;
   }
