@@ -15,7 +15,7 @@ Future<void> processOrder({
   required String address,
   required List<CartProduct> products,
   required List<CartCombo> combos,
-  required String paymentMethod,
+  required String? paymentMethod,
   required String currency,
   required num totalDecimal,
   required String userId,
