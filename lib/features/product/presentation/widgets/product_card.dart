@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_menu.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
 
@@ -99,7 +99,7 @@ class ProductItem extends StatelessWidget {
                                 product.currency,
                                 style: const TextStyle(
                                   fontSize: 14,
-                                  color: Color.fromARGB(255, 175, 91, 7),
+                                  color: Color(0xFFFF7000),
                                 ),
                               ),
                               const SizedBox(width: 4),

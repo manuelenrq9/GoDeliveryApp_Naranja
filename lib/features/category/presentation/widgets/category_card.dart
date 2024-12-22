@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/category/domain/category.dart';
+import 'package:godeliveryapp_naranja/features/product/presentation/pages/ProductCategory.dart';
 
 class CategoryCard extends StatelessWidget {
   final Category category;
@@ -11,57 +12,70 @@ class CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(7.0),
-      child: Container(
-        width: 110, // Incrementamos el ancho
-        height: 120, // Ajustamos la altura para que todo encaje bien
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color(0xFFFF7000),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 65, // Ajustamos el tamaño del contenedor de la imagen
-              height: 65,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                color: const Color.fromARGB(255, 255, 255, 255),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(9),
-                child: Image.network(
-                  category.image, // Usamos la URL de la categoría
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Icon(Icons.error, color: Colors.red),
-                ),
+    return GestureDetector(
+        onTap: () {
+          // Navega a ProductCategoryScreen pasando el nombre de la categoría
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductCategoryScreen(
+                categoryId: category.id,
               ),
             ),
-            const SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Center(
-                child: Text(
-                  category.name, // Usamos el nombre de la categoría
-                  maxLines:
-                      2, // Permitimos hasta dos líneas para nombres largos
-                  overflow: TextOverflow.ellipsis, // Cortamos con "..."
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14, // Hacemos la fuente un poco más grande
-                    fontWeight: FontWeight.bold,
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(7.0),
+          child: Container(
+            width: 110, // Incrementamos el ancho
+            height: 120, // Ajustamos la altura para que todo encaje bien
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: const Color(0xFFFF7000),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 65, // Ajustamos el tamaño del contenedor de la imagen
+                  height: 65,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(9),
+                    child: Image.network(
+                      category.image, // Usamos la URL de la categoría
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.error, color: Colors.red),
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Center(
+                    child: Text(
+                      category.name, // Usamos el nombre de la categoría
+                      maxLines:
+                          2, // Permitimos hasta dos líneas para nombres largos
+                      overflow: TextOverflow.ellipsis, // Cortamos con "..."
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14, // Hacemos la fuente un poco más grande
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        )
     );
   }
 }

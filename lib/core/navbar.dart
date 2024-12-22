@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/pages/RecoveryPorfilemessague.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/pages/order_history_screen.dart';
+import 'package:godeliveryapp_naranja/features/perfilusuario/presentation/pages/UserProfileScreen.dart';
 import 'package:godeliveryapp_naranja/features/search/presentation/pages/searchscreen.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 
@@ -9,8 +9,11 @@ class CustomNavBar extends StatefulWidget {
   final int currentIndex;
   final Function(int) onTap;
 
-  const CustomNavBar(
-      {super.key, required this.currentIndex, required this.onTap});
+  const CustomNavBar({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   _CustomNavBarState createState() => _CustomNavBarState();
@@ -123,11 +126,8 @@ class _CustomNavBarState extends State<CustomNavBar>
         );
         break;
       case 4:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => RecoveryProfiledmessagueScreen()),
-        );
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => UserProfileScreen()));
         break;
     }
   }
