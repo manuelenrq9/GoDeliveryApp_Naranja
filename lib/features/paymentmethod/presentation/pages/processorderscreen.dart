@@ -36,7 +36,8 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
   bool _isProcessing = false;
   final TextEditingController _addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  DateTime? _selectedDeliveryDate;
+  TimeOfDay? _selectedDeliveryTime;
   String? _selectedPaymentMethod;
 
   void _confirmOrder() async {
@@ -48,6 +49,16 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor, selecciona un método de pago.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_selectedDeliveryDate == null || _selectedDeliveryTime == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, selecciona una fecha y hora de entrega.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -76,27 +87,81 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
     );
   }
 
+  Future<void> _pickDeliveryDate() async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2029, 12, 31),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Color(0xFFFF7000),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _selectedDeliveryDate = selectedDate;
+      });
+    }
+  }
+
+  Future<void> _pickDeliveryTime() async {
+    TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Color(0xFFFF7000),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogBackgroundColor: Colors.white,
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (selectedTime != null) {
+      setState(() {
+        _selectedDeliveryTime = selectedTime;
+      });
+    }
+  }
+
   void _selectPaymentMethod(String method, Widget nextPage) async {
-  setState(() {
-    _selectedPaymentMethod = method;
-  });
+    setState(() {
+      _selectedPaymentMethod = method;
+    });
 
-  final result = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => nextPage,
-    ),
-  );
-
-  if (result == true) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Pago confirmado con $method.'),
-        backgroundColor: Colors.green,
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => nextPage,
       ),
     );
+
+    if (result == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pago confirmado con $method.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +209,6 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      // Mostrar elementos del carrito
                       ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -155,7 +219,6 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: Row(
                               children: [
-                                // Imagen del producto
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(8),
                                   child: Image.network(
@@ -166,10 +229,10 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                // Detalles del producto
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         item.name,
@@ -185,7 +248,6 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                                     ],
                                   ),
                                 ),
-                                // Precio
                                 Text(
                                   '${item.currency} ${item.price.toStringAsFixed(2)}',
                                   style: const TextStyle(
@@ -214,7 +276,6 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                   ),
                 ),
               ),
-              // Campo de dirección
               const Text(
                 'Ingresa tu Dirección',
                 style: TextStyle(
@@ -224,22 +285,117 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              TextFormField(
-                controller: _addressController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Dirección',
-                  hintText: 'Ingresa tu dirección aquí',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, ingresa una dirección válida.';
-                  }
-                  return null;
+              Focus(
+                onFocusChange: (hasFocus) {
+                  setState(() {});
                 },
+                child: TextFormField(
+                  controller: _addressController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    labelText: 'Dirección',
+                    labelStyle: TextStyle(color: Colors.black),
+                    hintText: 'Ingresa tu dirección aquí',
+                    prefixIcon:
+                        Icon(Icons.location_on, color: Color(0xFFFF7000)),
+                    filled: true,
+                    fillColor: Colors.white,
+                    focusedBorder: OutlineInputBorder(
+                      borderSide:
+                          BorderSide(color: Color(0xFFFF7000), width: 2.0),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, ingresa una dirección válida.';
+                    }
+                    return null;
+                  },
+                ),
               ),
               const SizedBox(height: 20),
-              // Selección de método de pago
+              const Text(
+                'Ingresa la fecha y Hora de Entrega',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 175, 91, 7),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFF7000),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: _pickDeliveryDate,
+                      icon:
+                          const Icon(Icons.calendar_today, color: Colors.white),
+                      label: const Text(
+                        'Fecha',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFF7000),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: _pickDeliveryTime,
+                      icon: const Icon(Icons.access_time, color: Colors.white),
+                      label: const Text(
+                        'Hora',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              if (_selectedDeliveryDate != null &&
+                  _selectedDeliveryTime != null)
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Fecha y Hora: ${_selectedDeliveryDate!.day}/${_selectedDeliveryDate!.month}/${_selectedDeliveryDate!.year} - ${_selectedDeliveryTime!.hour}:${_selectedDeliveryTime!.minute.toString().padLeft(2, '0')}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 20),
               const Text(
                 'Selecciona un Método de Pago',
                 style: TextStyle(
@@ -258,9 +414,9 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                     onTap: () {
                       setState(() {
                         _selectPaymentMethod(
-                        'Credit/Debit Card',
-                        CreditDebitScreen(),
-                      );
+                          'Credit/Debit Card',
+                          CreditDebitScreen(),
+                        );
                       });
                     },
                   ),
@@ -268,13 +424,14 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                   PaymentMethodCard(
                     icon: Icons.phone_android,
                     title: 'Pago Móvil',
-                    description: 'Realiza el pago a través de tu dispositivo móvil.',
+                    description:
+                        'Realiza el pago a través de tu dispositivo móvil.',
                     onTap: () {
                       setState(() {
                         _selectPaymentMethod(
-                        'Pago Movil',
-                        MobilePaymentScreen(),
-                      );
+                          'Pago Movil',
+                          MobilePaymentScreen(),
+                        );
                       });
                     },
                   ),
@@ -286,17 +443,15 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                     onTap: () {
                       setState(() {
                         _selectPaymentMethod(
-                        'Transferencia Zelle',
-                        PagoConZelleScreen(),
-                      );
-                        // _selectedPaymentMethod = 'Zelle';
+                          'Transferencia Zelle',
+                          PagoConZelleScreen(),
+                        );
                       });
                     },
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-              // Botones de acción
               Row(
                 children: [
                   Expanded(
