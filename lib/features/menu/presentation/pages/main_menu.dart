@@ -38,6 +38,7 @@ class _MainMenuState extends State<MainMenu> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white, // Establece el color de fondo a blanco
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
