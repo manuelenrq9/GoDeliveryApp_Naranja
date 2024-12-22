@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_search.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 
