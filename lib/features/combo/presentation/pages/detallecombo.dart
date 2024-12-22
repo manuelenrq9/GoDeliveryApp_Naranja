@@ -7,7 +7,7 @@ import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_detail.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/discount/discount_price_display.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_fetchID.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart'; // Importar el paquete

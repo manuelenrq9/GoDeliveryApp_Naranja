@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_menu.dart';
-import 'package:godeliveryapp_naranja/features/discount/discount_price_menu.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
 
@@ -94,10 +93,25 @@ class ProductItem extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          DiscountPriceMenu(
-                            specialPrice: product.price,
-                            discountId: product.discount,
-                            currency: product.currency
+                          Row(
+                            children: [
+                              Text(
+                                product.currency,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color.fromARGB(255, 175, 91, 7),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                product.price.toStringAsFixed(2),
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFFF7000),
+                                ),
+                              ),
+                            ],
                           ),
                           Container(
                             decoration: BoxDecoration(

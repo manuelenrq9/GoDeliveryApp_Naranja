@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/widgets/productitemCatalogo.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/product.dart';
 
 class ProductCatalogScreen extends StatefulWidget {
   const ProductCatalogScreen({super.key}); // Nombre actualizado
-
   @override
   State<ProductCatalogScreen> createState() =>
       _ProductCatalogScreenState(); // Nombre actualizado
