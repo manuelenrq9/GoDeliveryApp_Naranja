@@ -15,9 +15,6 @@ class ComboItemCatalogo extends StatefulWidget {
 class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
   bool isFavorite = false;
 
-  // Simulando una calificación (puedes reemplazar este valor con la calificación real)
-  double rating = 4.5; // Cambia este valor según la calificación que desees
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -43,7 +40,7 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
             children: [
               Container(
                 width: double.infinity,
-                height: 84,
+                height: 100,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                   image: DecorationImage(
@@ -138,45 +135,7 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
-              // Estrellas y calificación numérica colocadas en un Row
-              Row(
-                children: [
-                  // Estrellas
-                  ...List.generate(5, (index) {
-                    if (rating >= index + 1) {
-                      return const Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        size: 16,
-                      );
-                    } else if (rating > index) {
-                      return const Icon(
-                        Icons.star_half,
-                        color: Colors.amber,
-                        size: 16,
-                      );
-                    } else {
-                      return const Icon(
-                        Icons.star_border,
-                        color: Colors.amber,
-                        size: 16,
-                      );
-                    }
-                  }),
-                  const SizedBox(width: 4),
-                  // Calificación numérica
-                  Text(
-                    "$rating",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
             ],
           ),
         ),

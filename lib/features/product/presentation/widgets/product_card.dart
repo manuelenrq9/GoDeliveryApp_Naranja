@@ -94,10 +94,25 @@ class ProductItem extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          DiscountPriceMenu(
-                            specialPrice: product.price,
-                            discountId: product.discount,
-                            currency: product.currency
+                          Row(
+                            children: [
+                              Text(
+                                product.currency,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFFF7000),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                product.price.toStringAsFixed(2),
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFFF7000),
+                                ),
+                              ),
+                            ],
                           ),
                           Container(
                             decoration: BoxDecoration(
