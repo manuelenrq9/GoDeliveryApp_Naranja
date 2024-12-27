@@ -41,14 +41,12 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Center(
-          child: Text(
-            'Productos',
-            style: TextStyle(
-              color: Color.fromARGB(255, 175, 91, 7),
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+        title: Text(
+          'Productos',
+          style: TextStyle(
+            color: Color.fromARGB(255, 175, 91, 7),
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(

@@ -96,43 +96,47 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
                 ],
               ),
               const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Manejamos los textos del precio y la moneda con un SizedBox
-                  Row(
-                    children: [
-                      Text(
-                        widget.combo.currency,
-                        style: const TextStyle(
-                            color: Color.fromARGB(255, 245, 121, 20)),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.combo.specialPrice.toString(),
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Color.fromARGB(255, 245, 121, 20)),
-                      ),
-                    ],
-                  ),
-                  Material(
-                    elevation: 5.0,
-                    borderRadius: BorderRadius.circular(50),
-                    child: ButtonAddCartMenu(
-                      combo: widget.combo,
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Manejamos los textos del precio y la moneda con un SizedBox
+                    Row(
+                      children: [
+                        Text(
+                          widget.combo.currency,
+                          style: const TextStyle(
+                              color: Color.fromARGB(255, 245, 121, 20)),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.combo.specialPrice.toString(),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Color.fromARGB(255, 245, 121, 20)),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    Material(
+                      elevation: 5.0,
+                      borderRadius: BorderRadius.circular(50),
+                      child: ButtonAddCartMenu(
+                        combo: widget.combo,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 4),
-              Text(
-                "Disponible",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.green[700],
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  "Disponible",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.green[700],
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 4),

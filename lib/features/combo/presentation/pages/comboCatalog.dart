@@ -47,16 +47,14 @@ class _ComboCatalogScreenState extends State<ComboCatalogScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Center(
-          child: Text(
-            'Combos',
-            style: TextStyle(
-              color: Color.fromARGB(255, 175, 91, 7),
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        title: Text(
+        'Combos',
+        style: TextStyle(
+          color: Color.fromARGB(255, 175, 91, 7),
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
         ),
+                  ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back,
               color: Color.fromARGB(255, 175, 91, 7)),
@@ -83,7 +81,7 @@ class _ComboCatalogScreenState extends State<ComboCatalogScreen> {
                 crossAxisCount: 2, // Número de columnas
                 crossAxisSpacing: 10, // Espaciado horizontal entre columnas
                 mainAxisSpacing: 10, // Espaciado vertical entre filas
-                childAspectRatio: 0.75, // Relación de aspecto de las tarjetas
+                childAspectRatio: 0.70, // Relación de aspecto de las tarjetas
               ),
               itemCount: combos.length,
               itemBuilder: (context, index) {
