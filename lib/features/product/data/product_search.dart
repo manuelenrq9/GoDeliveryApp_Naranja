@@ -74,4 +74,6 @@ class _ProductListScreenState extends State<ProductListSearch> {
           ));
         });
   }
+
 }
+
