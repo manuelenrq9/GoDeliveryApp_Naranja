@@ -15,6 +15,7 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
 
   late Future<List<Product>> futureProducts;
+  
   late final DataService<Product> _productService = DataService<Product>(
       endpoint: '/product',
       repository: GenericRepository<Product>(

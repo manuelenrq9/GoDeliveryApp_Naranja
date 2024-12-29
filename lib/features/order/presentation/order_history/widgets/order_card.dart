@@ -1,26 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
 
 class OrderCard extends StatelessWidget {
-  final String date;
-  final String orderId;
-  final int price;
-  final String status;
-  final List<String> items;
-  final String deliveryTime;
+  final Order order;
 
   const OrderCard({
     Key? key,
-    required this.date,
-    required this.orderId,
-    required this.price,
-    required this.status,
-    required this.items,
-    required this.deliveryTime,
+    required this.order,
   }) : super(key: key);
+
+  List<String> orderItemsToString (){
+    List<String> items = [];
+    List<CartProduct> products = order.products; 
+    List<CartCombo> combos = order.combos;
+    return items;
+  }
+
+  num getPrice(){
+    num total = 0;
+    List<CartProduct> products = order.products;
+    products.forEach((product){
+      // total += product.price;
+    });
+    return total;
+  }
 
   @override
   Widget build(BuildContext context) {
+    String orderId = order.id;
+    num price = getPrice();
+    List<String> items = orderItemsToString();
+    String status = order.status;
     final isDelivered = status == 'Delivered';
+    String deliveryTime = order.receivedDate.toString();
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       elevation: 3,
@@ -36,7 +50,7 @@ class OrderCard extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    date,
+                    order.createdDate.toString(),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

@@ -1,42 +1,72 @@
-import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
-import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/orderPayment.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/orderReport.dart';
 
 class Order{
   final String id;
   final DateTime createdDate;
+  final DateTime receivedDate;
   final String status;
   final String address;
-  final List<Product> products;
-  final List<Combo> combos;
-  final DateTime receivedDate;
-  final String paymentMethod;
-  final String report;
+  final List<CartProduct> products;
+  final List<CartCombo> combos;
+  final List<OrderPayment>? paymentMethod;
+  final List<OrderReport>? report;
 
   const Order({
     required this.id,
     required this.createdDate,
+    required this.receivedDate,
     required this.status,
     required this.address,
     required this.products,
     required this.combos,
-    required this.receivedDate,
-    required this.paymentMethod,
-    required this.report
+    this.paymentMethod,
+    this.report,
   });
 
 // Deserialización del JSON
 factory Order.fromJson(Map<String, dynamic> json) {
-    return Order(
+    print("empieza factory");
+    var order = Order(
         id: json['id'] as String,
-        createdDate: json['createdDate'] as DateTime,
+        createdDate: DateTime.parse(json['createdDate'] as String),
+        receivedDate: DateTime.parse(json['receivedDate'] as String),
         status: json['status'] as String,
         address: json['address'] as String,
-        products: List<Product>.from(json['product'] ?? []),
-        combos: List<Combo>.from(json['combo'] ?? []),
-        receivedDate: json['receivedDate'] as DateTime,
-        paymentMethod: json['paymentMethod'] as String,
-        report: json['report'] as String,
+        products: (json['products'] as List<dynamic>?)
+            ?.map((item) => CartProduct(
+                id: item['id'] as String,
+                quantity: item['quantity'] as int,
+            ))
+            .toList() ?? [],
+        combos: (json['combos'] as List<dynamic>?)
+            ?.map((item) => CartCombo(
+                id: item['id'] as String,
+                quantity: item['quantity'] as int,
+            ))
+            .toList() ?? [],
         );
+    var products = order.products;
+    products.forEach((product){
+      print(product.id);
+      print(product.quantity);
+    });
+    var combos = order.combos;
+    combos.forEach((combo){
+      print(combo.id);
+      print(combo.quantity);
+    });
+    print(order.status);
+    print("termina factory");
+    print("");
+    print("");
+    print("");
+    print("");
+    print("");
+    print("");
+    return order;
   }
 
   // Serialización del objeto a JSON

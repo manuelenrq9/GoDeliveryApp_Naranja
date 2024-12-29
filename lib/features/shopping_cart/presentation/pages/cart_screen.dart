@@ -4,7 +4,6 @@ import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
-import 'package:godeliveryapp_naranja/features/order/domain/usecases/create_order.dart';
 import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/processorderscreen.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
@@ -27,7 +26,6 @@ class _CartScreenState extends State<CartScreen> {
   List<CartItemData> cartItems = [];
   List<Product> products = [];
   List<Combo> combos = [];
-  ProcessOrder orderProcessor = ProcessOrder();
 
   @override
   void initState() {
