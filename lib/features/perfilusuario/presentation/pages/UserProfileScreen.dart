@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/perfilusuario/domain/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -70,13 +71,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     try {
       final token = await _getToken();
       if (token == null) throw Exception('No hay token de autenticación');
-
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userID = prefs.getString('user_id');
-
       if (userID == null) throw Exception('No se encontró el ID del usuario');
-
-      final response = await http.put(
+      final response = await http.patch(
         Uri.parse(
             'https://orangeteam-deliverybackend-production.up.railway.app/User/$userID'),
         headers: {
@@ -89,7 +87,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           'phone': _phoneController.text,
         }),
       );
-
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Perfil actualizado con éxito')),
@@ -117,7 +114,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userID = prefs.getString('user_id');
 
-      final response = await http.put(
+      final response = await http.patch(
         Uri.parse(
             'https://orangeteam-deliverybackend-production.up.railway.app/User/$userID'),
         headers: {
@@ -125,8 +122,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           'Content-Type': 'application/json',
         },
         body: json.encode({
-          'currentPassword': currentPassword,
-          'newPassword': newPassword,
+          'password': newPassword,
         }),
       );
 
@@ -332,7 +328,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           icon: const Icon(Icons.arrow_back,
               color: Color.fromARGB(255, 175, 91, 7)),
           onPressed: () {
-            Navigator.pop(context);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainMenu()));
           },
         ),
       ),
