@@ -28,7 +28,7 @@ class Order{
 
 // Deserialización del JSON
 factory Order.fromJson(Map<String, dynamic> json) {
-    print("empieza factory");
+    //print("empieza factory");
     var order = Order(
         id: json['id'] as String,
         createdDate: DateTime.parse(json['createdDate'] as String),
@@ -47,7 +47,9 @@ factory Order.fromJson(Map<String, dynamic> json) {
                 quantity: item['quantity'] as int,
             ))
             .toList() ?? [],
+        
         );
+    /*
     var products = order.products;
     products.forEach((product){
       print(product.id);
@@ -66,6 +68,7 @@ factory Order.fromJson(Map<String, dynamic> json) {
     print("");
     print("");
     print("");
+    */
     return order;
   }
 

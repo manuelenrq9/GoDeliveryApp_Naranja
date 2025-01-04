@@ -10,8 +10,17 @@ class LocalStorageService {
   ) async {
     final prefs = await SharedPreferences.getInstance();
     final List<Map<String, dynamic>> dataList = data.map(encodeFunction).toList();
-    final String dataJson = jsonEncode(dataList); // Almacena una lista de Map
-    await prefs.setString(key, dataJson);
+    final String dataJson = jsonEncode(dataList); // Almacena una lista de Map. 
+    //El problema es aqui 
+    print("hola");
+    print(dataJson);
+    try {
+      print('Before saving data');
+      await prefs.setString(key, dataJson); 
+      print('After saving data');
+    } catch (e) {
+      print('Error saving data: $e');
+    }
   }
 
   // Cargar una lista de objetos
@@ -36,6 +45,7 @@ class LocalStorageService {
         }
       }).toList();
     }
+
     return [];
   }
 }

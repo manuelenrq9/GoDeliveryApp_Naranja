@@ -34,6 +34,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
   void loadOrders() async {
     futureOrders = _orderService.loadData();
+    // futureOrders esta vacío...
+    // verificar la creación de _orderService (DataService)
     setState(() {});
   }
 
@@ -44,12 +46,15 @@ class _OrderListScreenState extends State<OrderListScreen> {
       future: futureOrders,
       builder: (context, snapshot) {
         if (snapshot.hasData){
-          return ListView.builder(
-          itemCount: snapshot.data!.length,
-          itemBuilder: (context, index) {
-            return OrderCard(order: snapshot.data![index]);
-          },
-          );
+          if(snapshot.data!.isEmpty){
+            return const Center(child: Text('No hay órdenes disponibles.'));
+          }
+          else{
+            
+            return Wrap(
+                children: snapshot.data!.map((order) => OrderCard(order: order)).toList(),
+            );
+          }
         } else if (snapshot.hasError){
           return Text('Error: ${snapshot.error}');
         }
