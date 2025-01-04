@@ -106,8 +106,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-  Future<void> _updatePassword(
-      String currentPassword, String newPassword) async {
+  Future<void> _updatePassword(String newPassword) async {
     try {
       final token = await _getToken();
       if (token == null) throw Exception('No hay token de autenticación');
@@ -241,8 +240,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           _updatePassword(
-                            _currentPasswordController.text,
-                            _newPasswordController.text,
+                            _newPasswordController.text
                           );
                           Navigator.of(context).pop();
                         }
