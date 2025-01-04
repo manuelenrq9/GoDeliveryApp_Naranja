@@ -16,7 +16,7 @@ Future<void> showLoadingScreen(BuildContext context,
     ),
   );
 
-  await Future.delayed(const Duration(seconds: 2));
+  await Future.delayed(const Duration(seconds: 1));
 
   if (destination != null) {
     Navigator.pushReplacement(
@@ -54,7 +54,7 @@ class _LoadingScreenState extends State<LoadingScreen>
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    )..forward();
+    )..repeat(reverse: true); // Repite la animación en reversa
 
     _progressAnimation = Tween<double>(begin: -0.5, end: 0.5).animate(
       CurvedAnimation(parent: _controller, curve: Curves.linear),
@@ -85,25 +85,15 @@ class _LoadingScreenState extends State<LoadingScreen>
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Texto de bienvenida
-                const Text(
-                  "Godely",
-                  style: TextStyle(
-                    color: Color.fromARGB(255, 2, 2, 2),
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    shadows: [
-                      Shadow(
-                        offset: Offset(2, 2),
-                        blurRadius: 3,
-                        color: Colors.black26,
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
+                // Imagen de bienvenida
+                Image.asset(
+                  'images/LogoLetrasGoDely.png',
+                  width: 450,
+                  height: 150,
                 ),
-                const SizedBox(height: 32),
+
                 // Animación del carro sobre la línea
                 Stack(
                   alignment: Alignment.bottomCenter,
