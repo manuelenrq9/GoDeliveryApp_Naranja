@@ -78,9 +78,9 @@ class _ProductCatalogScreenState extends State<ProductCategoryScreen> {
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, // Número de columnas
-                crossAxisSpacing: 10, // Espaciado horizontal entre columnas
-                mainAxisSpacing: 10, // Espaciado vertical entre filas
-                childAspectRatio: 0.75, // Relación de aspecto de las tarjetas
+                crossAxisSpacing: 1, // Espaciado horizontal entre columnas
+                mainAxisSpacing: 1, // Espaciado vertical entre filas
+                childAspectRatio: 0.85, // Relación de aspecto de las tarjetas
               ),
               itemCount: products.length,
               itemBuilder: (context, index) {

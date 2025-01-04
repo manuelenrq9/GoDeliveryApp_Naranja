@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
+import 'package:godeliveryapp_naranja/features/order/data/post_order.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/usecases/create_order.dart';
@@ -49,6 +51,10 @@ class _CartScreenState extends State<CartScreen> {
 
   double get totalAmount {
     return cartItems.fold(0, (sum, item) => sum + item.price * item.quantity);
+  }
+
+  int get totalCartItems {
+    return cartItems.fold(0, (sum, item) => sum + item.quantity);
   }
 
   void increaseQuantity(int index) {
@@ -133,6 +139,7 @@ class _CartScreenState extends State<CartScreen> {
             TextButton(
               onPressed: () {
                 clearCart();
+                CounterManager().reset();
                 Navigator.of(context).pop();
               },
               child: const Text(

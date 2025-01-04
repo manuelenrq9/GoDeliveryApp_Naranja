@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
 import 'package:godeliveryapp_naranja/features/order/data/post_order.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
@@ -100,6 +101,7 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final converter = CurrencyConverter();
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -187,7 +189,7 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                                 ),
                                 // Precio
                                 Text(
-                                  '${item.currency} ${item.price.toStringAsFixed(2)}',
+                                  '${converter.selectedCurrency} ${converter.convert(item.price.toDouble()).toStringAsFixed(2)}',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -202,7 +204,7 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          'Total: ${widget.currency} ${widget.totalDecimal.toStringAsFixed(2)}',
+                          'Total: ${converter.selectedCurrency} ${converter.convert( widget.totalDecimal.toDouble()).toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/getEntitiesById.services.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_detail.dart';
@@ -74,18 +75,27 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
     return connectivityResult != ConnectivityResult.none;
   }
 
-  Future<List<Product>> getProductsForCombo() async {
-    if (!await hasInternetConnection()) {
-      throw 'No tienes conexión a internet';
-    }
+  // Future<List<Product>> getProductsForCombo() async {
+  //   if (!await hasInternetConnection()) {
+  //     throw 'No tienes conexión a internet';
+  //   }
 
-    List<Product> productList = [];
-    for (var productId in widget.combo.products) {
-      Product product = await fetchProductById(productId);
-      productList.add(product);
-    }
-    return productList;
+  //   List<Product> productList = [];
+  //   for (var productId in widget.combo.products) {
+  //     Product product = await fetchProductById(productId);
+  //     productList.add(product);
+  //   }
+  //   return productList;
+  // }
+
+  Future<List<Product>> getProductsForCombo() async {
+    return await getEntitiesByIds<Product>(
+      widget.combo.products,
+      'product',
+      (json) => Product.fromJson(json),
+    );
   }
+
 
   // Función para mostrar la imagen en tamaño grande con zoom
   void _showLargeImage(BuildContext context, String imageUrl) {

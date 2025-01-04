@@ -36,7 +36,8 @@ class DataService<T> {
       if (token == null) {
         throw Exception('No hay token de autenticación');
       }
-
+      print('FINAL');
+      print(apiUrl);
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {

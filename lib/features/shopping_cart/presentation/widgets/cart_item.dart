@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
+import 'package:godeliveryapp_naranja/core/dataID.services.dart';
 import 'package:godeliveryapp_naranja/features/discount/data/discount_fetchID.dart';
 import 'package:godeliveryapp_naranja/features/discount/discount_logic.dart';
+import 'package:godeliveryapp_naranja/features/discount/domain/discount.dart';
 import 'package:photo_view/photo_view.dart';
 
 import '../../domain/cart_item_data.dart';
@@ -33,17 +36,36 @@ class _CartItemState extends State<CartItem> {
     _fetchDiscount();
   }
 
+  // Future<void> _fetchDiscount() async {
+  //   if (widget.data.discount != null) {
+  //     final discount = await fetchDiscountById(widget.data.discount); 
+  //     setState(() {
+  //       discountedPrice = getDiscountedPrice(widget.data.price, discount);
+  //     });
+  //   }
+  // }
+
   Future<void> _fetchDiscount() async {
     if (widget.data.discount != null) {
-      final discount = await fetchDiscountById(widget.data.discount);
-      setState(() {
-        discountedPrice = getDiscountedPrice(widget.data.price, discount);
-      });
+      try {
+        final discount = await fetchEntityById<Discount>(
+          widget.data.discount!, // El ID del descuento
+          'discount', // Endpoint genérico para descuentos
+          (json) => Discount.fromJson(json), // Función para mapear JSON a Discount
+        );
+        setState(() {
+          discountedPrice = getDiscountedPrice(widget.data.price, discount);
+        });
+      } catch (e) {
+        print('Error fetching discount: $e');
+        // Maneja el error de manera adecuada (por ejemplo, mostrar un mensaje al usuario)
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final converter = CurrencyConverter();
     return Card(
       color: Colors.white,
       elevation: 4.0,
@@ -105,8 +127,9 @@ class _CartItemState extends State<CartItem> {
                 children: [
                   if (discountedPrice != null &&
                       discountedPrice != widget.data.price)
+                      
                     Text(
-                      '${widget.data.currency} ${(widget.data.price * widget.data.quantity).toStringAsFixed(2)}',
+                      '${converter.selectedCurrency} ${(converter.convert(widget.data.price.toDouble()) * widget.data.quantity).toStringAsFixed(2)}',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Colors.grey,
@@ -114,7 +137,7 @@ class _CartItemState extends State<CartItem> {
                       ),
                     ),
                   Text(
-                    '${widget.data.currency} ${(discountedPrice ?? widget.data.price) * widget.data.quantity}',
+                    '${converter.selectedCurrency} ${(converter.convert((discountedPrice ?? widget.data.price).toDouble()) * widget.data.quantity).toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

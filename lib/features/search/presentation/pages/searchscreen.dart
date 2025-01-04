@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_search.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
@@ -12,19 +13,37 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
+  String _currentSearchText = '';
+  int _currentIndex = 1;
 
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  } 
+
+  @override
   void dispose() {
     _debounce?.cancel(); // Cancelar el timer si el widget es destruido
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      setState(() {
+        _currentSearchText = query;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading:
-            false, // Deshabilita el back button automático
-        toolbarHeight: 60.0, // Ajusta la altura de la AppBar
+        automaticallyImplyLeading: false,
+        toolbarHeight: 60.0,
         backgroundColor: Colors.white,
         elevation: 0,
         flexibleSpace: SafeArea(
@@ -35,15 +54,17 @@ class _SearchScreenState extends State<SearchScreen> {
                 IconButton(
                   icon: const Icon(Icons.arrow_back, color: Color(0xFFFF7000)),
                   onPressed: () {
-                    // Navigator.of(context).pop();
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainMenu()));
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const MainMenu()),
+                    );
                   },
                 ),
                 Expanded(
                   child: Container(
                     height: 40.0,
                     decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(30.0),
                       border: Border.all(
                         color: Color(0xFFFF7000),
@@ -63,9 +84,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         contentPadding:
                             const EdgeInsets.symmetric(vertical: 10.0),
                       ),
-                      onChanged: (_) {
-                        _onSearchChanged(_searchController.text);
-                      },
+                      onChanged: _onSearchChanged,
                     ),
                   ),
                 ),
@@ -75,6 +94,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     onPressed: () {
                       setState(() {
                         _searchController.clear();
+                        _currentSearchText = '';
                       });
                     },
                   ),
@@ -85,7 +105,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const CartScreen()),
+                        builder: (context) => const CartScreen(),
+                      ),
                     );
                   },
                 ),
@@ -96,32 +117,16 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          shrinkWrap: true, // Esto hace que la lista se ajuste al contenido
-          physics:
-              NeverScrollableScrollPhysics(), // Deshabilita el desplazamiento interno de ListView
-          children: [
-            if (_searchController.text.isNotEmpty)
-            ProductListSearch(
-              searchText: _searchController.text,
-            ),
-          ],
-        ),
+        child: _currentSearchText.isNotEmpty
+            ? ProductListSearch(searchText: _currentSearchText)
+            : const Center(
+                child: Text('Escribe algo para buscar.'),
+              ),
+      ),
+      bottomNavigationBar: CustomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onTap,
       ),
     );
-  }
-
-  // Método para manejar los cambios en el campo de búsqueda
-  void _onSearchChanged(String query) {
-    print("DENTRO DEL SEARCH CHANGED");
-    if (query.isNotEmpty) {
-      if (_debounce?.isActive ?? false)
-      _debounce?.cancel(); // Cancela el timer anterior si lo hay
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      print("Dentro del debounce");
-      setState(() {
-      });
-    });
-    }
   }
 }

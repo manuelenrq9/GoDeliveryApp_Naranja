@@ -41,6 +41,10 @@ dependencies:
   flutter_map: ^7.0.2
   shared_preferences: ^2.3.0
   location: ^7.0.1
+  dart_bcv: ^1.0.0
+
+dependency_overrides:
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.1
