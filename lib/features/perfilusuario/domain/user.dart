@@ -15,7 +15,6 @@ class User {
     required this.profileImageUrl,
   });
 
-  // Crear un objeto User desde JSON
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] ?? '',
@@ -24,7 +23,7 @@ class User {
       phone: json['phone'] ?? '',
       password: json['password'] ?? '',
       profileImageUrl: json['profileImageUrl'] ??
-          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          'https://covalto-production-website.s3.amazonaws.com/Hero_Mobile_Cuenta_Personas_V1_1_8046e424ea.webp',
     );
   }
 }

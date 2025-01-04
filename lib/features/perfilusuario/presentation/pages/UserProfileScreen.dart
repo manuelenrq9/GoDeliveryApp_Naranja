@@ -1,40 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
-import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
-import 'package:godeliveryapp_naranja/features/perfilusuario/presentation/pages/edit_user_profile_screen.dart';
+import 'package:godeliveryapp_naranja/features/perfilusuario/domain/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-class User {
-  final String id;
-  final String name;
-  final String email;
-  final String phone;
-  final String password;
-  final String profileImageUrl;
-
-  User({
-    required this.id,
-    required this.name,
-    required this.email,
-    required this.phone,
-    required this.password,
-    required this.profileImageUrl,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] ?? '',
-      name: json['name'] ?? '',
-      email: json['email'] ?? '',
-      phone: json['phone'] ?? '',
-      password: json['password'] ?? '',
-      profileImageUrl: json['profileImageUrl'] ??
-          'https://covalto-production-website.s3.amazonaws.com/Hero_Mobile_Cuenta_Personas_V1_1_8046e424ea.webp',
-    );
-  }
-}
 
 class UserProfileScreen extends StatefulWidget {
   @override
@@ -45,10 +13,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
-  late User _user;
-  bool _isPasswordVisible = false; // Estado para alternar visibilidad
+  Future<User?>? _userFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userFuture = _getUserData();
+  }
 
   Future<String?> _getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -60,6 +32,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     String? userID = prefs.getString('user_id');
 
     if (userID == null) {
+      print('Error: No se encontró el userID en SharedPreferences');
       return null;
     }
 
@@ -78,12 +51,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        return User.fromJson(data['value']);
+        final user = User.fromJson(data['value']);
+        _nameController.text = user.name;
+        _phoneController.text = user.phone;
+        _emailController.text = user.email;
+        return user;
       } else {
+        print('Error del servidor: ${response.statusCode}');
         return null;
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error al obtener datos del usuario: $e');
       return null;
     }
   }
@@ -93,9 +71,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       final token = await _getToken();
       if (token == null) throw Exception('No hay token de autenticación');
 
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userID = prefs.getString('user_id');
+
+      if (userID == null) throw Exception('No se encontró el ID del usuario');
+
       final response = await http.put(
         Uri.parse(
-            'https://orangeteam-deliverybackend-production.up.railway.app/User/${_user.id}'),
+            'https://orangeteam-deliverybackend-production.up.railway.app/User/$userID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -104,7 +87,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           'name': _nameController.text,
           'email': _emailController.text,
           'phone': _phoneController.text,
-          'password': _passwordController.text,
         }),
       );
 
@@ -113,225 +95,367 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           const SnackBar(content: Text('Perfil actualizado con éxito')),
         );
       } else {
+        final errorMessage = json.decode(response.body)['message'] ??
+            'Error desconocido al actualizar el perfil';
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al actualizar perfil')),
+          SnackBar(content: Text(errorMessage)),
         );
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error al actualizar perfil: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error en la conexión o el servidor')),
+      );
     }
   }
 
-  Future<String?> _getUserID() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_id');
+  Future<void> _updatePassword(
+      String currentPassword, String newPassword) async {
+    try {
+      final token = await _getToken();
+      if (token == null) throw Exception('No hay token de autenticación');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userID = prefs.getString('user_id');
+
+      final response = await http.put(
+        Uri.parse(
+            'https://orangeteam-deliverybackend-production.up.railway.app/User/$userID'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Contraseña actualizada con éxito')),
+        );
+      } else {
+        final errorMessage = json.decode(response.body)['message'] ??
+            'Error al actualizar la contraseña';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
+    } catch (e) {
+      print('Error al cambiar contraseña: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al cambiar la contraseña')),
+      );
+    }
+  }
+
+  void _showChangePasswordDialog() {
+    final TextEditingController _currentPasswordController =
+        TextEditingController();
+    final TextEditingController _newPasswordController =
+        TextEditingController();
+    final TextEditingController _confirmPasswordController =
+        TextEditingController();
+    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+    final ValueNotifier<bool> _currentPasswordVisible =
+        ValueNotifier<bool>(false);
+    final ValueNotifier<bool> _newPasswordVisible = ValueNotifier<bool>(false);
+    final ValueNotifier<bool> _confirmPasswordVisible =
+        ValueNotifier<bool>(false);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          elevation: 16,
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Cambiar Contraseña',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 16),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      buildPasswordTextField(
+                        label: 'Contraseña Actual',
+                        controller: _currentPasswordController,
+                        visibleNotifier: _currentPasswordVisible,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Ingresa tu contraseña actual';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      buildPasswordTextField(
+                        label: 'Nueva Contraseña',
+                        controller: _newPasswordController,
+                        visibleNotifier: _newPasswordVisible,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Ingresa tu nueva contraseña';
+                          } else if (value.length < 8) {
+                            return 'Debe tener al menos 8 caracteres';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      buildPasswordTextField(
+                        label: 'Confirmar Contraseña',
+                        controller: _confirmPasswordController,
+                        visibleNotifier: _confirmPasswordVisible,
+                        validator: (value) {
+                          if (value != _newPasswordController.text) {
+                            return 'Las contraseñas no coinciden';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Cancelar'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.orange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _updatePassword(
+                            _currentPasswordController.text,
+                            _newPasswordController.text,
+                          );
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: const Text('Actualizar'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFF7000),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildPasswordTextField({
+    required String label,
+    required TextEditingController controller,
+    required ValueNotifier<bool> visibleNotifier,
+    required String? Function(String?) validator,
+  }) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: visibleNotifier,
+      builder: (context, value, child) {
+        return TextFormField(
+          controller: controller,
+          obscureText: !value,
+          decoration: InputDecoration(
+            labelText: label,
+            prefixIcon: const Icon(Icons.lock_outline),
+            suffixIcon: IconButton(
+              icon: Icon(
+                value ? Icons.visibility : Icons.visibility_off,
+              ),
+              onPressed: () {
+                visibleNotifier.value = !value;
+              },
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+          ),
+          validator: validator,
+        );
+      },
+    );
+  }
+
+  Widget _buildEditableField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData icon,
+  }) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        inputDecorationTheme: InputDecorationTheme(
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFFFF7000)),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          labelStyle: const TextStyle(
-            color: Colors.black, // Etiqueta negra cuando se enfoca
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Perfil de Usuario'),
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          color: Color.fromARGB(255, 175, 91, 7),
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
         ),
-      ),
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Perfil de Usuario',
-            style: TextStyle(
-              color: Color.fromARGB(255, 175, 91, 7),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back,
-                color: Color.fromARGB(255, 175, 91, 7)),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => MainMenu()),
-              );
-            },
-          ),
-        ),
-        body: FutureBuilder<User?>(
-          future: _getUserData(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            }
-
-            if (!snapshot.hasData || snapshot.data == null) {
-              return const Center(
-                  child: Text('No se encontraron datos de usuario.'));
-            }
-
-            _user = snapshot.data!;
-            _nameController.text = _user.name;
-            _phoneController.text = _user.phone;
-            _emailController.text = _user.email;
-            _passwordController.text = _user.password;
-
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundImage: NetworkImage(_user.profileImageUrl),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildTextField(_nameController, 'Nombre', Icons.person),
-                    const SizedBox(height: 16),
-                    _buildTextField(
-                        _emailController, 'Correo Electrónico', Icons.email),
-                    const SizedBox(height: 16),
-                    _buildTextField(_phoneController, 'Teléfono', Icons.phone),
-                    const SizedBox(height: 16),
-                    _buildPasswordTextField(),
-                    const SizedBox(height: 16),
-
-                    const SizedBox(
-                        height: 20), // Espacio entre botones y formulario
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () async {
-                            final userId = await _getUserID();
-                            if (userId == null) {
-                              throw Exception('No hay usuario ID');
-                            }
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EditProfileScreen(),
-                              ),
-                            );
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.edit, color: Colors.white),
-                              const SizedBox(width: 8),
-                              const Text('Editar'),
-                            ],
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFFF7000),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                        ),
-                        OutlinedButton.icon(
-                          onPressed: () {
-                            // Acción para cerrar sesión
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginScreen(),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.logout,
-                              color: Color(0xFFFF7000)),
-                          label: const Text('Cerrar Sesión'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Color(0xFFFF7000),
-                            side: const BorderSide(color: Color(0xFFFF7000)),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back,
+              color: Color.fromARGB(255, 175, 91, 7)),
+          onPressed: () {
+            Navigator.pop(context);
           },
         ),
       ),
-    );
-  }
+      body: FutureBuilder<User?>(
+        future: _userFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-  Widget _buildTextField(
-      TextEditingController controller, String labelText, IconData icon,
-      {bool obscureText = false}) {
-    return Material(
-      elevation: 5.0,
-      shadowColor: Colors.black54,
-      borderRadius: BorderRadius.circular(8.0),
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        style: const TextStyle(color: Colors.black), // Texto negro
-        decoration: InputDecoration(
-          labelText: labelText,
-          prefixIcon: Icon(icon, color: Color(0xFFFF7000)),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFFFF7000)),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
-      ),
-    );
-  }
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
 
-  Widget _buildPasswordTextField() {
-    return Material(
-      elevation: 5.0,
-      shadowColor: Colors.black54,
-      borderRadius: BorderRadius.circular(8.0),
-      child: TextField(
-        controller: _passwordController,
-        obscureText: !_isPasswordVisible,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: 'Contraseña',
-          prefixIcon: const Icon(Icons.lock, color: Color(0xFFFF7000)),
-          suffixIcon: IconButton(
-            icon: Icon(
-              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-              color: Color(0xFFFF7000),
+          if (!snapshot.hasData || snapshot.data == null) {
+            return const Center(child: Text('Usuario no encontrado.'));
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                const SizedBox(height: 16),
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: NetworkImage(snapshot.data!.profileImageUrl),
+                ),
+                const SizedBox(height: 16),
+                Focus(
+                  onFocusChange: (hasFocus) {
+                    setState(() {});
+                  },
+                  child: TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Nombre',
+                      prefixIcon: Icon(
+                        Icons.person,
+                        color: _nameController.text.isNotEmpty
+                            ? Colors.orange
+                            : Colors.grey,
+                      ),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Focus(
+                  onFocusChange: (hasFocus) {
+                    setState(() {});
+                  },
+                  child: TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Correo Electrónico',
+                      prefixIcon: Icon(
+                        Icons.email,
+                        color: _emailController.text.isNotEmpty
+                            ? Colors.orange
+                            : Colors.grey,
+                      ),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Focus(
+                  onFocusChange: (hasFocus) {
+                    setState(() {});
+                  },
+                  child: TextField(
+                    controller: _phoneController,
+                    decoration: InputDecoration(
+                      labelText: 'Teléfono',
+                      prefixIcon: Icon(
+                        Icons.phone,
+                        color: _phoneController.text.isNotEmpty
+                            ? Colors.orange
+                            : Colors.grey,
+                      ),
+                      border: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.orange),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _updateUserData,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFF7000),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                      ),
+                      child: const Text('Guardar Cambios'),
+                    ),
+                    ElevatedButton(
+                      onPressed: _showChangePasswordDialog,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFF7000),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                      ),
+                      child: const Text('Cambiar Contraseña'),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            onPressed: () {
-              setState(() {
-                _isPasswordVisible = !_isPasswordVisible;
-              });
-            },
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Color(0xFFFF7000)),
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
