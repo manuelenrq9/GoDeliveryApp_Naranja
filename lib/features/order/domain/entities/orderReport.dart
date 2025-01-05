@@ -3,5 +3,9 @@ class OrderReport {
   final String description;
   final DateTime reportDate;
 
-  OrderReport({required this.id,required this.description,required this.reportDate});
+  OrderReport({
+    required this.id,
+    this.description = '',
+    DateTime? reportDate,
+  }) : reportDate = reportDate ?? DateTime.now(); // Default to current date
 }

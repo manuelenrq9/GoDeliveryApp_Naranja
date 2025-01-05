@@ -47,8 +47,26 @@ factory Order.fromJson(Map<String, dynamic> json) {
                 quantity: item['quantity'] as int,
             ))
             .toList() ?? [],
-        
+        paymentMethod: (json['paymentMethod'] as List<dynamic>?)
+          ?.map((item) => OrderPayment(
+                id: item['id'] as String,
+                paymentMethod: item['paymentMethod'] ?? '', // Use default if not available
+                currency: item['currency'] ?? '',         // Use de fault if not available
+                total: item['total'] ?? 0,                // Use default if not available
+              ))
+          .toList() ?? [], // Handle missing data gracefully
+
+        report: (json['report'] as List<dynamic>?)
+          ?.map((item) => OrderReport(
+                id: item['_id'] as String,
+                description: item['description'] ?? '',  // Use default if not available
+                reportDate: json['reportDate'] != null 
+                  ? DateTime.parse(json['reportDate'] as String) 
+                  : DateTime.now(),              
+              ))
+          .toList() ?? [], // Handle missing data gracefully
         );
+        
     /*
     var products = order.products;
     products.forEach((product){
@@ -76,14 +94,23 @@ factory Order.fromJson(Map<String, dynamic> json) {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'createdDate': createdDate,
+      'createdDate': createdDate.toIso8601String(),
+      'receivedDate': receivedDate,
       'status': status,
       'address': address,
-      'products': products,
-      'combos': combos,
-      'receivedDate': receivedDate,
-      'paymentMethod': paymentMethod,
-      'report': report,
+      'products': products.map((product)=>product.toJson()).toList(),
+      'combos': combos.map((combo)=>combo.toJson()).toList(),
+      'paymentMethod': paymentMethod?.map((payment) => {
+        'id': payment.id,
+        'paymentMethod': payment.paymentMethod,
+        'currency': payment.currency,
+        'total': payment.total
+      }).toList(),
+      'report': report?.map((reportItem) => {
+        '_id': reportItem.id,
+        'description': reportItem.description,
+        'reportDate': reportItem.reportDate.toIso8601String()
+      }).toList(),
     };
   }
 

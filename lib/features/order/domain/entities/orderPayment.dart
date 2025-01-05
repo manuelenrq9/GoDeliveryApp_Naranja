@@ -4,5 +4,10 @@ class OrderPayment {
   final String currency;
   final int total;
 
-  OrderPayment({required this.id,required this.paymentMethod,required this.currency, required this.total});
+  OrderPayment({
+    required this.id,
+    this.paymentMethod = '',
+    this.currency = '', 
+    this.total = 0
+  });
 }

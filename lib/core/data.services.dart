@@ -69,6 +69,8 @@ class DataService<T> {
     if (hasInternet) {
       try {
         final data = await fetchDataFromApi();
+        //falla aqui
+        print(data);
         await repository.saveData(data);
         return data;
       } catch (e) {
