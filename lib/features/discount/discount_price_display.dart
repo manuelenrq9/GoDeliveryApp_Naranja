@@ -33,6 +33,7 @@ class DiscountPriceDisplay extends StatelessWidget {
 
         // Si hay datos, verificamos el descuento y calculamos el precio
         Discount discount = snapshot.data!;
+
         // Validamos si el descuento es válido
         num discountedPrice = getDiscountedPrice(specialPrice, discount);
 

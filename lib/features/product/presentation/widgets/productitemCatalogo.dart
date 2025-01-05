@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_menu.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/product_detail.dart';
-import 'dart:math';
 
 class ProductItemCatalogo extends StatefulWidget {
   final Product product;
@@ -15,16 +14,6 @@ class ProductItemCatalogo extends StatefulWidget {
 
 class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
   bool isFavorite = false; // Estado inicial del favorito
-
-  // Simulando una calificación (puedes reemplazar este valor con la calificación real)
-  double rating = 4.5; // Cambia este valor según la calificación que desees
-
-  // Función para generar calificaciones basadas en el hash del producto
-  int getSimulatedRating(Product product) {
-    final seed = product.name.hashCode; // Usa el hash del nombre como semilla
-    final random = Random(seed); // Generador aleatorio basado en la semilla
-    return random.nextInt(6); // Genera un número entre 0 y 5
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +66,8 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                       child: Text(
                         widget.product.name,
                         style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 10,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 13,
                           color: Colors.black87,
                         ),
                         maxLines: 2,
@@ -144,44 +133,6 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                         child: ButtonAddCartMenu(
                           product: widget.product,
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                // Estrellas para calificar
-                Row(
-                  children: [
-                    // Estrellas
-                    ...List.generate(5, (index) {
-                      if (rating >= index + 1) {
-                        return const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                          size: 16,
-                        );
-                      } else if (rating > index) {
-                        return const Icon(
-                          Icons.star_half,
-                          color: Colors.amber,
-                          size: 16,
-                        );
-                      } else {
-                        return const Icon(
-                          Icons.star_border,
-                          color: Colors.amber,
-                          size: 16,
-                        );
-                      }
-                    }),
-                    const SizedBox(width: 4),
-                    // Calificación numérica
-                    Text(
-                      "$rating",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],

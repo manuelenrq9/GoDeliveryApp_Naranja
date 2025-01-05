@@ -4,18 +4,21 @@ import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.r
 import 'package:godeliveryapp_naranja/features/product/presentation/widgets/productitemCatalogo.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 
-class ProductCatalogScreen extends StatefulWidget {
-  const ProductCatalogScreen({super.key}); // Nombre actualizado
+class ProductCategoryScreen extends StatefulWidget {
+  final String categoryId;
+  const ProductCategoryScreen(
+      {super.key, required this.categoryId}); // Nombre actualizado
+
   @override
-  State<ProductCatalogScreen> createState() =>
+  State<ProductCategoryScreen> createState() =>
       _ProductCatalogScreenState(); // Nombre actualizado
 }
 
-class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
+class _ProductCatalogScreenState extends State<ProductCategoryScreen> {
   // Nombre actualizado
   late Future<List<Product>> futureProducts;
   late final DataService<Product> productService = DataService<Product>(
-    endpoint: '/product',
+    endpoint: '/product?category=${widget.categoryId}',
     repository: GenericRepository<Product>(
       storageKey: 'products',
       fromJson: (json) => Product.fromJson(json),
@@ -41,12 +44,14 @@ class _ProductCatalogScreenState extends State<ProductCatalogScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
-          'Productos',
-          style: TextStyle(
-            color: Color.fromARGB(255, 175, 91, 7),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+        title: const Center(
+          child: Text(
+            'Productos',
+            style: TextStyle(
+              color: Color.fromARGB(255, 175, 91, 7),
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         leading: IconButton(

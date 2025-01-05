@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
-import 'package:godeliveryapp_naranja/features/order/data/post_order.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
-import 'package:godeliveryapp_naranja/features/order/domain/usecases/create_order.dart';
+import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/processorderscreen.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
@@ -286,18 +286,16 @@ class _CartScreenState extends State<CartScreen> {
                             if (userId == null) {
                               throw Exception('No hay usuario ID');
                             }
-                            await processOrder(
-                              address:
-                                  'San Antonio de los Altos, Miranda, Venezuela', // Dirección predeterminada
+                            showLoadingScreen(context, destination: ProcessOrderScreen(
+                              cartItems: cartItems,
                               products: getProducts(),
                               combos: getCombos(),
-                              paymentMethod: "Credit Card",
                               currency: 'USD', // La moneda
-                              totalDecimal: totalAmount,
+                              totalDecimal: totalAmount+50,
                               userId: userId,
                               context: context,
-                            );
-                            clearCart();
+                            ));
+                            
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF7000),

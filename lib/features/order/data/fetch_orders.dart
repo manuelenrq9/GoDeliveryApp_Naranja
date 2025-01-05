@@ -4,7 +4,6 @@ import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/order_card.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderListScreen extends StatefulWidget {
   const OrderListScreen({super.key});
@@ -15,11 +14,6 @@ class OrderListScreen extends StatefulWidget {
 
 class _OrderListScreenState extends State<OrderListScreen> {
   late Future<List<Order>> futureOrders;
-
-  Future<String?> _getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token'); // Obtén el token almacenado
-  }
 
   late final DataService<Order> _orderService = DataService<Order>(
     endpoint: '/order',
@@ -46,6 +40,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Order>>(
+
         future: futureOrders,
         builder: (context, snapshot) {
           if (snapshot.hasData) {

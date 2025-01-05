@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/order/data/fetch_orders.dart';
-import 'order_card.dart';
+import 'package:godeliveryapp_naranja/features/product/data/product_fetch.dart';
 
 class CustomTabBar extends StatelessWidget {
   final TabController tabController;
@@ -32,9 +32,11 @@ class CustomTabBar extends StatelessWidget {
           child: TabBarView(
             controller: tabController,
             children: [
+              
+                OrderListScreen(),
+                ProductListScreen(),
+        
               // Active Orders
-
-              OrderListScreen(),
               /*
               ListView(
                 padding: const EdgeInsets.all(16.0),
@@ -49,10 +51,8 @@ class CustomTabBar extends StatelessWidget {
                 ],
               ),
               */
-
+          
               // Past Orders
-
-              OrderListScreen(),
               /*
               ListView(
                 padding: const EdgeInsets.all(16.0),
