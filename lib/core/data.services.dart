@@ -47,9 +47,10 @@ class DataService<T> {
       );
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
+        // print("mostrando el jsonData ${jsonData}");
         final List<dynamic> items = jsonData['${repository.storageKey}'];
-        print(endpoint);
-        print(items);
+        print("El endpoint es ${endpoint}");
+        print("Items antes de deserializar: $items");
         return items.map((item) => fromJson(item)).toList();
       } else {
         throw Exception('Failed to fetch data');
@@ -68,7 +69,9 @@ class DataService<T> {
 
     if (hasInternet) {
       try {
+        print("LOADDATA");
         final data = await fetchDataFromApi();
+        print("DATA LOAD DATA ${data}");
         await repository.saveData(data);
         return data;
       } catch (e) {
