@@ -8,6 +8,8 @@ import 'dart:convert';
 class UserProfileScreen extends StatefulWidget {
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
+
+  updatePassword(String text) {}
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
@@ -89,7 +91,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       );
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perfil actualizado con éxito')),
+          SnackBar(
+            content: Text(
+              '¡Tu perfil ha sido actualizado exitosamente! 🎉',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.green,
+            margin: const EdgeInsets.all(16.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
         );
       } else {
         final errorMessage = json.decode(response.body)['message'] ??
@@ -127,7 +140,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Contraseña actualizada con éxito')),
+          SnackBar(
+            content: Text(
+              '¡Tu contraseña se ha actualizado exitosamente!',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.green,
+            margin: const EdgeInsets.all(16.0),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
         );
       } else {
         final errorMessage = json.decode(response.body)['message'] ??
@@ -239,9 +263,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          _updatePassword(
-                            _newPasswordController.text
-                          );
+                          _updatePassword(_newPasswordController.text);
                           Navigator.of(context).pop();
                         }
                       },
@@ -258,6 +280,52 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _showConfirmationDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Confirmar Cambios',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: const Text(
+            '¿Estás segura de querer actualizar los datos de tu perfil?',
+            style: TextStyle(fontSize: 16),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar diálogo
+              },
+              child: const Text(
+                'Cancelar',
+                style: TextStyle(
+                    color: Colors.orange, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Cerrar diálogo
+                _updateUserData(); // Actualizar datos
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF7000),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
+              ),
+              child: const Text('Aceptar'),
+            ),
+          ],
         );
       },
     );
@@ -326,7 +394,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           icon: const Icon(Icons.arrow_back,
               color: Color.fromARGB(255, 175, 91, 7)),
           onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainMenu()));
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const MainMenu()));
           },
         ),
       ),
@@ -425,7 +494,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
-                      onPressed: _updateUserData,
+                      onPressed:
+                          _showConfirmationDialog, // Llamar al diálogo de confirmación
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFFF7000),
                         shape: RoundedRectangleBorder(
