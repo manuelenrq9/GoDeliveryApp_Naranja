@@ -34,7 +34,7 @@ class CustomTabBar extends StatelessWidget {
             children: [
               
                 OrderListScreen(),
-                ProductListScreen(),
+                OrderListScreen(),
         
               // Active Orders
               /*
