@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
+import 'package:godeliveryapp_naranja/features/perfilusuario/data/UserServiceupdatePassword.dart';
 import 'package:godeliveryapp_naranja/features/perfilusuario/domain/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +17,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final UserService _userService = UserService();
 
   Future<User?>? _userFuture;
 
@@ -93,7 +95,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              '¡Tu perfil ha sido actualizado exitosamente! 🎉',
+              '¡Tu perfil ha sido actualizado exitosamente!',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             behavior: SnackBarBehavior.floating,
@@ -115,55 +117,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       print('Error al actualizar perfil: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Error en la conexión o el servidor')),
-      );
-    }
-  }
-
-  Future<void> _updatePassword(String newPassword) async {
-    try {
-      final token = await _getToken();
-      if (token == null) throw Exception('No hay token de autenticación');
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? userID = prefs.getString('user_id');
-
-      final response = await http.patch(
-        Uri.parse(
-            'https://orangeteam-deliverybackend-production.up.railway.app/User/$userID'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'password': newPassword,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '¡Tu contraseña se ha actualizado exitosamente!',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.green,
-            margin: const EdgeInsets.all(16.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-          ),
-        );
-      } else {
-        final errorMessage = json.decode(response.body)['message'] ??
-            'Error al actualizar la contraseña';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
-      }
-    } catch (e) {
-      print('Error al cambiar contraseña: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al cambiar la contraseña')),
       );
     }
   }
@@ -261,10 +214,37 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _updatePassword(_newPasswordController.text);
-                          Navigator.of(context).pop();
+                      onPressed: () async {
+                        if (_newPasswordController.text ==
+                            _confirmPasswordController.text) {
+                          try {
+                            // Llamar al método desde UserService
+                            await _userService
+                                .updatePassword(_newPasswordController.text);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('¡Contraseña actualizada con éxito!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('Error al actualizar la contraseña'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Las contraseñas no coinciden'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
                         }
                       },
                       child: const Text('Actualizar'),
@@ -295,7 +275,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           content: const Text(
-            '¿Estás segura de querer actualizar los datos de tu perfil?',
+            '¿Estás seguro de querer actualizar los datos de tu perfil?',
             style: TextStyle(fontSize: 16),
           ),
           shape: RoundedRectangleBorder(

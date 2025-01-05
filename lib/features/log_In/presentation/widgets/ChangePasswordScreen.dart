@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:godeliveryapp_naranja/features/perfilusuario/data/UserServiceupdatePassword.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -17,60 +15,7 @@ class _ChangePasswordScreenScreenState extends State<ChangePasswordScreen> {
       TextEditingController();
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-
-  Future<String?> _getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token');
-  }
-
-  Future<void> _updatePassword(String newPassword) async {
-    try {
-      final token = await _getToken();
-      if (token == null) throw Exception('No hay token de autenticación');
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? userID = prefs.getString('user_id');
-
-      final response = await http.patch(
-        Uri.parse(
-            'https://orangeteam-deliverybackend-production.up.railway.app/User/$userID'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'password': newPassword,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '¡Tu contraseña se ha actualizado exitosamente 🎉',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.green,
-            margin: const EdgeInsets.all(16.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-          ),
-        );
-      } else {
-        final errorMessage = json.decode(response.body)['message'] ??
-            'Error al actualizar la contraseña';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
-      }
-    } catch (e) {
-      print('Error al cambiar contraseña: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error al cambiar la contraseña')),
-      );
-    }
-  }
+  final UserService _userService = UserService();
 
   @override
   Widget build(BuildContext context) {
@@ -180,18 +125,32 @@ class _ChangePasswordScreenScreenState extends State<ChangePasswordScreen> {
                 onPressed: () async {
                   if (newPasswordController.text ==
                       confirmPasswordController.text) {
-                    // Lógica para guardar la nueva contraseña
-                    await _updatePassword(newPasswordController.text);
-                    showLoadingScreen(context,
-                        destination: const LoginScreen());
-                    Future.delayed(const Duration(seconds: 30), () {
+                    try {
+                      // Llamar al método desde UserService
+                      await _userService
+                          .updatePassword(newPasswordController.text);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('¡Contraseña actualizada con éxito!'),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+
+                      // Navegar al LoginScreen
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                             builder: (context) => const LoginScreen()),
                       );
-                    });
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(e.toString()),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   } else {
-                    // Mostrar mensaje de error si las contraseñas no coinciden
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Las contraseñas no coinciden'),
