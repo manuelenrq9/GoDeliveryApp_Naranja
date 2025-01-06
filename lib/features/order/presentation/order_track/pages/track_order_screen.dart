@@ -34,12 +34,12 @@ class TrackOrderScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DeliveryInfoSection(size: size),
-              const Divider(),
-              CourierInfoSection(),
-              const Divider(),
-              OrderDetailsSection(),
-              const SizedBox(height: 16),
+              // DeliveryInfoSection(size: size),
+              // const Divider(),
+              // CourierInfoSection(),
+              // const Divider(),
+              // OrderDetailsSection(),
+              // const SizedBox(height: 16),
               ETAAndTrackingSection(),
             ],
           ),
