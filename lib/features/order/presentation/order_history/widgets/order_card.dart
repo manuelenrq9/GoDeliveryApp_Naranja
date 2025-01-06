@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/combo/data/combo_fetchID.dart';
+import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/item_names_builder.dart';
+import 'package:godeliveryapp_naranja/features/product/data/product_fetchID.dart';
+import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-class OrderCard extends StatelessWidget {
+
+class OrderCard extends StatefulWidget {
   final Order order;
 
   const OrderCard({
@@ -11,16 +19,32 @@ class OrderCard extends StatelessWidget {
     required this.order,
   }) : super(key: key);
 
-  List<String> orderItemsToString (){
-    List<String> items = [];
-    List<CartProduct> products = order.products; 
-    List<CartCombo> combos = order.combos;
-    return items;
+  @override
+  State<OrderCard> createState() => _OrderCardState();
+}
+
+class _OrderCardState extends State<OrderCard> {
+
+  String createdDate = '';
+
+  @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting('es_ES').then((_){
+      setState(() {
+        createdDate = formatDate(widget.order.createdDate);
+      });
+    });
+  } 
+
+  String formatDate(DateTime dateTime) {
+    // Format the DateTime object into the desired format in Spanish
+    return DateFormat('EEE dd MMM yyyy', 'es_ES').format(dateTime);
   }
 
   num getPrice(){
     num total = 0;
-    List<CartProduct> products = order.products;
+    List<CartProduct> products = widget.order.products;
     products.forEach((product){
       // total += product.price;
     });
@@ -29,12 +53,17 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String orderId = order.id;
+    String orderId = widget.order.id;
+    String formatedId = orderId.length>8
+      ? orderId.substring(0,8) : orderId;
     num price = getPrice();
-    List<String> items = orderItemsToString();
-    String status = order.status;
+    String status = widget.order.status;
     final isDelivered = status == 'Delivered';
-    String deliveryTime = order.receivedDate.toString();
+    String deliveryTime = widget.order.receivedDate.toString();
+    List<CartProduct> products = widget.order.products;
+    List<CartCombo> combos = widget.order.combos; 
+
+    
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       elevation: 3,
@@ -50,7 +79,7 @@ class OrderCard extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    order.createdDate.toString(),
+                    createdDate,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -78,7 +107,7 @@ class OrderCard extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    'Order #$orderId',
+                    'Order #$formatedId',
                     style: const TextStyle(
                       color: Color(0xFFFF7000),
                       fontSize: 14,
@@ -106,19 +135,9 @@ class OrderCard extends StatelessWidget {
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                Wrap(
-                  spacing: 8,
-                  children: items
-                      .map((item) => Chip(
-                            label: Text(
-                              item,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            backgroundColor:
-                                Colors.grey.shade200.withOpacity(0.5),
-                          ))
-                      .toList(),
-                ),
+                Wrap(children: [
+                  ItemNamesBuilder(products: products, combos: combos),
+                ],),
               ],
             ),
             const SizedBox(height: 8),

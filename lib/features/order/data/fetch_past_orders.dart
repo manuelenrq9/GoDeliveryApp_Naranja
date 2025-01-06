@@ -5,18 +5,18 @@ import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.r
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/order_card.dart';
 
-class OrderListScreen extends StatefulWidget {
-  const OrderListScreen({super.key});
+class FetchPastOrdersScreen extends StatefulWidget {
+  const FetchPastOrdersScreen({super.key});
 
   @override
-  State<OrderListScreen> createState() => _OrderListScreenState();
+  State<FetchPastOrdersScreen> createState() => _FetchPastOrdersScreenState();
 }
 
-class _OrderListScreenState extends State<OrderListScreen> {
+class _FetchPastOrdersScreenState extends State<FetchPastOrdersScreen> {
   late Future<List<Order>> futureOrders;
 
   late final DataService<Order> _orderService = DataService<Order>(
-    endpoint: '/order',
+    endpoint: '/order?take=30',
     repository: GenericRepository<Order>(
       storageKey: 'orders',
       fromJson: (json) => Order.fromJson(json),
@@ -51,7 +51,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
             // Filter orders based on status within the builder
             final deliveredOrders = orders
-                .where((order) => order.status == 'BEING PROCESSED')
+                .where((order) => order.status == 'DELIVERED' || 
+                  order.status == 'CANCELLED'
+                )
                 .toList();
             // print("AQUI SON LAS ORDENES ORDER ${deliveredOrders}");
             return ListView(
