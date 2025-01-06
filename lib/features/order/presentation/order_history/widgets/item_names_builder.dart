@@ -47,17 +47,19 @@ class _ItemNamesBuilderState extends State<ItemNamesBuilder> {
         } else if (snapshot.hasData) {
         // Limit to first 5 items and create a row
         List<String> limitedItems = snapshot.data!.take(5).toList();
-
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: limitedItems.map((item) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0), // Add some spacing between items
-              child: Chip(
-                label: Text(item, style: const TextStyle(fontSize: 12)), // Display each item name in a Chip
-              ),
-            );
-          }).toList(),
+        return Container(
+          height: 50,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: limitedItems.map((item) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0), // Add some spacing between items
+                child: Chip(
+                  label: Text(item, style: const TextStyle(fontSize: 12)), // Display each item name in a Chip
+                ),
+              );
+            }).toList(),
+          ),
         );
       } else {
           return Text('No items found.'); // Handle no data case
