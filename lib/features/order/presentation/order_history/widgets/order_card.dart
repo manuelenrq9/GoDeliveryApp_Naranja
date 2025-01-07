@@ -103,7 +103,6 @@ class _OrderCardState extends State<OrderCard> {
     num price = getPrice();
     List<CartProduct> products = widget.order.products;
     List<CartCombo> combos = widget.order.combos; 
-    final bool isDelivered = (status == 'DELIVERED');
 
     
     return Card(
@@ -258,13 +257,17 @@ class _OrderCardState extends State<OrderCard> {
                     child: OutlinedButton.icon(
                       onPressed: () {},
                       icon: const Icon(Icons.cancel, color: Colors.redAccent),
-                      label: const Text('Cancelar pedido'),
+                      label: const Text(
+                        'Cancelar pedido',
+                        style: TextStyle(fontSize: 12),
+                        ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.redAccent,
                         side: const BorderSide(color: Colors.redAccent),
                       ),
                     ),
                   ),
+                  SizedBox(width: 5,),
                 Flexible(
                   child: OutlinedButton.icon(
                     onPressed: () {},
@@ -274,7 +277,7 @@ class _OrderCardState extends State<OrderCard> {
                     ),
                     label: Text(
                       'Hacer seguimiento',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 11),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor:  const Color(0xFFFF7000),
@@ -292,13 +295,17 @@ class _OrderCardState extends State<OrderCard> {
                     child: OutlinedButton.icon(
                       onPressed: () {},
                       icon: const Icon(Icons.cancel, color: Colors.redAccent),
-                      label: const Text('Cancelar pedido'),
+                      label: const Text(
+                        'Cancelar pedido',
+                        style: TextStyle(fontSize: 12),
+                        ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.redAccent,
                         side: const BorderSide(color: Colors.redAccent),
                       ),
                     ),
                   ),
+                  SizedBox(width: 5,),
                 Flexible(
                   child: OutlinedButton.icon(
                     onPressed: () {},
@@ -308,7 +315,7 @@ class _OrderCardState extends State<OrderCard> {
                     ),
                     label: Text(
                       'Hacer seguimiento',
-                      style: TextStyle(fontSize: 12),
+                      style: TextStyle(fontSize: 11),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor:  const Color(0xFFFF7000),
@@ -326,13 +333,16 @@ class _OrderCardState extends State<OrderCard> {
                     child: OutlinedButton.icon(
                       onPressed: () {},
                       icon: const Icon(Icons.refresh, color: Colors.redAccent),
-                      label: const Text('Solicitar reembolso'),
+                      label: const Text('Solicitar reembolso',
+                      style: TextStyle(fontSize: 12),
+                      ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.redAccent,
                         side: const BorderSide(color: Colors.redAccent),
                       ),
                     ),
                   ),
+                  SizedBox(width: 1,),
                 Flexible(
                   child: OutlinedButton.icon(
                     onPressed: () {},
@@ -342,6 +352,7 @@ class _OrderCardState extends State<OrderCard> {
                     ),
                     label: Text(
                       'Reordenar',
+                      style: TextStyle(fontSize: 12),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor:  const Color(0xFFFF7000),

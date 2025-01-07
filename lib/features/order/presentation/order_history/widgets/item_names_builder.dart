@@ -43,7 +43,7 @@ class _ItemNamesBuilderState extends State<ItemNamesBuilder> {
             color: Colors.orange,
           )); // Show loading indicator while fetching data
         } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}'); // Handle error case
+          return Text(''); // Handle error case
         } else if (snapshot.hasData) {
         // Limit to first 5 items and create a row
         List<String> limitedItems = snapshot.data!.take(5).toList();
