@@ -1,34 +1,22 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/core/data.services.dart';
-import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/usecases/fetch_orders_usecase.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/order_card.dart';
 
-class FetchActiveOrdersScreen extends StatefulWidget {
-  const FetchActiveOrdersScreen({super.key});
+class ActiveOrdersScreen extends StatefulWidget {
+  const ActiveOrdersScreen({super.key});
 
   @override
-  State<FetchActiveOrdersScreen> createState() => _FetchActiveOrdersScreenState();
+  State<ActiveOrdersScreen> createState() => _ActiveOrdersScreenState();
 }
 
-class _FetchActiveOrdersScreenState extends State<FetchActiveOrdersScreen> {
+class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
   late Future<List<Order>> futureOrders;
-
-  late final DataService<Order> _orderService = DataService<Order>(
-    endpoint: '/order?take=30',
-    repository: GenericRepository<Order>(
-      storageKey: 'orders',
-      fromJson: (json) => Order.fromJson(json),
-      toJson: (order) => order.toJson(),
-    ),
-    fromJson: (json) => Order.fromJson(json),
-  );
+  FetchOrdersUsecase usecase = FetchOrdersUsecase();
 
   void loadOrders() async {
-    futureOrders = _orderService.loadData();
-    print("Aqui estamos en loadOrders ${futureOrders}");
-    setState(() {});
+    futureOrders = usecase.fetchOrders();
   }
 
   @override
@@ -51,7 +39,7 @@ class _FetchActiveOrdersScreenState extends State<FetchActiveOrdersScreen> {
 
             // Filter orders based on status within the builder
             final deliveredOrders = orders
-                .where((order) => order.status == 'CREATED' || 
+                .where((order) =>  
                   order.status == 'BEING PROCESSED' ||
                   order.status == 'SHIPPED'
                 )

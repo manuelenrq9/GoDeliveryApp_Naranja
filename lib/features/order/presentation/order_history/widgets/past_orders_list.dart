@@ -1,40 +1,28 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/core/data.services.dart';
-import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/usecases/fetch_orders_usecase.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/order_card.dart';
 
-class FetchPastOrdersScreen extends StatefulWidget {
-  const FetchPastOrdersScreen({super.key});
+class PastOrdersScreen extends StatefulWidget {
+  const PastOrdersScreen({super.key});
 
   @override
-  State<FetchPastOrdersScreen> createState() => _FetchPastOrdersScreenState();
+  State<PastOrdersScreen> createState() => _PastOrdersScreenState();
 }
 
-class _FetchPastOrdersScreenState extends State<FetchPastOrdersScreen> {
+class _PastOrdersScreenState extends State<PastOrdersScreen> {
   late Future<List<Order>> futureOrders;
+  FetchOrdersUsecase usecase = FetchOrdersUsecase();
 
-  late final DataService<Order> _orderService = DataService<Order>(
-    endpoint: '/order?take=30',
-    repository: GenericRepository<Order>(
-      storageKey: 'orders',
-      fromJson: (json) => Order.fromJson(json),
-      toJson: (order) => order.toJson(),
-    ),
-    fromJson: (json) => Order.fromJson(json),
-  );
+  void loadOrders() async {
+    futureOrders = usecase.fetchOrders();
+  }
 
   @override
   void initState() {
     super.initState();
     loadOrders();
-  }
-
-  void loadOrders() async {
-    futureOrders = _orderService.loadData();
-    print("Aqui estamos en loadOrders ${futureOrders}");
-    setState(() {});
   }
 
   @override
