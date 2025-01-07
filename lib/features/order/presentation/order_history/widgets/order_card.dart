@@ -32,6 +32,23 @@ OrderStatus orderStatusFromString(String status) {
   }
 }
 
+Color getStatusColor(String status) {
+  switch (status.toUpperCase()) {
+    case 'CREATED':
+      return Color.fromARGB(255, 233, 86, 135);
+    case 'BEING PROCESSED':
+      return Color.fromARGB(255, 98, 91, 190);
+    case 'SHIPPED':
+      return Color.fromARGB(255, 5, 158, 120);
+    case 'DELIVERED':
+      return Colors.green;
+    case 'CANCELLED':
+      return Colors.red;
+    default:
+      throw Exception('Unknown status: $status');
+  }
+}
+
 class OrderCard extends StatefulWidget {
   final Order order;
 
@@ -47,7 +64,9 @@ class OrderCard extends StatefulWidget {
 class _OrderCardState extends State<OrderCard> {
   late String status = widget.order.status;
   late OrderStatus _status = orderStatusFromString(status);
+  late Color statusColor = getStatusColor(status);
   String createdDate = '';
+  String deliveredDate = '';
 
   @override
   void initState() {
@@ -57,6 +76,7 @@ class _OrderCardState extends State<OrderCard> {
     initializeDateFormatting('es_ES').then((_){
       setState(() {
         createdDate = formatDate(widget.order.createdDate);
+        deliveredDate = formatDate(widget.order.receivedDate);
       });
     });
   } 
@@ -81,7 +101,6 @@ class _OrderCardState extends State<OrderCard> {
     String formatedId = orderId.length>8
       ? orderId.substring(0,8) : orderId;
     num price = getPrice();
-    String deliveryTime = widget.order.receivedDate.toString();
     List<CartProduct> products = widget.order.products;
     List<CartCombo> combos = widget.order.combos; 
     final bool isDelivered = (status == 'DELIVERED');
@@ -144,7 +163,7 @@ class _OrderCardState extends State<OrderCard> {
                     status,
                     style: const TextStyle(color: Colors.white),
                   ),
-                  backgroundColor: isDelivered ? Colors.green : Colors.red,
+                  backgroundColor: statusColor,
                 ),
               ],
             ),
@@ -169,9 +188,43 @@ class _OrderCardState extends State<OrderCard> {
               children: [
                 const Icon(Icons.schedule, size: 18, color: Colors.grey),
                 const SizedBox(width: 4),
+                if (status=="DELIVERED")
                 Flexible(
                   child: Text(
-                    'Entrega estimada: $deliveryTime',
+                    'Entregado el: $deliveredDate',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                if (status=="CANCELLED")
+                Flexible(
+                  child: Text(
+                    'Pedido cancelado',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                if (status=="BEING PROCESSED")
+                Flexible(
+                  child: Text(
+                    'tu pedido esta siendo procesado...',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                if (status=="SHIPPED")
+                Flexible(
+                  child: Text(
+                    'Tu pedido ha sido enviado a su destino...',
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
@@ -183,12 +236,92 @@ class _OrderCardState extends State<OrderCard> {
             ),
             const Divider(),
             // Botones de acciones
-            ButtonsByStatus(),
-            /*
-            Row(
+            ButtonsByStatus(), 
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget ButtonsByStatus() {
+    switch (_status) {
+      case OrderStatus.CREATED:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [],
+        );
+      case OrderStatus.BEING_PROCESSED:
+        return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (isDelivered)
+                  Flexible(
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.cancel, color: Colors.redAccent),
+                      label: const Text('Cancelar pedido'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        side: const BorderSide(color: Colors.redAccent),
+                      ),
+                    ),
+                  ),
+                Flexible(
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.location_on ,
+                      color: const Color(0xFFFF7000)    
+                    ),
+                    label: Text(
+                      'Hacer seguimiento',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor:  const Color(0xFFFF7000),
+                      side:const BorderSide(color: Color(0xFFFF7000)),  
+                    ),
+                  ),
+                ),
+              ],
+            );
+      case OrderStatus.SHIPPED:
+        return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                  Flexible(
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.cancel, color: Colors.redAccent),
+                      label: const Text('Cancelar pedido'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        side: const BorderSide(color: Colors.redAccent),
+                      ),
+                    ),
+                  ),
+                Flexible(
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.location_on ,
+                      color: const Color(0xFFFF7000)    
+                    ),
+                    label: Text(
+                      'Hacer seguimiento',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor:  const Color(0xFFFF7000),
+                      side:const BorderSide(color: Color(0xFFFF7000)),  
+                    ),
+                  ),
+                ),
+              ],
+            );
+      case OrderStatus.DELIVERED:
+        return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                   Flexible(
                     child: OutlinedButton.icon(
                       onPressed: () {},
@@ -204,107 +337,37 @@ class _OrderCardState extends State<OrderCard> {
                   child: OutlinedButton.icon(
                     onPressed: () {},
                     icon: Icon(
-                      isDelivered ? Icons.shopping_cart : Icons.error_outline,
-                      color: isDelivered
-                          ? const Color(0xFFFF7000)
-                          : const Color(0xFFB71C1C),
+                      Icons.shopping_cart ,
+                      color: const Color(0xFFFF7000)    
                     ),
                     label: Text(
-                      isDelivered ? 'Reordenar' : 'Reportar problema',
+                      'Reordenar',
                     ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: isDelivered
-                          ? const Color(0xFFFF7000)
-                          : const Color(0xFFB71C1C),
-                      side: isDelivered
-                          ? const BorderSide(color: Color(0xFFFF7000))
-                          : null,
+                      foregroundColor:  const Color(0xFFFF7000),
+                      side:const BorderSide(color: Color(0xFFFF7000))   
                     ),
                   ),
                 ),
               ],
-            ), */
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget ButtonsByStatus() {
-    switch (_status) {
-      case OrderStatus.CREATED:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Handle canceling the order
-                print('Order Cancelled');
-              },
-              child: Text('Cancel Order'),
-            ),
-            SizedBox(width: 10),
-            ElevatedButton(
-              onPressed: () {
-                // Handle modifying the order
-                print('Order Modified');
-              },
-              child: Text('Modify Order'),
-            ),
-          ],
-        );
-      case OrderStatus.BEING_PROCESSED:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Handle contacting support
-                print('Contact Support');
-              },
-              child: Text('Contact Support'),
-            ),
-          ],
-        );
-      case OrderStatus.SHIPPED:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Handle tracking the shipment
-                print('Tracking Shipment');
-              },
-              child: Text('Track Shipment'),
-            ),
-          ],
-        );
-      case OrderStatus.DELIVERED:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Handle leaving feedback
-                print('Leave Feedback');
-              },
-              child: Text('Leave Feedback'),
-            ),
-          ],
-        );
+            );
       case OrderStatus.CANCELLED:
         return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Handle reporting an issue
-                print('Report Issue');
-              },
-              child: Text('Report Issue'),
-            ),
-          ],
-        );
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                  Flexible(
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.warning, color: Colors.redAccent),
+                      label: const Text('Reportar problema'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        side: const BorderSide(color: Colors.redAccent),
+                      ),
+                    ),
+                  ),
+              ],
+            );
       default:
         return Container(); // Return an empty container if no status matches
     }
