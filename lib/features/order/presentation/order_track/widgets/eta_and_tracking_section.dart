@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_track/widgets/distanceDelivery.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_track/widgets/googlemaps.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_track/widgets/map_placeholder.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 // Importa MapScreen
 
 import 'tracking_step.dart';
@@ -60,7 +62,7 @@ class ETAAndTrackingSection extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     // child: MapScreen(),
-                    child: MapScreen2(),  // Llamas la clase MapScreen
+                    child: DeliveryTrackingScreen( deliveryDestination: LatLng(10.3574598,-66.9660037)),  // Llamas la clase MapScreen
                   ),
                   const Divider(),
                   // const TrackingStep(
