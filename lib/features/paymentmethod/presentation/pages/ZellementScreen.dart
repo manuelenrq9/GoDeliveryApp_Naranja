@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class PagoConZelleScreen extends StatefulWidget {
   @override
@@ -7,22 +8,13 @@ class PagoConZelleScreen extends StatefulWidget {
 
 class _PagoConZelleScreenState extends State<PagoConZelleScreen> {
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
+
   final _amountController = TextEditingController();
   final _messageController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
-  // Lista de prefijos telefónicos
-  final List<String> _prefixes = [
-    '+1', '+44', '+52', '+34', '+57', '+56',
-    '+55', '+58' // Agrega los prefijos que necesites
-  ];
-
-  // Prefijo seleccionado
-  String? _selectedPrefix = '+1';
-  bool _isPrefixSelected =
-      false; // Estado para detectar si se seleccionó el prefijo
+  final FocusNode _phoneFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -116,74 +108,130 @@ class _PagoConZelleScreenState extends State<PagoConZelleScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    // Dropdown para seleccionar el prefijo
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: _isPrefixSelected
-                              ? const Color(
-                                  0xFFFF7000) // Naranja cuando está seleccionado
-                              : Colors.grey, // Gris cuando no está seleccionado
+                    Expanded(
+                      flex: 2,
+                      child: DropdownButtonFormField<String>(
+                        value: '+58', // Set the default value to '+58'
+                        decoration: InputDecoration(
+                          labelStyle: const TextStyle(
+                              color: Color.fromARGB(255, 0, 0, 0)),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide:
+                                const BorderSide(color: Color(0xFFFF7000)),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: DropdownButton<String>(
-                        value: _selectedPrefix,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedPrefix = newValue;
-                            _isPrefixSelected =
-                                true; // Cambiar el estado a seleccionado
-                          });
-                        },
-                        underline:
-                            Container(), // Quitar el subrayado predeterminado
-                        isExpanded: false, // Evitar que el dropdown se expanda
-                        items: _prefixes
-                            .map<DropdownMenuItem<String>>((String prefix) {
+                        dropdownColor: Colors.white,
+                        items: [
+                          {
+                            'prefix': '+58',
+                            'flag': 'https://flagcdn.com/w320/ve.png'
+                          },
+                          {
+                            'prefix': '+1',
+                            'flag': 'https://flagcdn.com/w320/us.png'
+                          },
+                          {
+                            'prefix': '+44',
+                            'flag': 'https://flagcdn.com/w320/gb.png'
+                          },
+                          {
+                            'prefix': '+49',
+                            'flag': 'https://flagcdn.com/w320/de.png'
+                          },
+                          {
+                            'prefix': '+34',
+                            'flag': 'https://flagcdn.com/w320/es.png'
+                          },
+                          {
+                            'prefix': '+39',
+                            'flag': 'https://flagcdn.com/w320/it.png'
+                          },
+                          {
+                            'prefix': '+81',
+                            'flag': 'https://flagcdn.com/w320/jp.png'
+                          },
+                          {
+                            'prefix': '+86',
+                            'flag': 'https://flagcdn.com/w320/cn.png'
+                          },
+                          {
+                            'prefix': '+91',
+                            'flag': 'https://flagcdn.com/w320/in.png'
+                          }
+                        ].map((Map<String, String> prefix) {
                           return DropdownMenuItem<String>(
-                            value: prefix,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Text(prefix),
+                            value: prefix['prefix'],
+                            child: Row(
+                              children: [
+                                Image.network(
+                                  prefix['flag']!,
+                                  width: 18,
+                                  height: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(prefix['prefix']!),
+                              ],
                             ),
                           );
                         }).toList(),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    // Input para el número de teléfono
-                    Expanded(
-                      child: TextFormField(
-                        controller: _phoneController,
-                        decoration: InputDecoration(
-                          labelText: 'Número de telefono',
-                          labelStyle: const TextStyle(
-                              color: Color.fromARGB(255, 0, 0, 0)),
-                          hintText: '4265634985',
-                          prefixIcon: const Icon(Icons.phone),
-                          border: const OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(12.0)),
-                          ),
-                          prefixIconColor: WidgetStateColor.resolveWith(
-                              (states) => states.contains(WidgetState.focused)
-                                  ? const Color(0xFFFF7000)
-                                  : const Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                        keyboardType: TextInputType.phone,
+                        onChanged: (value) {
+                          // Handle prefix change if needed
+                        },
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa un número de teléfono';
-                          }
-                          if (value.length < 10) {
-                            return ' Por favor debe tener al menos 10 dígitos';
+                            return 'Seleccione ';
                           }
                           return null;
                         },
                       ),
                     ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 5,
+                      child: TextFormField(
+                        focusNode: _phoneFocusNode,
+                        decoration: InputDecoration(
+                          labelText: 'Número de Referencia',
+                          labelStyle: const TextStyle(
+                              color: Color.fromARGB(255, 0, 0, 0)),
+                          hintText: '4265634985',
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide:
+                                const BorderSide(color: Color(0xFFFF7000)),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor ingrese el número de referencia';
+                          }
+                          if (value.length < 10) {
+                            return 'Por favor debe tener  10 dígitos';
+                          }
+                          return null;
+                        },
+                        onTap: () {
+                          setState(() {});
+                        },
+                      ),
+                    ), // Dropdown para seleccionar el prefijo
+
+                    // Input para el número de teléfono
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -269,89 +317,88 @@ class _PagoConZelleScreenState extends State<PagoConZelleScreen> {
   }
 
   void _confirmarPago(BuildContext context) {
-  final email = _emailController.text;
-  final amount = _amountController.text;
-  final message = _messageController.text;
+    final email = _emailController.text;
+    final amount = _amountController.text;
+    final message = _messageController.text;
 
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 24.0,
-      title: const Center(
-        child: Column(
-          children: [
-            Icon(
-              Icons.check_circle_outline,
-              color: Color(0xFFFF7000),
-              size: 50,
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Pago realizado',
-              style: TextStyle(
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        elevation: 24.0,
+        title: const Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.check_circle_outline,
                 color: Color(0xFFFF7000),
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
+                size: 50,
               ),
+              SizedBox(height: 10),
+              Text(
+                'Pago realizado',
+                style: TextStyle(
+                  color: Color(0xFFFF7000),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+              ),
+            ],
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Tu pago de \$${amount} ha sido procesado con éxito.',
+              style: const TextStyle(
+                color: Color(0xFF6D4C41),
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Correo: $email',
+              style: const TextStyle(
+                color: Color(0xFF6D4C41),
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Mensaje: ${message.isEmpty ? "Sin mensaje" : message}',
+              style: const TextStyle(
+                color: Color(0xFF6D4C41),
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Tu pago de \$${amount} ha sido procesado con éxito.',
-            style: const TextStyle(
-              color: Color(0xFF6D4C41),
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Correo: $email',
-            style: const TextStyle(
-              color: Color(0xFF6D4C41),
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Mensaje: ${message.isEmpty ? "Sin mensaje" : message}',
-            style: const TextStyle(
-              color: Color(0xFF6D4C41),
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-      actions: [
-        Center(
-          child: TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Cierra el diálogo
-              Navigator.pop(context); // Regresa a ProcessOrderScreen
-            },
-            child: const Text(
-              'Aceptar',
-              style: TextStyle(
-                color: Color(0xFFFF7000),
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+        actions: [
+          Center(
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Cierra el diálogo
+                Navigator.pop(context); // Regresa a ProcessOrderScreen
+              },
+              child: const Text(
+                'Aceptar',
+                style: TextStyle(
+                  color: Color(0xFFFF7000),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+        ],
+      ),
+    );
+  }
 }

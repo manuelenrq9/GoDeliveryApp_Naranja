@@ -388,7 +388,7 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Fecha y Hora: ${_selectedDeliveryDate!.day}/${_selectedDeliveryDate!.month}/${_selectedDeliveryDate!.year} - ${_selectedDeliveryTime!.hour}:${_selectedDeliveryTime!.minute.toString().padLeft(2, '0')}',
+                          'Fecha y Hora: ${_selectedDeliveryDate!.day}/${_selectedDeliveryDate!.month}/${_selectedDeliveryDate!.year} - ${_selectedDeliveryTime!.format(context)}',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ),

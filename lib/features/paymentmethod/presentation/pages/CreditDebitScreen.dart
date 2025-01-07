@@ -382,81 +382,55 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
   }
 
   void _confirmarPago(BuildContext context) {
-  final String amount = '100.00'; // Aquí puedes usar el monto real
-  final String email = 'user@example.com'; // Aquí puedes usar el email real
-
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 24.0,
-      title: const Center(
-        child: Column(
-          children: [
-            Icon(
-              Icons.check_circle_outline,
-              color: Color(0xFFFF7000),
-              size: 50,
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Pago realizado',
-              style: TextStyle(
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        elevation: 24.0,
+        title: const Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.check_circle_outline,
                 color: Color(0xFFFF7000),
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
+                size: 50,
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Pago realizado',
+                style: TextStyle(
+                  color: Color(0xFFFF7000),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Center(
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Cierra el diálogo
+                Navigator.pop(context); // Regresa a ProcessOrderScreen
+              },
+              child: const Text(
+                'Aceptar',
+                style: TextStyle(
+                  color: Color(0xFFFF7000),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
             ),
-          ],
-        ),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Tu pago de \$${amount} ha sido procesado con éxito.',
-            style: const TextStyle(
-              color: Color(0xFF6D4C41),
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Correo: $email',
-            style: const TextStyle(
-              color: Color(0xFF6D4C41),
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
-      actions: [
-        Center(
-          child: TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Cierra el diálogo
-              Navigator.pop(context); // Regresa a ProcessOrderScreen
-            },
-            child: const Text(
-              'Aceptar',
-              style: TextStyle(
-                color: Color(0xFFFF7000),
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
+    );
+  }
 
   /// Método para seleccionar mes/año
   Future<DateTime?> _selectMonthYear(BuildContext context) async {

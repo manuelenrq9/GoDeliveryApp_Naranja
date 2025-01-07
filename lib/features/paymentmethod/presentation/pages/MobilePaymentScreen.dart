@@ -223,6 +223,90 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                   // ),
                   const SizedBox(width: 10),
                   Expanded(
+                    flex: 2,
+                    child: DropdownButtonFormField<String>(
+                      value: '+58', // Set the default value to '+58'
+                      decoration: InputDecoration(
+                        labelStyle: const TextStyle(
+                            color: Color.fromARGB(255, 0, 0, 0)),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(color: Color(0xFFFF7000)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      dropdownColor: Colors.white,
+                      items: [
+                        {
+                          'prefix': '+58',
+                          'flag': 'https://flagcdn.com/w320/ve.png'
+                        },
+                        {
+                          'prefix': '+1',
+                          'flag': 'https://flagcdn.com/w320/us.png'
+                        },
+                        {
+                          'prefix': '+44',
+                          'flag': 'https://flagcdn.com/w320/gb.png'
+                        },
+                        {
+                          'prefix': '+49',
+                          'flag': 'https://flagcdn.com/w320/de.png'
+                        },
+                        {
+                          'prefix': '+34',
+                          'flag': 'https://flagcdn.com/w320/es.png'
+                        },
+                        {
+                          'prefix': '+39',
+                          'flag': 'https://flagcdn.com/w320/it.png'
+                        },
+                        {
+                          'prefix': '+81',
+                          'flag': 'https://flagcdn.com/w320/jp.png'
+                        },
+                        {
+                          'prefix': '+86',
+                          'flag': 'https://flagcdn.com/w320/cn.png'
+                        },
+                        {
+                          'prefix': '+91',
+                          'flag': 'https://flagcdn.com/w320/in.png'
+                        }
+                      ].map((Map<String, String> prefix) {
+                        return DropdownMenuItem<String>(
+                          value: prefix['prefix'],
+                          child: Row(
+                            children: [
+                              Image.network(
+                                prefix['flag']!,
+                                width: 18,
+                                height: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(prefix['prefix']!),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        // Handle prefix change if needed
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Seleccione ';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
                     flex: 5,
                     child: TextFormField(
                       focusNode: _phoneFocusNode,
@@ -332,8 +416,8 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                   Expanded(
                     flex: 2,
                     child: DropdownButtonFormField<String>(
+                      value: '+58', // Set the default value to '+58'
                       decoration: InputDecoration(
-                        labelText: 'Prefijo',
                         labelStyle: const TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0)),
                         filled: true,
@@ -349,19 +433,56 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                       ),
                       dropdownColor: Colors.white,
                       items: [
-                        '+58',
-                        '+1',
-                        '+44',
-                        '+49',
-                        '+34',
-                        '+39',
-                        '+81',
-                        '+86',
-                        '+91'
-                      ].map((String prefix) {
+                        {
+                          'prefix': '+58',
+                          'flag': 'https://flagcdn.com/w320/ve.png'
+                        },
+                        {
+                          'prefix': '+1',
+                          'flag': 'https://flagcdn.com/w320/us.png'
+                        },
+                        {
+                          'prefix': '+44',
+                          'flag': 'https://flagcdn.com/w320/gb.png'
+                        },
+                        {
+                          'prefix': '+49',
+                          'flag': 'https://flagcdn.com/w320/de.png'
+                        },
+                        {
+                          'prefix': '+34',
+                          'flag': 'https://flagcdn.com/w320/es.png'
+                        },
+                        {
+                          'prefix': '+39',
+                          'flag': 'https://flagcdn.com/w320/it.png'
+                        },
+                        {
+                          'prefix': '+81',
+                          'flag': 'https://flagcdn.com/w320/jp.png'
+                        },
+                        {
+                          'prefix': '+86',
+                          'flag': 'https://flagcdn.com/w320/cn.png'
+                        },
+                        {
+                          'prefix': '+91',
+                          'flag': 'https://flagcdn.com/w320/in.png'
+                        }
+                      ].map((Map<String, String> prefix) {
                         return DropdownMenuItem<String>(
-                          value: prefix,
-                          child: Text(prefix),
+                          value: prefix['prefix'],
+                          child: Row(
+                            children: [
+                              Image.network(
+                                prefix['flag']!,
+                                width: 18,
+                                height: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(prefix['prefix']!),
+                            ],
+                          ),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -385,12 +506,6 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                         labelStyle: const TextStyle(
                             color: Color.fromARGB(255, 0, 0, 0)),
                         hintText: '4265634985',
-                        prefixIcon: Icon(
-                          Icons.phone,
-                          color: _idFocusNode.hasFocus
-                              ? Color(0xFFFF7000)
-                              : const Color.fromARGB(255, 0, 0, 0),
-                        ),
                         filled: true,
                         fillColor: Colors.white,
                         border: OutlineInputBorder(
