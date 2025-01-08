@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future<T> fetchEntityById<T>(String id, String endpoint, T Function(Map<String, dynamic>) fromJson) async {
+Future<T> fetchEntityById<T>(String id, String endpoint,
+    T Function(Map<String, dynamic>) fromJson) async {
   // Método para obtener el token de SharedPreferences
   Future<String?> _getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -19,7 +20,8 @@ Future<T> fetchEntityById<T>(String id, String endpoint, T Function(Map<String, 
     }
 
     final response = await http.get(
-      Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/$endpoint/$id'),
+      Uri.parse(
+          'https://orangeteam-deliverybackend-production.up.railway.app/$endpoint/$id'),
       headers: {
         'Authorization': 'Bearer $token', // Incluimos el token en el encabezado
         'Content-Type': 'application/json',
@@ -27,8 +29,18 @@ Future<T> fetchEntityById<T>(String id, String endpoint, T Function(Map<String, 
     );
 
     if (response.statusCode == 200) {
+      print('Dentro del if $endpoint/$id');
       final jsonData = jsonDecode(response.body);
-      final entityData = jsonData['value']; // Acceder al objeto dentro de "value"
+      print('1');
+      print(response.body);
+      print('2');
+      print(jsonData);
+      final entityData =
+          jsonData; // Acceder al objeto dentro de "value"
+          print('3');
+      print(entityData);
+      print('4');
+      print(fromJson(entityData));
       return fromJson(entityData);
     } else {
       print("Failed to fetch entity, status code: ${response.statusCode}");

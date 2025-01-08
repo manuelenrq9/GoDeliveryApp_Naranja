@@ -16,7 +16,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   late Future<List<Product>> futureProducts;
   late final DataService<Product> _productService = DataService<Product>(
-      endpoint: '/product',
+      endpoint: '/product/many',
       repository: GenericRepository<Product>(
         storageKey: 'products',
         fromJson: (json) => Product.fromJson(json),

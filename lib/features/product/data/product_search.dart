@@ -12,7 +12,7 @@ class ProductListSearch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productService = DataService<Product>(
-      endpoint: '/product?name=$searchText',
+      endpoint: '/product/many?name=$searchText',
       repository: GenericRepository<Product>(
         storageKey: 'products',
         fromJson: (json) => Product.fromJson(json),

@@ -20,7 +20,7 @@ class _ComboCatalogScreenState extends State<ComboCatalogScreen> {
 
   // Instancia de DataService<Combo>
   final DataService<Combo> comboService = DataService<Combo>(
-    endpoint: '/combo',
+    endpoint: '/bundle/many',
     repository: GenericRepository<Combo>(
       storageKey: 'combos',
       fromJson: Combo.fromJson,

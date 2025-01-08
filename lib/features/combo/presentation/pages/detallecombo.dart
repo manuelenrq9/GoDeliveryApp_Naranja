@@ -27,7 +27,6 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
   num price = 0;
   late Future<List<Product>> _productsFuture;
   bool isAddedToCart = false;
-  
 
   @override
   void initState() {
@@ -91,11 +90,10 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
   Future<List<Product>> getProductsForCombo() async {
     return await getEntitiesByIds<Product>(
       widget.combo.products,
-      'product',
+      'product/one',
       (json) => Product.fromJson(json),
     );
   }
-
 
   // Función para mostrar la imagen en tamaño grande con zoom
   void _showLargeImage(BuildContext context, String imageUrl) {
@@ -274,7 +272,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                               );
                             }
                             return Center(
-                                child: Text('Error: ${snapshot.error}'));
+                                child: Text('Errorr: ${snapshot.error}'));
                           }
 
                           if (!snapshot.hasData || snapshot.data!.isEmpty) {

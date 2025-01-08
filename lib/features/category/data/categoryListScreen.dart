@@ -14,7 +14,7 @@ class CategoryListScreen extends StatefulWidget {
 class _CategoryListScreenState extends State<CategoryListScreen> {
   late Future<List<Category>> futureCategories = Future.value([]);
   late final DataService<Category> _categoryService = DataService<Category>(
-    endpoint: '/category',
+    endpoint: '/category/many',
     repository: GenericRepository<Category>(
       storageKey: 'categories',
       fromJson: (json) => Category.fromJson(json),
