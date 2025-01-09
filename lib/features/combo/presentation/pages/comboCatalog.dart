@@ -20,7 +20,7 @@ class _ComboCatalogScreenState extends State<ComboCatalogScreen> {
 
   // Instancia de DataService<Combo>
   final DataService<Combo> comboService = DataService<Combo>(
-    endpoint: '/combo',
+    endpoint: '/bundle/many',
     repository: GenericRepository<Combo>(
       storageKey: 'combos',
       fromJson: Combo.fromJson,
@@ -79,9 +79,9 @@ class _ComboCatalogScreenState extends State<ComboCatalogScreen> {
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, // Número de columnas
-                crossAxisSpacing: 10, // Espaciado horizontal entre columnas
-                mainAxisSpacing: 10, // Espaciado vertical entre filas
-                childAspectRatio: 0.70, // Relación de aspecto de las tarjetas
+                crossAxisSpacing: 1, // Espaciado horizontal entre columnas
+                mainAxisSpacing: 1, // Espaciado vertical entre filas
+                childAspectRatio: 0.85, // Relación de aspecto de las tarjetas
               ),
               itemCount: combos.length,
               itemBuilder: (context, index) {

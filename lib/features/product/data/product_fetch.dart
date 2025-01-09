@@ -17,7 +17,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   late Future<List<Product>> futureProducts;
   
   late final DataService<Product> _productService = DataService<Product>(
-      endpoint: '/product',
+      endpoint: '/product/many',
       repository: GenericRepository<Product>(
         storageKey: 'products',
         fromJson: (json) => Product.fromJson(json),
@@ -44,6 +44,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       future: futureProducts,
       builder: (context, snapshot) {
         if (snapshot.hasData){
+          print(snapshot.data);
           return Wrap(
         children: snapshot.data!.map((product) => ProductItem(product: product)).toList(),
       );

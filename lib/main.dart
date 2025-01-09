@@ -1,8 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
+import 'package:godeliveryapp_naranja/core/http.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = MyHttpOverrides();
+  final converter = CurrencyConverter();
+  await converter.updateRates();
   runApp(const MyApp());
 }
 

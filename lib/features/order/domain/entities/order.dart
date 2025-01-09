@@ -1,87 +1,137 @@
+// import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
+// import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
+// import 'package:godeliveryapp_naranja/features/order/domain/entities/orderPayment.dart';
+// import 'package:godeliveryapp_naranja/features/order/domain/entities/orderReport.dart';
+
+// class Order{
+//   final String id;
+//   final DateTime createdDate;
+//   final String status;
+//   final String address;
+//   final List<CartProduct> products;
+//   final List<CartCombo> combos;
+//   final DateTime receivedDate;
+//   final List<OrderPayment> paymentMethod;
+//   final List<OrderReport> report;
+
+//   const Order({
+//     required this.id,
+//     required this.createdDate,
+//     required this.status,
+//     required this.address,
+//     required this.products,
+//     required this.combos,
+//     required this.receivedDate,
+//     required this.paymentMethod,
+//     required this.report
+//   });
+
+// // Deserialización del JSON
+// factory Order.fromJson(Map<String, dynamic> json) {
+//     return Order(
+//         id: json['id'] as String,
+//         createdDate: json['createdDate'] as DateTime,
+//         status: json['status'] as String,
+//         address: json['address'] as String,
+//         products: List<CartProduct>.from(json['products'] ?? []),
+//         combos: List<CartCombo>.from(json['combos'] ?? []),
+//         paymentMethod: List<OrderPayment>.from(json['paymentMethod'] ?? []),
+//         report: List<OrderReport>.from(json['report'] ?? []),
+//         receivedDate: json['receivedDate'] as DateTime,
+//         );
+//   }
+
+//   // Serialización del objeto a JSON
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'createdDate': createdDate,
+//       'status': status,
+//       'address': address,
+//       'products': products,
+//       'combos': combos,
+//       'receivedDate': receivedDate,
+//       'paymentMethod': paymentMethod,
+//       'report': report,
+//     };
+//   }
+
+// }
+
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/orderPayment.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/orderReport.dart';
 
-class Order{
+class Order {
   final String id;
   final DateTime createdDate;
-  final DateTime receivedDate;
   final String status;
   final String address;
   final List<CartProduct> products;
   final List<CartCombo> combos;
-  final List<OrderPayment>? paymentMethod;
-  final List<OrderReport>? report;
+  final DateTime receivedDate;
+  final List<OrderPayment> paymentMethod;
+  final List<OrderReport> report;
 
   const Order({
     required this.id,
     required this.createdDate,
-    required this.receivedDate,
     required this.status,
     required this.address,
     required this.products,
     required this.combos,
-    this.paymentMethod,
-    this.report,
+    required this.receivedDate,
+    required this.paymentMethod,
+    required this.report,
   });
 
-// Deserialización del JSON
-factory Order.fromJson(Map<String, dynamic> json) {
-    print("empieza factory");
-    var order = Order(
-        id: json['id'] as String,
-        createdDate: DateTime.parse(json['createdDate'] as String),
-        receivedDate: DateTime.parse(json['receivedDate'] as String),
-        status: json['status'] as String,
-        address: json['address'] as String,
-        products: (json['products'] as List<dynamic>?)
-            ?.map((item) => CartProduct(
-                id: item['id'] as String,
-                quantity: item['quantity'] as int,
-            ))
-            .toList() ?? [],
-        combos: (json['combos'] as List<dynamic>?)
-            ?.map((item) => CartCombo(
-                id: item['id'] as String,
-                quantity: item['quantity'] as int,
-            ))
-            .toList() ?? [],
-        );
-    var products = order.products;
-    products.forEach((product){
-      print(product.id);
-      print(product.quantity);
-    });
-    var combos = order.combos;
-    combos.forEach((combo){
-      print(combo.id);
-      print(combo.quantity);
-    });
-    print(order.status);
-    print("termina factory");
-    print("");
-    print("");
-    print("");
-    print("");
-    print("");
-    print("");
-    return order;
+  factory Order.fromJson(Map<String, dynamic> json) {
+    try {
+      return Order(
+        id: json['id'] ?? '',
+        createdDate: DateTime.parse(json['createdDate']),
+        status: json['status'] ?? 'UNKNOWN',
+        address: json['address'] ?? 'Sin dirección',
+        receivedDate: DateTime.parse(json['receivedDate']),
+        
+        // Conversión correcta de productos y combos
+        products: (json['products'] as List<dynamic>)
+            .map((item) => CartProduct.fromJson(item))
+            .toList(),
+        combos: (json['combos'] as List<dynamic>)
+            .map((item) => CartCombo.fromJson(item))
+            .toList(),
+
+        // ✅ Conversión corregida para objetos individuales
+        paymentMethod: json['paymentMethod'] != null
+            ? [OrderPayment.fromJson(json['paymentMethod'])]
+            : [],
+        report: json['report'] != null
+            ? [OrderReport.fromJson(json['report'])]
+            : [],
+      );
+    } catch (e) {
+      print("Error al deserializar Order: $e");
+      throw Exception("Error al procesar el JSON de Order");
+    }
   }
 
-  // Serialización del objeto a JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'createdDate': createdDate,
+      'createdDate': createdDate.toIso8601String(),
       'status': status,
       'address': address,
-      'products': products,
-      'combos': combos,
-      'receivedDate': receivedDate,
-      'paymentMethod': paymentMethod,
-      'report': report,
+      'receivedDate': receivedDate.toIso8601String(),
+      'products': products.map((product) => product.toJson()).toList(),
+      'combos': combos.map((combo) => combo.toJson()).toList(),
+      'paymentMethod': paymentMethod.isNotEmpty 
+          ? paymentMethod.first.toJson()
+          : null,
+      'report': report.isNotEmpty 
+          ? report.first.toJson()
+          : null,
     };
   }
-
 }

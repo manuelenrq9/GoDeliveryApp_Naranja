@@ -1,3 +1,4 @@
+import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/domain/cart_item_data.dart';
 
@@ -16,6 +17,7 @@ class CartRepository extends GenericRepository<CartItemData> {
     if (index != -1) {
       items[index].quantity += item.quantity;
     } else {
+      CounterManager().increment();
       items.add(item);
     }
     await saveData(items);

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
+import 'package:godeliveryapp_naranja/core/dataID.services.dart';
 import 'package:godeliveryapp_naranja/features/discount/domain/discount.dart';
 import 'discount_logic.dart'; // Importamos la lógica de descuento
-import 'package:godeliveryapp_naranja/features/discount/data/discount_fetchID.dart'; // Para obtener descuento por ID
 
 class DiscountPriceMenu extends StatelessWidget {
   final num specialPrice;
@@ -17,34 +18,41 @@ class DiscountPriceMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+  final converter = CurrencyConverter();
+
     // Usamos FutureBuilder para manejar la obtención del descuento asíncrona
     return FutureBuilder<Discount>(
-      future: fetchDiscountById(discountId), // Obtenemos el descuento por ID
+      future: fetchEntityById<Discount>(
+        discountId ?? '', // Si el ID es null, se pasa una cadena vacía
+        'discount/one',       // Endpoint específico para descuentos
+        (json) => Discount.fromJson(json),
+      ),
       builder: (context, snapshot) {
-        // Si está esperando la respuesta del Future
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: Colors.orange));
+          return const Center(
+            child: CircularProgressIndicator(color: Colors.orange),
+          );
         }
 
-        // Si hubo un error o no se obtuvo un descuento válido
-        if (snapshot.hasError || !snapshot.hasData) {
-          return _buildPriceDisplay(specialPrice, null);
+        num priceInUSD = specialPrice;
+        num? discountedPrice = specialPrice;
+
+        if (snapshot.hasData) {
+          final discount = snapshot.data!;
+          discountedPrice = getDiscountedPrice(specialPrice, discount);
         }
 
-        // Si hay datos, verificamos el descuento y calculamos el precio
-        Discount discount = snapshot.data!;
-
-        // Validamos si el descuento es válido
-        num discountedPrice = getDiscountedPrice(specialPrice, discount);
-
-        // Mostrar el precio original y el precio con descuento
-        return _buildPriceDisplay(specialPrice, discountedPrice);
+        return _buildPriceDisplay(
+          converter.convert(priceInUSD.toDouble()), // Convertir precios
+          discountedPrice != null ? converter.convert(discountedPrice.toDouble()) : null,
+          converter.selectedCurrency,
+        );
       },
     );
   }
 
   // Método que construye la visualización del precio, manteniendo el estilo consistente
-  Widget _buildPriceDisplay(num originalPrice, num? discountedPrice) {
+  Widget _buildPriceDisplay(num originalPrice, num? discountedPrice, String currency) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,  // Alineamos todo a la izquierda
       children: [

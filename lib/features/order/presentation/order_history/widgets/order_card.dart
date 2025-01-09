@@ -2,8 +2,54 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/item_names_builder.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-class OrderCard extends StatelessWidget {
+enum OrderStatus {
+  CREATED,
+  BEING_PROCESSED,
+  SHIPPED,
+  DELIVERED,
+  CANCELLED,
+}
+
+// Method to convert String to OrderStatus
+OrderStatus orderStatusFromString(String status) {
+  switch (status.toUpperCase()) {
+    case 'CREATED':
+      return OrderStatus.CREATED;
+    case 'BEING PROCESSED':
+      return OrderStatus.BEING_PROCESSED;
+    case 'SHIPPED':
+      return OrderStatus.SHIPPED;
+    case 'DELIVERED':
+      return OrderStatus.DELIVERED;
+    case 'CANCELLED':
+      return OrderStatus.CANCELLED;
+    default:
+      throw Exception('Unknown status: $status');
+  }
+}
+
+Color getStatusColor(String status) {
+  switch (status.toUpperCase()) {
+    case 'CREATED':
+      return Color.fromARGB(255, 233, 86, 135);
+    case 'BEING PROCESSED':
+      return Color.fromARGB(255, 98, 91, 190);
+    case 'SHIPPED':
+      return Color.fromARGB(255, 5, 158, 120);
+    case 'DELIVERED':
+      return Colors.green;
+    case 'CANCELLED':
+      return Colors.red;
+    default:
+      throw Exception('Unknown status: $status');
+  }
+}
+
+class OrderCard extends StatefulWidget {
   final Order order;
 
   const OrderCard({
@@ -11,16 +57,38 @@ class OrderCard extends StatelessWidget {
     required this.order,
   }) : super(key: key);
 
-  List<String> orderItemsToString (){
-    List<String> items = [];
-    List<CartProduct> products = order.products; 
-    List<CartCombo> combos = order.combos;
-    return items;
+  @override
+  State<OrderCard> createState() => _OrderCardState();
+}
+
+class _OrderCardState extends State<OrderCard> {
+  late String status = widget.order.status;
+  late OrderStatus _status = orderStatusFromString(status);
+  late Color statusColor = getStatusColor(status);
+  String createdDate = '';
+  String deliveredDate = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Convert the string status to an enum
+    _status = orderStatusFromString(widget.order.status);
+    initializeDateFormatting('es_ES').then((_){
+      setState(() {
+        createdDate = formatDate(widget.order.createdDate);
+        deliveredDate = formatDate(widget.order.receivedDate);
+      });
+    });
+  } 
+
+  String formatDate(DateTime dateTime) {
+    // Format the DateTime object into the desired format in Spanish
+    return DateFormat('EEE dd MMM yyyy', 'es_ES').format(dateTime);
   }
 
   num getPrice(){
     num total = 0;
-    List<CartProduct> products = order.products;
+    List<CartProduct> products = widget.order.products;
     products.forEach((product){
       // total += product.price;
     });
@@ -29,12 +97,14 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String orderId = order.id;
+    String orderId = widget.order.id;
+    String formatedId = orderId.length>8
+      ? orderId.substring(0,8) : orderId;
     num price = getPrice();
-    List<String> items = orderItemsToString();
-    String status = order.status;
-    final isDelivered = status == 'Delivered';
-    String deliveryTime = order.receivedDate.toString();
+    List<CartProduct> products = widget.order.products;
+    List<CartCombo> combos = widget.order.combos; 
+
+    
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       elevation: 3,
@@ -50,7 +120,7 @@ class OrderCard extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    order.createdDate.toString(),
+                    createdDate,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -78,7 +148,7 @@ class OrderCard extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    'Order #$orderId',
+                    'Order #$formatedId',
                     style: const TextStyle(
                       color: Color(0xFFFF7000),
                       fontSize: 14,
@@ -92,7 +162,7 @@ class OrderCard extends StatelessWidget {
                     status,
                     style: const TextStyle(color: Colors.white),
                   ),
-                  backgroundColor: isDelivered ? Colors.green : Colors.red,
+                  backgroundColor: statusColor,
                 ),
               ],
             ),
@@ -106,19 +176,9 @@ class OrderCard extends StatelessWidget {
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                Wrap(
-                  spacing: 8,
-                  children: items
-                      .map((item) => Chip(
-                            label: Text(
-                              item,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            backgroundColor:
-                                Colors.grey.shade200.withOpacity(0.5),
-                          ))
-                      .toList(),
-                ),
+                Wrap(children: [
+                  ItemNamesBuilder(products: products, combos: combos),
+                ],),
               ],
             ),
             const SizedBox(height: 8),
@@ -127,9 +187,43 @@ class OrderCard extends StatelessWidget {
               children: [
                 const Icon(Icons.schedule, size: 18, color: Colors.grey),
                 const SizedBox(width: 4),
+                if (status=="DELIVERED")
                 Flexible(
                   child: Text(
-                    'Entrega estimada: $deliveryTime',
+                    'Entregado el: $deliveredDate',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                if (status=="CANCELLED")
+                Flexible(
+                  child: Text(
+                    'Pedido cancelado',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                if (status=="BEING PROCESSED")
+                Flexible(
+                  child: Text(
+                    'tu pedido esta siendo procesado...',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                if (status=="SHIPPED")
+                Flexible(
+                  child: Text(
+                    'Tu pedido ha sido enviado a su destino...',
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.grey,
@@ -141,48 +235,152 @@ class OrderCard extends StatelessWidget {
             ),
             const Divider(),
             // Botones de acciones
-            Row(
+            ButtonsByStatus(), 
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget ButtonsByStatus() {
+    switch (_status) {
+      case OrderStatus.CREATED:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [],
+        );
+      case OrderStatus.BEING_PROCESSED:
+        return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (isDelivered)
                   Flexible(
                     child: OutlinedButton.icon(
                       onPressed: () {},
-                      icon: const Icon(Icons.refresh, color: Colors.redAccent),
-                      label: const Text('Solicitar reembolso'),
+                      icon: const Icon(Icons.cancel, color: Colors.redAccent),
+                      label: const Text(
+                        'Cancelar pedido',
+                        style: TextStyle(fontSize: 12),
+                        ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.redAccent,
                         side: const BorderSide(color: Colors.redAccent),
                       ),
                     ),
                   ),
+                  SizedBox(width: 5,),
                 Flexible(
                   child: OutlinedButton.icon(
                     onPressed: () {},
                     icon: Icon(
-                      isDelivered ? Icons.shopping_cart : Icons.error_outline,
-                      color: isDelivered
-                          ? const Color(0xFFFF7000)
-                          : const Color(0xFFB71C1C),
+                      Icons.location_on ,
+                      color: const Color(0xFFFF7000)    
                     ),
                     label: Text(
-                      isDelivered ? 'Reordenar' : 'Reportar problema',
+                      'Hacer seguimiento',
+                      style: TextStyle(fontSize: 11),
                     ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: isDelivered
-                          ? const Color(0xFFFF7000)
-                          : const Color(0xFFB71C1C),
-                      side: isDelivered
-                          ? const BorderSide(color: Color(0xFFFF7000))
-                          : null,
+                      foregroundColor:  const Color(0xFFFF7000),
+                      side:const BorderSide(color: Color(0xFFFF7000)),  
                     ),
                   ),
                 ),
               ],
-            ),
-          ],
-        ),
-      ),
-    );
+            );
+      case OrderStatus.SHIPPED:
+        return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                  Flexible(
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.cancel, color: Colors.redAccent),
+                      label: const Text(
+                        'Cancelar pedido',
+                        style: TextStyle(fontSize: 12),
+                        ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        side: const BorderSide(color: Colors.redAccent),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 5,),
+                Flexible(
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.location_on ,
+                      color: const Color(0xFFFF7000)    
+                    ),
+                    label: Text(
+                      'Hacer seguimiento',
+                      style: TextStyle(fontSize: 11),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor:  const Color(0xFFFF7000),
+                      side:const BorderSide(color: Color(0xFFFF7000)),  
+                    ),
+                  ),
+                ),
+              ],
+            );
+      case OrderStatus.DELIVERED:
+        return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                  Flexible(
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.refresh, color: Colors.redAccent),
+                      label: const Text('Solicitar reembolso',
+                      style: TextStyle(fontSize: 12),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        side: const BorderSide(color: Colors.redAccent),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 1,),
+                Flexible(
+                  child: OutlinedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.shopping_cart ,
+                      color: const Color(0xFFFF7000)    
+                    ),
+                    label: Text(
+                      'Reordenar',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor:  const Color(0xFFFF7000),
+                      side:const BorderSide(color: Color(0xFFFF7000))   
+                    ),
+                  ),
+                ),
+              ],
+            );
+      case OrderStatus.CANCELLED:
+        return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                  Flexible(
+                    child: OutlinedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.warning, color: Colors.redAccent),
+                      label: const Text('Reportar problema'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        side: const BorderSide(color: Colors.redAccent),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+      default:
+        return Container(); // Return an empty container if no status matches
+    }
   }
 }
