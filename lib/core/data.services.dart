@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DataService<T> {
   static const String baseUrl =
       'https://orangeteam-deliverybackend-production.up.railway.app';
+  // 'https://amarillo-backend-production.up.railway.app';
   //'http://192.168.68.113:3000';
   final String endpoint;
   final GenericRepository<T> repository;
@@ -36,7 +37,8 @@ class DataService<T> {
       if (token == null) {
         throw Exception('No hay token de autenticación');
       }
-
+      print('FINAL');
+      print(apiUrl);
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
@@ -47,10 +49,9 @@ class DataService<T> {
       );
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
-        // print("mostrando el jsonData ${jsonData}");
-        final List<dynamic> items = jsonData['${repository.storageKey}'];
-        print("El endpoint es ${endpoint}");
-        print("Items antes de deserializar: $items");
+        final List<dynamic> items = jsonData; //['${repository.storageKey}'];
+        print(endpoint);
+        print(items);
         return items.map((item) => fromJson(item)).toList();
       } else {
         throw Exception('Failed to fetch data');

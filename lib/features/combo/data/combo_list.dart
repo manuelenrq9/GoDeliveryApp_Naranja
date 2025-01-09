@@ -14,7 +14,7 @@ class ComboListScreen extends StatefulWidget {
 class _ComboListScreenState extends State<ComboListScreen> {
   late Future<List<Combo>> futureCombos = Future.value([]);
   final DataService<Combo> comboService = DataService<Combo>(
-    endpoint: '/combo',
+    endpoint: '/bundle/many',
     repository: GenericRepository<Combo>(
       storageKey: 'combos',
       fromJson: Combo.fromJson,

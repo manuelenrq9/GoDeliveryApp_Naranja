@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/titulo_lista.dart';
+import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/combo/presentation/pages/comboCatalog.dart';
 import 'package:godeliveryapp_naranja/features/product/presentation/pages/ProductCatalago.dart';
 import 'package:godeliveryapp_naranja/features/combo/data/combo_list.dart';
@@ -18,8 +20,25 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
+  late String selectedCurrency;
   // Variable para controlar el índice seleccionado en el BottomNavigationBar
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeCurrency(); // Inicializa la moneda seleccionada
+    CounterManager().loadCounterFromStorage();
+  }
+
+  // Cargar la moneda seleccionada
+  Future<void> _initializeCurrency() async {
+    final converter = CurrencyConverter();
+    setState(() {
+      selectedCurrency = converter.selectedCurrency; // Carga la moneda actual
+    });
+    print('MONEDA ${selectedCurrency}');
+  }
 
   // Función para manejar el cambio de índice
   void _onTap(int index) {

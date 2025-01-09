@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'cart_item.dart';
 import '../../domain/cart_item_data.dart';
 
@@ -34,6 +35,7 @@ class CartItemsList extends StatelessWidget {
               SlidableAction(
                 onPressed: (context) {
                   // Llamar a la función para eliminar el producto
+                  CounterManager().decrement();
                   onRemoveItem(index);
                 },
                 backgroundColor: Colors.red,
