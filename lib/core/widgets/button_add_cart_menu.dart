@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/add_to_cart.dart';
 
 class ButtonAddCartMenu extends StatefulWidget {
@@ -28,7 +29,6 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
   Timer?
       _debounceTimer; // Timer para esperar 2 segundos después de dejar de presionar
   bool _isAddingToCart = false; // Estado para saber si ya se añadió al carrito
-  
 
   // Lógica para agregar al carrito usando AddToCartLogic
   Future<void> _sendToCart() async {
@@ -50,10 +50,75 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
         showSnackBar: (message) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                  '${widget.product?.name ?? widget.combo?.name} añadido al carrito'),
-              duration: const Duration(seconds: 2),
+              content: Row(
+                children: [
+                  if (widget.product != null &&
+                      widget.product!.image.isNotEmpty)
+                    Image.network(
+                      widget.product!.image.first,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                    )
+                  else if (widget.combo != null &&
+                      widget.combo!.comboImage.isNotEmpty)
+                    Image.network(
+                      widget.combo!.comboImage.first,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                    )
+                  else
+                    Container(width: 48, height: 48),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${widget.product != null ? widget.product!.name : widget.combo!.name} añadido al carrito',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Cantidad: $_quantity',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        Text(
+                          'Precio: \$${(widget.product?.price ?? widget.combo?.specialPrice ?? 0).toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              duration: const Duration(seconds: 3),
               backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              action: SnackBarAction(
+                label: 'Ir al carrito',
+                textColor: Colors.white,
+                onPressed: () {
+                  // Navegar a la pantalla del carrito
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CartScreen()),
+                  );
+                },
+              ),
             ),
           );
         },
@@ -124,7 +189,6 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
       onTap: () {
         if (!_isAddingToCart) {
           _expandAndReset();
-          
         }
       },
       child: AnimatedContainer(
@@ -142,8 +206,10 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
               Container(
                 height: 30,
                 child: OverflowBox(
-                  maxWidth: double.infinity,  // Permite que el contenido sobrepase el ancho del contenedor
-                  maxHeight: double.infinity, // Permite que el contenido sobrepase el alto del contenedor
+                  maxWidth: double
+                      .infinity, // Permite que el contenido sobrepase el ancho del contenedor
+                  maxHeight: double
+                      .infinity, // Permite que el contenido sobrepase el alto del contenedor
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

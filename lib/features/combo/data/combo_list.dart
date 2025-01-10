@@ -4,6 +4,7 @@ import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/combo/presentation/widgets/combo_card.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
+
 class ComboListScreen extends StatefulWidget {
   const ComboListScreen({super.key});
 
@@ -26,7 +27,7 @@ class _ComboListScreenState extends State<ComboListScreen> {
   @override
   void initState() {
     super.initState();
-     loadCombos(); // Llama a loadCombos al iniciar la pantalla
+    loadCombos(); // Llama a loadCombos al iniciar la pantalla
   }
 
   void loadCombos() async {
@@ -34,11 +35,11 @@ class _ComboListScreenState extends State<ComboListScreen> {
     setState(() {});
   }
 
-
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    double containerHeight = screenHeight * 0.38; // 38% de la altura de la pantalla
+    double containerHeight =
+        screenHeight * 0.38; // 38% de la altura de la pantalla
 
     return SizedBox(
       height: containerHeight, // Limita la altura de ComboListScreen
@@ -47,7 +48,8 @@ class _ComboListScreenState extends State<ComboListScreen> {
         builder: (context, snapshot) {
           // Verifica el estado de la conexión y muestra el cargador mientras espera
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.orange));
+            return const Center(
+                child: CircularProgressIndicator(color: Colors.orange));
           }
 
           // Si ocurre un error
@@ -61,7 +63,8 @@ class _ComboListScreenState extends State<ComboListScreen> {
             return ListView(
               scrollDirection: Axis.horizontal,
               children: combos.map((combo) {
-                return ComboCard(combo: combo); // Se crea una tarjeta para cada combo
+                return ComboCard(
+                    combo: combo); // Se crea una tarjeta para cada combo
               }).toList(),
             );
           }
