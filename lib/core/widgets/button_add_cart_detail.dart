@@ -56,7 +56,7 @@ class _AddToCartButtonState extends State<AddToCartButton>
     return AnimatedScale(
       scale: _isAdding ? _scaleAnimation.value : 1.0,
       duration: const Duration(milliseconds: 200),
-      child: ElevatedButton.icon(
+      child: ElevatedButton(
         onPressed: _isAdding
             ? null // Deshabilitar el botón mientras se está añadiendo
             : () async {
@@ -74,26 +74,33 @@ class _AddToCartButtonState extends State<AddToCartButton>
                       widget.combo?.specialPrice ??
                       0),
                   resetQuantity: widget.resetQuantity,
-                  showSnackBar: (message) {
+                  showSnackBar: (message) async {
+                    await Future.delayed(const Duration(seconds: 2));
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Row(
                           children: [
                             if (widget.product != null &&
                                 widget.product!.image.isNotEmpty)
-                              Image.network(
-                                widget.product!.image.first,
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.cover,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: Image.network(
+                                  widget.product!.image.first,
+                                  width: 58,
+                                  height: 58,
+                                  fit: BoxFit.cover,
+                                ),
                               )
                             else if (widget.combo != null &&
                                 widget.combo!.comboImage.isNotEmpty)
-                              Image.network(
-                                widget.combo!.comboImage.first,
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.cover,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(30),
+                                child: Image.network(
+                                  widget.combo!.comboImage.first,
+                                  width: 58,
+                                  height: 58,
+                                  fit: BoxFit.cover,
+                                ),
                               )
                             else
                               Container(width: 48, height: 48),
@@ -107,29 +114,15 @@ class _AddToCartButtonState extends State<AddToCartButton>
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
-                                    overflow: TextOverflow.ellipsis,
+                                    overflow: TextOverflow.fade,
                                   ),
                                   const SizedBox(height: 4),
-                                  Text(
-                                    'Cantidad: ${widget.quantity}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Precio: \$${widget.price.toStringAsFixed(2)}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                        duration: const Duration(seconds: 3),
+                        duration: const Duration(seconds: 4),
                         backgroundColor: Colors.green,
                         behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
@@ -159,11 +152,23 @@ class _AddToCartButtonState extends State<AddToCartButton>
                   _controller.reverse(); // Revertir la animación de escala
                 });
               },
-        icon: const Icon(Icons.shopping_cart, color: Colors.white),
-        label: const Text(
-          'Añadir al carrito',
-          style: TextStyle(color: Colors.white, fontSize: 14),
-        ),
+        child: _isAdding
+            ? const Icon(
+                Icons.shopping_cart_checkout_sharp,
+                color: Colors.black,
+                size: 32, // Tamaño más grande del icono
+              )
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.shopping_cart, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text(
+                    'Añadir al carrito',
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ],
+              ),
         style: ElevatedButton.styleFrom(
           backgroundColor: _isAdding ? Colors.green : const Color(0xFFFF9027),
           padding: const EdgeInsets.symmetric(vertical: 14),

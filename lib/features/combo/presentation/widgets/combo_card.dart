@@ -96,8 +96,7 @@ class ComboCard extends StatelessWidget {
                   DiscountPriceMenu(
                       specialPrice: combo.specialPrice,
                       discountId: combo.discount,
-                      currency: combo.currency
-                    ),
+                      currency: combo.currency),
                 ],
               ),
             ),

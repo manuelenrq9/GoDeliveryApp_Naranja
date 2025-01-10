@@ -16,19 +16,21 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isLoading = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Controlador para el campo de fecha nacimiento
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   String? _region;
   String? _emailErrorMessage;
-  
+  String _selectedCountryCode = '+1';
+
   @override
   void dispose() {
     _dateController.dispose();
@@ -40,18 +42,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-
-
-  // Método para realizar la validación y enviar los datos
- // Método para realizar la validación y enviar los datos
   void _register() async {
     if (_formKey.currentState?.validate() ?? false) {
       if (_emailErrorMessage != null) {
-        // Si hay un error de correo, no permitir el registro
         return;
       }
 
-      // Continuar con el proceso de registro
       final email = _emailController.text;
 
       try {
@@ -68,64 +64,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'name': _nameController.text,
           'email': email,
           'password': _passwordController.text,
-          'phone': _phoneController.text,
+          'phone': '$_selectedCountryCode${_phoneController.text}',
           'type': 'CLIENT',
         };
 
         final response = await http.post(
-          Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/auth/register'),
+          Uri.parse(
+              'https://orangeteam-deliverybackend-production.up.railway.app/auth/register'),
           headers: {'accept': '*/*', 'Content-Type': 'application/json'},
           body: json.encode(newUser),
         );
 
         if (response.statusCode == 201) {
-          showLoadingScreen(context, destination: const RegisterSuccessScreen());
+          showLoadingScreen(context,
+              destination: const RegisterSuccessScreen());
         } else {
-          // Mostrar mensaje genérico de error
           setState(() {
             _emailErrorMessage = 'Error al crear cuenta. Intenta nuevamente.';
           });
         }
       } catch (e) {
         setState(() {
-          _emailErrorMessage = 'Ocurrió un error. Por favor verifica tu conexión.';
+          _emailErrorMessage =
+              'Ocurrió un error. Por favor verifica tu conexión.';
         });
       }
     }
   }
 
-
-  // void _register() async {
-  //   if (_formKey.currentState?.validate() ?? false) {
-  //     // Si la validación es correcta, enviar los datos
-  //     final newUser = {
-  //       'name': _nameController.text,
-  //       'email': _emailController.text,
-  //       'password': _passwordController.text,
-  //       'phone': _phoneController.text,
-  //       'type': 'CLIENT', // Tipo siempre es CLIENT
-  //     };
-
-  //     try {
-  //       final response = await http.post(
-  //         Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/auth/register'),
-  //         headers: {'accept': '*/*', 'Content-Type': 'application/json'},
-  //         body: json.encode(newUser),
-  //       );
-
-  //       if (response.statusCode == 201) {
-  //         // Si la respuesta es exitosa, redirige a la pantalla de éxito
-  //         showLoadingScreen(context, destination: const RegisterSuccessScreen());
-  //       } else {
-  //         _showErrorDialog('Error al crear cuenta. Intenta nuevamente.\n${response.body}');
-  //       }
-  //     } catch (e) {
-  //       _showErrorDialog('Ocurrió un error. Por favor verifica tu conexión.\n$e');
-  //     }
-  //   }
-  // }
-
-  // Método para mostrar el diálogo de error
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -145,35 +111,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<bool> isEmailAvailable(String email) async {
-  try {
-    final response = await http.get(
-      Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/User/byEmail/$email'),
-    );
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'https://orangeteam-deliverybackend-production.up.railway.app/User/byEmail/$email'),
+      );
 
-    if (response.statusCode == 500) {
-      // El servidor responde 500 si el correo no está registrado
-      return true;
-    } else if (response.statusCode == 200) {
-      // El servidor responde 200 si el correo ya está registrado
-      return false;
-    } else {
-      throw Exception('Error al verificar el correo electrónico');
+      if (response.statusCode == 500) {
+        return true;
+      } else if (response.statusCode == 200) {
+        return false;
+      } else {
+        throw Exception('Error al verificar el correo electrónico');
+      }
+    } catch (e) {
+      throw Exception('Error al conectar con el servidor: $e');
     }
-  } catch (e) {
-    throw Exception('Error al conectar con el servidor: $e');
   }
-}
 
-Future<void> _validateEmail(String email) async {
-  if (email.isNotEmpty && RegExp(r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+').hasMatch(email)) {
-    final emailAvailable = await isEmailAvailable(email);
-    setState(() {
-      _emailErrorMessage = emailAvailable ? null : 'El correo electrónico ya está registrado.';
-    });
+  Future<void> _validateEmail(String email) async {
+    if (email.isNotEmpty &&
+        RegExp(r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+').hasMatch(email)) {
+      final emailAvailable = await isEmailAvailable(email);
+      setState(() {
+        _emailErrorMessage =
+            emailAvailable ? null : 'El correo electrónico ya está registrado.';
+      });
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +147,7 @@ Future<void> _validateEmail(String email) async {
       body: Center(
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey,  // Aquí se agrega el formulario
+            key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -200,8 +165,6 @@ Future<void> _validateEmail(String email) async {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Campo Nombre de Usuario
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -222,8 +185,6 @@ Future<void> _validateEmail(String email) async {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Correo Electronico
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -233,11 +194,13 @@ Future<void> _validateEmail(String email) async {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: _emailErrorMessage == null ? Colors.grey : Colors.red,
+                          color: _emailErrorMessage == null
+                              ? Colors.grey
+                              : Colors.red,
                         ),
                       ),
                       prefixIcon: const Icon(Icons.email),
-                      errorText: _emailErrorMessage, // Muestra el mensaje de error
+                      errorText: _emailErrorMessage,
                     ),
                     onChanged: (value) {
                       _validateEmail(value);
@@ -247,37 +210,13 @@ Future<void> _validateEmail(String email) async {
                         return 'Por favor ingresa tu correo.';
                       }
                       if (_emailErrorMessage != null) {
-                        return _emailErrorMessage; // Valida si hay un error ya establecido
+                        return _emailErrorMessage;
                       }
                       return null;
                     },
                   ),
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                //   child: TextFormField(
-                //     controller: _emailController,
-                //     decoration: InputDecoration(
-                //       hintText: 'Correo Electronico',
-                //       border: OutlineInputBorder(
-                //         borderRadius: BorderRadius.circular(10),
-                //       ),
-                //       prefixIcon: const Icon(Icons.email),
-                //     ),
-                //     validator: (value) {
-                //       if (value == null || value.isEmpty) {
-                //         return 'Por favor ingresa tu correo';
-                //       }
-                //       if (!RegExp(r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+').hasMatch(value)) {
-                //         return 'Correo no válido';
-                //       }
-                //       return null;
-                //     },
-                //   ),
-                // ),
                 const SizedBox(height: 10),
-
-                // Campo Contraseña
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -291,7 +230,9 @@ Future<void> _validateEmail(String email) async {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -312,8 +253,6 @@ Future<void> _validateEmail(String email) async {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Confirmar Contraseña
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -327,11 +266,14 @@ Future<void> _validateEmail(String email) async {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isConfirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
-                            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                            _isConfirmPasswordVisible =
+                                !_isConfirmPasswordVisible;
                           });
                         },
                       ),
@@ -348,8 +290,6 @@ Future<void> _validateEmail(String email) async {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Región
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: DropdownButtonFormField<String>(
@@ -388,34 +328,113 @@ Future<void> _validateEmail(String email) async {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Teléfono
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextFormField(
-                    controller: _phoneController,
-                    decoration: InputDecoration(
-                      hintText: 'Teléfono',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedCountryCode,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          items: <String>[
+                            '+1', // USA
+                            '+52', // Mexico
+                            '+91', // India
+                            '+44', // UK
+                            '+81', // Japan
+                            '+58', // Venezuela
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            String flagUrl;
+                            switch (value) {
+                              case '+1':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/us.png'; // USA
+                                break;
+                              case '+52':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/mx.png'; // Mexico
+                                break;
+                              case '+91':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/in.png'; // India
+                                break;
+                              case '+44':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/gb.png'; // UK
+                                break;
+                              case '+81':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/jp.png'; // Japan
+                                break;
+                              case '+58':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/ve.png'; // Venezuela
+                                break;
+                              default:
+                                flagUrl =
+                                    'https://flagcdn.com/w320/default.png'; // Default flag
+                            }
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Row(
+                                children: [
+                                  Image.network(
+                                    flagUrl,
+                                    width: 19,
+                                    height: 19,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(value),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedCountryCode = newValue!;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor selecciona un prefijo';
+                            }
+                            return null;
+                          },
+                        ),
                       ),
-                      prefixIcon: const Icon(Icons.phone),
-                    ),
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa tu teléfono';
-                      }
-                      if (!RegExp(r'^\d+$').hasMatch(value)) {
-                        return 'Teléfono no válido';
-                      }
-                      return null;
-                    },
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 5,
+                        child: TextFormField(
+                          controller: _phoneController,
+                          decoration: InputDecoration(
+                            hintText: 'Teléfono',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            prefixIcon: const Icon(Icons.phone),
+                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor ingresa tu teléfono';
+                            }
+                            if (!RegExp(r'^\d+$').hasMatch(value)) {
+                              return 'Teléfono no válido';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Fecha de Nacimiento
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -438,13 +457,10 @@ Future<void> _validateEmail(String email) async {
                           return Theme(
                             data: ThemeData.light().copyWith(
                               colorScheme: const ColorScheme.light(
-                                primary: Color(0xFFFF7000), // Color naranja
-                                onPrimary: Color.fromARGB(255, 15, 15,
-                                    15), // Color del texto en el botón
-                                surface: Color.fromARGB(255, 255, 255,
-                                    255), // Color de fondo del calendario
-                                onSurface: Colors
-                                    .black, // Color del texto en el calendario
+                                primary: Color(0xFFFF7000),
+                                onPrimary: Color.fromARGB(255, 15, 15, 15),
+                                surface: Color.fromARGB(255, 255, 255, 255),
+                                onSurface: Colors.black,
                               ),
                               dialogBackgroundColor: Colors.white,
                             ),
@@ -469,35 +485,52 @@ Future<void> _validateEmail(String email) async {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Botón de Crear Cuenta
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF7000), 
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: _register, // Llamamos la función de registro
-                    child: const Text(
-                      'Crear Cuenta',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: _isLoading
+                        ? ElevatedButton(
+                            key: const ValueKey('loading'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                              minimumSize: const Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: () {},
+                            child: const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : ElevatedButton(
+                            key: const ValueKey('login'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFFF7000),
+                              minimumSize: const Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: _register,
+                            child: const Text(
+                              'Crear Cuenta',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Texto de ir al Login
                 TextButton(
                   onPressed: () {
-                    showLoadingScreen(context, destination: const LoginScreen());
+                    showLoadingScreen(context,
+                        destination: const LoginScreen());
                   },
                   child: const Text(
                     '¿Ya tienes cuenta? Inicia sesión',

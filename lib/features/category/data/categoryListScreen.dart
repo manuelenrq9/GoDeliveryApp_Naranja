@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/category/domain/category.dart';
@@ -23,15 +24,46 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
     fromJson: (json) => Category.fromJson(json),
   );
 
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     loadCategories();
+    startAutoScroll();
   }
 
   void loadCategories() async {
     futureCategories = _categoryService.loadData();
     setState(() {});
+  }
+
+  void startAutoScroll() {
+    Timer.periodic(Duration(seconds: 3), (Timer timer) {
+      if (_scrollController.hasClients) {
+        double maxScroll = _scrollController.position.maxScrollExtent;
+        double currentScroll = _scrollController.position.pixels;
+        double nextScroll = currentScroll + 200;
+
+        if (nextScroll > maxScroll) {
+          nextScroll = 0;
+          _scrollController.jumpTo(0); // Saltar al inicio sin animación
+        } else {
+          _scrollController.animateTo(
+            nextScroll,
+            duration: Duration(seconds: 1),
+            curve: Curves.easeInOut,
+          );
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -44,20 +76,20 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
           if (snapshot.hasData) {
             final categories = snapshot.data!;
             return ListView(
+              controller: _scrollController,
               scrollDirection: Axis.horizontal,
               children: categories.map((category) {
                 return CategoryCard(category: category);
               }).toList(),
             );
           } else if (snapshot.hasError) {
-            // Si hay un error, mostramos el mensaje de error
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          // Si está esperando la respuesta, mostramos un indicador de carga
           return const Center(
-              child: CircularProgressIndicator(
-            color: Colors.orange,
-          ));
+            child: CircularProgressIndicator(
+              color: Colors.orange,
+            ),
+          );
         },
       ),
     );

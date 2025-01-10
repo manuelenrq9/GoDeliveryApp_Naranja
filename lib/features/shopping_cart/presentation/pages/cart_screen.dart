@@ -3,8 +3,8 @@ import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
-import 'package:godeliveryapp_naranja/features/order/data/post_order.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
+
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/usecases/create_order.dart';
 import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/processorderscreen.dart';
@@ -25,6 +25,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  bool _isProcessing = false;
   late final CartRepository _cartRepository;
   List<CartItemData> cartItems = [];
   List<Product> products = [];
@@ -108,6 +109,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void _showClearCartDialog() {
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -289,22 +291,106 @@ class _CartScreenState extends State<CartScreen> {
                     onPressed: cartItems.isEmpty
                         ? null
                         : () async {
-                            getProducts();
-                            getCombos();
-                            final userId = await _getUserID();
-                            if (userId == null) {
-                              throw Exception('No hay usuario ID');
-                            }
-                            showLoadingScreen(context, destination: ProcessOrderScreen(
-                              cartItems: cartItems,
-                              products: getProducts(),
-                              combos: getCombos(),
-                              currency: 'USD', // La moneda
-                              totalDecimal: totalAmount+50,
-                              userId: userId,
+                            showDialog(
                               context: context,
-                            ));
-                            
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text(
+                                    'Resumen de tu orden',
+                                    style: TextStyle(
+                                      color: Color(0xFFFF7000),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      ...cartItems.map((item) => ListTile(
+                                            title: Text(item.name),
+                                            subtitle: Text(
+                                                'Cantidad: ${item.quantity}'),
+                                            trailing: Text(
+                                              '\$${(item.price * item.quantity).toStringAsFixed(2)}',
+                                            ),
+                                          )),
+                                      const Divider(),
+                                      SummaryRow(
+                                        label: 'Total con envío',
+                                        amount:
+                                            '\$${(totalAmount + 50).toStringAsFixed(2)}',
+                                        isTotal: true,
+                                      ),
+                                    ],
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text(
+                                        'Cancelar',
+                                        style: TextStyle(
+                                          color: Color(0xFFFF7000),
+                                        ),
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: cartItems.isEmpty
+                                          ? null
+                                          : () async {
+                                              setState(() {
+                                                _isProcessing = true;
+                                              });
+                                              getProducts();
+                                              getCombos();
+                                              final userId = await _getUserID();
+                                              if (userId == null) {
+                                                throw Exception(
+                                                    'No hay usuario ID');
+                                              }
+                                              await Future.delayed(
+                                                  const Duration(seconds: 2));
+                                              setState(() {
+                                                _isProcessing = false;
+                                              });
+                                              showLoadingScreen(context,
+                                                  destination:
+                                                      ProcessOrderScreen(
+                                                    cartItems: cartItems,
+                                                    products: getProducts(),
+                                                    combos: getCombos(),
+                                                    currency: 'USD',
+                                                    totalDecimal:
+                                                        totalAmount + 50,
+                                                    userId: userId,
+                                                    context: context,
+                                                  ));
+                                            },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            const Color(0xFFFF7000),
+                                      ),
+                                      child: _isProcessing
+                                          ? const CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Colors.white),
+                                            )
+                                          : const Text(
+                                              'Aceptar',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                    ),
+                                  ],
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                );
+                              },
+                            );
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF7000),
@@ -312,9 +398,18 @@ class _CartScreenState extends State<CartScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Procesar Orden',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: _isProcessing
+                          ? const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            )
+                          : const Text(
+                              'Procesar Orden',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white),
+                            ),
                     ),
                   ),
                 ],

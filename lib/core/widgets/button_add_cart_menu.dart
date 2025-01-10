@@ -54,19 +54,25 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
                 children: [
                   if (widget.product != null &&
                       widget.product!.image.isNotEmpty)
-                    Image.network(
-                      widget.product!.image.first,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Image.network(
+                        widget.product!.image.first,
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                      ),
                     )
                   else if (widget.combo != null &&
                       widget.combo!.comboImage.isNotEmpty)
-                    Image.network(
-                      widget.combo!.comboImage.first,
-                      width: 48,
-                      height: 48,
-                      fit: BoxFit.cover,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: Image.network(
+                        widget.combo!.comboImage.first,
+                        width: 58,
+                        height: 58,
+                        fit: BoxFit.cover,
+                      ),
                     )
                   else
                     Container(width: 48, height: 48),
@@ -80,29 +86,15 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
-                          overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.fade,
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          'Cantidad: $_quantity',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white70,
-                          ),
-                        ),
-                        Text(
-                          'Precio: \$${(widget.product?.price ?? widget.combo?.specialPrice ?? 0).toStringAsFixed(2)}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white70,
-                          ),
-                        ),
                       ],
                     ),
                   ),
                 ],
               ),
-              duration: const Duration(seconds: 3),
+              duration: const Duration(seconds: 4),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(

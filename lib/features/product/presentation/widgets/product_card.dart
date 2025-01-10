@@ -95,10 +95,9 @@ class ProductItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           DiscountPriceMenu(
-                            specialPrice: product.price,
-                            discountId: product.discount,
-                            currency: product.currency
-                          ),
+                              specialPrice: product.price,
+                              discountId: product.discount,
+                              currency: product.currency),
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
