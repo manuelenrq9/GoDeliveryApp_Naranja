@@ -61,7 +61,7 @@ class CustomDrawer extends StatelessWidget {
             leading: const Icon(Icons.info),
             title: const Text('Detalle de orden'),
             onTap: () {
-              showLoadingScreen(context, destination: OrderSummaryScreen());
+              showLoadingScreen(context, destination: OrderHistoryScreen());
             },
           ),
           ListTile(

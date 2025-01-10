@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/usecases/fetch_orders_usecase.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/order_card.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/pages/order_summary.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/OrderSummaryScreen.dart';
 
 class ActiveOrdersScreen extends StatefulWidget {
   const ActiveOrdersScreen({super.key});
@@ -32,8 +34,6 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
         future: futureOrders,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            // print("Tiene data ${snapshot} y el otro ${context}");
-            // print("DATA ${snapshot.data}");
             // Extract the data from the snapshot only once
             final orders = snapshot.data!;
 
@@ -44,11 +44,20 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
                   order.status == 'SHIPPED'
                 )
                 .toList();
-            // print("AQUI SON LAS ORDENES ORDER ${deliveredOrders}");
             return ListView(
               padding: const EdgeInsets.all(16.0),
               children: deliveredOrders
-                  .map((order) => OrderCard(order: order))
+                  .map((order) => GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrderSummaryScreen(order: order),
+                            ),
+                          );
+                        },
+                        child: OrderCard(order: order),
+                      ))
                   .toList(),
             );
           } else if (snapshot.hasError) {

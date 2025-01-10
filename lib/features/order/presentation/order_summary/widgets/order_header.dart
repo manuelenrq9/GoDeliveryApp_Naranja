@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
 class OrderHeader extends StatelessWidget {
+  final String orderNumber;
+  final String status;
+
+  const OrderHeader({Key? key, required this.orderNumber, required this.status}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 6.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -23,13 +28,14 @@ class OrderHeader extends StatelessWidget {
         children: [
           // Número de orden
           Text(
-            'Order #1334426',
+            'Order #${orderNumber}',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
               color: Colors.black87, // Color de texto más oscuro
             ),
           ),
+          const SizedBox(width: 8,),
           // Estado de la orden
           Row(
             children: [
@@ -37,15 +43,14 @@ class OrderHeader extends StatelessWidget {
                 Icons.check_circle,
                 color: Colors.green,
                 size:
-                    24, // Aumentamos el tamaño del ícono para mayor visibilidad
+                    20, // Aumentamos el tamaño del ícono para mayor visibilidad
               ),
-              const SizedBox(width: 8),
               Text(
-                'Delivered',
+                status,
                 style: TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.w500,
-                  fontSize: 16, // Tamaño de texto adecuado para la visibilidad
+                  fontSize: 13, // Tamaño de texto adecuado para la visibilidad
                 ),
               ),
             ],
