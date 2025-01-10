@@ -39,10 +39,10 @@ class Combo {
   return Combo(
     id: json['id'] as String,
     name: json['name'] as String,
-    specialPrice: json['specialPrice'] as num,
+    specialPrice: json['price'] as num,
     currency: json['currency'] as String,
     description: json['description'] as String,
-    comboImage: List<String>.from(json['comboImages'] ?? []),
+    comboImage: List<String>.from(json['images'] ?? []),
     products: List<String>.from(json['products'] ?? []),
     weight: json['weight'] as num,
     measurement: json['measurement'] as String,

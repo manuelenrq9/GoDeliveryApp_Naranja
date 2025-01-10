@@ -48,7 +48,7 @@ class DataService<T> {
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
         // print("mostrando el jsonData ${jsonData}");
-        final List<dynamic> items = jsonData['${repository.storageKey}'];
+        final List<dynamic> items = jsonData;     //['${repository.storageKey}'];
         print("El endpoint es ${endpoint}");
         print("Items antes de deserializar: $items");
         return items.map((item) => fromJson(item)).toList();
