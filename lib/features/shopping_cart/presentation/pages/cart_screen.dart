@@ -158,11 +158,6 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  Future<String?> _getUserID() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_id');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -275,11 +270,10 @@ class _CartScreenState extends State<CartScreen> {
               child: Column(
                 children: [
                   ProductSummary(totalAmount: totalAmount),
-                  const SummaryRow(label: 'Tarifa de envío', amount: '\$50'),
                   const Divider(),
                   SummaryRow(
                     label: 'Total',
-                    amount: '\$${(totalAmount + 50).toStringAsFixed(2)}',
+                    amount: '\$${(totalAmount).toStringAsFixed(2)}',
                     isTotal: true,
                   ),
                   const SizedBox(height: 16),
@@ -289,17 +283,12 @@ class _CartScreenState extends State<CartScreen> {
                         : () async {
                             getProducts();
                             getCombos();
-                            final userId = await _getUserID();
-                            if (userId == null) {
-                              throw Exception('No hay usuario ID');
-                            }
                             showLoadingScreen(context, destination: ProcessOrderScreen(
                               cartItems: cartItems,
                               products: getProducts(),
                               combos: getCombos(),
                               currency: 'USD', // La moneda
-                              totalDecimal: totalAmount+50,
-                              userId: userId,
+                              totalDecimal: totalAmount,
                               context: context,
                             ));
                             

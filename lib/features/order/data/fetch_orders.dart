@@ -13,18 +13,17 @@ class OrderListScreen extends StatefulWidget {
 }
 
 class _OrderListScreenState extends State<OrderListScreen> {
-
   late Future<List<Order>> futureOrders;
 
   late final DataService<Order> _orderService = DataService<Order>(
-      endpoint: '/order',
-      repository: GenericRepository<Order>(
-        storageKey: 'orders',
-        fromJson: (json) => Order.fromJson(json),
-        toJson: (order) => order.toJson(),
-      ),
+    endpoint: '/order',
+    repository: GenericRepository<Order>(
+      storageKey: 'orders',
       fromJson: (json) => Order.fromJson(json),
-    );
+      toJson: (order) => order.toJson(),
+    ),
+    fromJson: (json) => Order.fromJson(json),
+  );
 
   @override
   void initState() {
@@ -34,27 +33,40 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
   void loadOrders() async {
     futureOrders = _orderService.loadData();
+    print("Aqui estamos en loadOrders ${futureOrders}");
     setState(() {});
   }
-
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Order>>(
-      future: futureOrders,
-      builder: (context, snapshot) {
-        if (snapshot.hasData){
-          return ListView.builder(
-          itemCount: snapshot.data!.length,
-          itemBuilder: (context, index) {
-            return OrderCard(order: snapshot.data![index]);
-          },
-          );
-        } else if (snapshot.hasError){
-          return Text('Error: ${snapshot.error}');
-        }
-        return const Center(child: CircularProgressIndicator(color: Colors.orange,));
-      }
-    );
+
+        future: futureOrders,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            // print("Tiene data ${snapshot} y el otro ${context}");
+            // print("DATA ${snapshot.data}");
+            // Extract the data from the snapshot only once
+            final orders = snapshot.data!;
+
+            // Filter orders based on status within the builder
+            final deliveredOrders = orders
+                .where((order) => order.status == 'BEING PROCESSED')
+                .toList();
+            // print("AQUI SON LAS ORDENES ORDER ${deliveredOrders}");
+            return ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: deliveredOrders
+                  .map((order) => OrderCard(order: order))
+                  .toList(),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          return const Center(
+              child: CircularProgressIndicator(
+            color: Colors.orange,
+          ));
+        });
   }
 }

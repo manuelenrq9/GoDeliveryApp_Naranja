@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "989691864918",
+    "project_id": "godelynaranja",
+    "storage_bucket": "godelynaranja.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:989691864918:android:f0a9f3a7e98a70c03858f7",
+        "android_client_info": {
+          "package_name": "com.example.godeliveryapp_naranja"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAA7UBGBt15rXlntea7lQ1HSYzWua8Zo4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

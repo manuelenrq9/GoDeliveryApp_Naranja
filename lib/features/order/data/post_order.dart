@@ -17,14 +17,12 @@ Future<void> processOrder({
   required List<CartCombo> combos,
   required String? paymentMethod,
   required String currency,
-  required num totalDecimal,
-  required String userId,
+  required num totalDecimal,//! FALTA CUPON LATITUDE Y LONGITUDE
   required BuildContext context, 
 }) async {
   final int total = totalDecimal.toInt();
   // Estructura de la orden que se enviará al backend
   final orderData = {
-    'userId': userId,
     'address': address,
     'products': products.map((product) {
       return {

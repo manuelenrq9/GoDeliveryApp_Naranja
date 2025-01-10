@@ -3,6 +3,7 @@ import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
 import 'package:godeliveryapp_naranja/features/order/data/post_order.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_track/pages/order_direction.dart';
 import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/CreditDebitScreen.dart';
 import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/MobilePaymentScreen.dart';
 import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/ZellementScreen.dart';
@@ -15,7 +16,6 @@ class ProcessOrderScreen extends StatefulWidget {
   final List<CartCombo> combos; // Lista de combos
   final String currency; // Moneda
   final num totalDecimal; // Total del pedido
-  final String userId; // ID del usuario
   final BuildContext context; // Contexto para posibles navegaciones
 
   const ProcessOrderScreen({
@@ -25,7 +25,6 @@ class ProcessOrderScreen extends StatefulWidget {
     required this.combos,
     required this.currency,
     required this.totalDecimal,
-    required this.userId,
     required this.context,
   }) : super(key: key);
 
@@ -37,11 +36,29 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
   bool _isProcessing = false;
   final TextEditingController _addressController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String? _selectedAddress;
+  double? _latitude;
+  double? _longitude;
+  double? _distanceKm;
+  String? _envio;
 
   String? _selectedPaymentMethod;
 
   void _confirmOrder() async {
     if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (_selectedAddress == null ||
+        _latitude == null ||
+        _longitude == null ||
+        _distanceKm == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, selecciona una dirección.'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -72,32 +89,48 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
       paymentMethod: _selectedPaymentMethod,
       currency: widget.currency,
       totalDecimal: widget.totalDecimal.toInt(),
-      userId: widget.userId,
       context: context,
     );
   }
 
   void _selectPaymentMethod(String method, Widget nextPage) async {
-  setState(() {
-    _selectedPaymentMethod = method;
-  });
+    setState(() {
+      _selectedPaymentMethod = method;
+    });
 
-  final result = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => nextPage,
-    ),
-  );
-
-  if (result == true) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Pago confirmado con $method.'),
-        backgroundColor: Colors.green,
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => nextPage,
       ),
     );
+
+    if (result == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pago confirmado con $method.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
   }
-}
+
+  Future<void> _openLocationPicker() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LocationPickerScreen()),
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedAddress = result['direccion'];
+        _latitude = result['latitud'];
+        _longitude = result['longitud'];
+        _distanceKm = result['km'] * 0.2;
+        _envio = "${widget.currency} ${_distanceKm?.toStringAsFixed(1)}";
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +204,8 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                                 // Detalles del producto
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         item.name,
@@ -204,7 +238,18 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          'Total: ${converter.selectedCurrency} ${converter.convert( widget.totalDecimal.toDouble()).toStringAsFixed(2)}',
+                          'Tarifa de envío: ${_envio ?? 'Seleccione la ubicación'}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            // fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          'Total: ${widget.currency} ${widget.totalDecimal.toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -226,19 +271,18 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              TextFormField(
-                controller: _addressController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Dirección',
-                  hintText: 'Ingresa tu dirección aquí',
+              Text(
+                'Dirección: ${_selectedAddress ?? 'Seleccione la ubicación'}',
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _openLocationPicker,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.orange,
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, ingresa una dirección válida.';
-                  }
-                  return null;
-                },
+                child: Text('Seleccionar Ubicación'),
               ),
               const SizedBox(height: 20),
               // Selección de método de pago
@@ -260,9 +304,9 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                     onTap: () {
                       setState(() {
                         _selectPaymentMethod(
-                        'Credit/Debit Card',
-                        CreditDebitScreen(),
-                      );
+                          'Credit/Debit Card',
+                          CreditDebitScreen(),
+                        );
                       });
                     },
                   ),
@@ -270,13 +314,14 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                   PaymentMethodCard(
                     icon: Icons.phone_android,
                     title: 'Pago Móvil',
-                    description: 'Realiza el pago a través de tu dispositivo móvil.',
+                    description:
+                        'Realiza el pago a través de tu dispositivo móvil.',
                     onTap: () {
                       setState(() {
                         _selectPaymentMethod(
-                        'Pago Movil',
-                        MobilePaymentScreen(),
-                      );
+                          'Pago Movil',
+                          MobilePaymentScreen(),
+                        );
                       });
                     },
                   ),
@@ -288,9 +333,9 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                     onTap: () {
                       setState(() {
                         _selectPaymentMethod(
-                        'Transferencia Zelle',
-                        PagoConZelleScreen(),
-                      );
+                          'Transferencia Zelle',
+                          PagoConZelleScreen(),
+                        );
                         // _selectedPaymentMethod = 'Zelle';
                       });
                     },
