@@ -5,7 +5,7 @@ import 'package:godeliveryapp_naranja/features/product/domain/entities/product.d
 class GetProductListUseCase {
   
   late Future<List<Product>> futureProducts;
-  late ProductsRepository repository;
+  late ProductsRepository repository = ProductsRepository();
 
   execute(){
     futureProducts = repository.fetch();

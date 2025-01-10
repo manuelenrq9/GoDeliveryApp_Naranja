@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/usecases/get_product_list.dart';
@@ -14,7 +13,7 @@ class ProductList extends StatefulWidget {
 class _ProductListState extends State<ProductList> {
   
   late Future<List<Product>> futureProducts;
-  late GetProductListUseCase useCase;
+  late GetProductListUseCase useCase = GetProductListUseCase();
   
   void loadProducts() async {
     futureProducts = useCase.execute();
