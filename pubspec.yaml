@@ -30,18 +30,27 @@ environment:
 dependencies:
   cached_network_image: ^3.2.3
   carousel_slider: ^5.0.0
-  connectivity_plus: ^3.0.0
+  connectivity_plus: ^6.1.1
   cupertino_icons: ^1.0.6
   flutter:
     sdk: flutter
   flutter_slidable: ^3.1.1
   http: ^1.2.2
-  intl: ^0.17.0
+  intl: ^0.20.1
   photo_view: ^0.15.0
   flutter_map: ^7.0.2
   shared_preferences: ^2.3.0
   location: ^7.0.1
   dart_bcv: ^1.0.0
+   # Service locator
+  get_it: ^8.0.3
+  # Bloc for state management
+  flutter_bloc: ^8.1.6
+  # Value equality
+  equatable: ^2.0.7
+  # Functional programming thingies
+  dartz: ^0.10.1
+  # Local cache
 
 dependency_overrides:
   http: ^0.13.5
@@ -50,6 +59,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.1
   flutter_test:
     sdk: flutter
+  mockito: ^5.4.4
 flutter_launcher_icons:
   android: true
   image_path: "images/Icongodely.png"
