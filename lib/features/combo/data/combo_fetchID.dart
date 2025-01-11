@@ -19,7 +19,7 @@ Future<Combo> fetchComboById(String comboId) async {
       }
 
     final response = await http.get(Uri.parse(
-        'https://orangeteam-deliverybackend-production.up.railway.app/combo/$comboId'),
+        'https://orangeteam-deliverybackend-production.up.railway.app/bundle/one/$comboId'),
         headers: {
           'Authorization':
               'Bearer $token', // Incluimos el token en el encabezado
@@ -30,7 +30,7 @@ Future<Combo> fetchComboById(String comboId) async {
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
       // Acceder a la propiedad 'value' que contiene el combo
-      final comboData = jsonData['value'];
+      final comboData = jsonData;
       return Combo.fromJson(comboData);
     } else {
       print("Failed to fetch combo, status code: ${response.statusCode}");

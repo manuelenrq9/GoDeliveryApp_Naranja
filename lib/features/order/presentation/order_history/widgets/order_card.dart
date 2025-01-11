@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/orderPayment.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/item_names_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -73,38 +74,32 @@ class _OrderCardState extends State<OrderCard> {
     super.initState();
     // Convert the string status to an enum
     _status = orderStatusFromString(widget.order.status);
-    initializeDateFormatting('es_ES').then((_){
+    initializeDateFormatting('es_ES').then((_) {
       setState(() {
         createdDate = formatDate(widget.order.createdDate);
         deliveredDate = formatDate(widget.order.receivedDate);
       });
     });
-  } 
+  }
 
   String formatDate(DateTime dateTime) {
     // Format the DateTime object into the desired format in Spanish
     return DateFormat('EEE dd MMM yyyy', 'es_ES').format(dateTime);
   }
 
-  num getPrice(){
-    num total = 0;
-    List<CartProduct> products = widget.order.products;
-    products.forEach((product){
-      // total += product.price;
-    });
-    return total;
-  }
-
   @override
   Widget build(BuildContext context) {
     String orderId = widget.order.id;
-    String formatedId = orderId.length>8
-      ? orderId.substring(0,8) : orderId;
-    num price = getPrice();
+    String formatedId = orderId.length > 8 ? orderId.substring(0, 8) : orderId;
     List<CartProduct> products = widget.order.products;
-    List<CartCombo> combos = widget.order.combos; 
-
-    
+    List<CartCombo> combos = widget.order.combos;
+    List<OrderPayment> payment = widget.order.paymentMethod;
+    double total = 0;
+    String currency = '';
+    payment.forEach((payment) {
+      total = payment.total;
+      currency = payment.currency;
+    });
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       elevation: 3,
@@ -122,7 +117,7 @@ class _OrderCardState extends State<OrderCard> {
                   child: Text(
                     createdDate,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -130,7 +125,7 @@ class _OrderCardState extends State<OrderCard> {
                 ),
                 Flexible(
                   child: Text(
-                    '\$$price',
+                    '$currency ${total.toStringAsFixed(2)}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -176,9 +171,11 @@ class _OrderCardState extends State<OrderCard> {
                   style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
-                Wrap(children: [
-                  ItemNamesBuilder(products: products, combos: combos),
-                ],),
+                Wrap(
+                  children: [
+                    ItemNamesBuilder(products: products, combos: combos),
+                  ],
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -187,55 +184,55 @@ class _OrderCardState extends State<OrderCard> {
               children: [
                 const Icon(Icons.schedule, size: 18, color: Colors.grey),
                 const SizedBox(width: 4),
-                if (status=="DELIVERED")
-                Flexible(
-                  child: Text(
-                    'Entregado el: $deliveredDate',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      overflow: TextOverflow.ellipsis,
+                if (status == "DELIVERED")
+                  Flexible(
+                    child: Text(
+                      'Entregado el: $deliveredDate',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
-                ),
-                if (status=="CANCELLED")
-                Flexible(
-                  child: Text(
-                    'Pedido cancelado',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      overflow: TextOverflow.ellipsis,
+                if (status == "CANCELLED")
+                  Flexible(
+                    child: Text(
+                      'Pedido cancelado',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
-                ),
-                if (status=="BEING PROCESSED")
-                Flexible(
-                  child: Text(
-                    'tu pedido esta siendo procesado...',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      overflow: TextOverflow.ellipsis,
+                if (status == "BEING PROCESSED")
+                  Flexible(
+                    child: Text(
+                      'tu pedido esta siendo procesado...',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
-                ),
-                if (status=="SHIPPED")
-                Flexible(
-                  child: Text(
-                    'Tu pedido ha sido enviado a su destino...',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                      overflow: TextOverflow.ellipsis,
+                if (status == "SHIPPED")
+                  Flexible(
+                    child: Text(
+                      'Tu pedido ha sido enviado a su destino...',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
             const Divider(),
             // Botones de acciones
-            ButtonsByStatus(), 
+            ButtonsByStatus(),
           ],
         ),
       ),
@@ -251,134 +248,131 @@ class _OrderCardState extends State<OrderCard> {
         );
       case OrderStatus.BEING_PROCESSED:
         return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                  Flexible(
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.cancel, color: Colors.redAccent),
-                      label: const Text(
-                        'Cancelar pedido',
-                        style: TextStyle(fontSize: 12),
-                        ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.redAccent,
-                        side: const BorderSide(color: Colors.redAccent),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 5,),
-                Flexible(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.location_on ,
-                      color: const Color(0xFFFF7000)    
-                    ),
-                    label: Text(
-                      'Hacer seguimiento',
-                      style: TextStyle(fontSize: 11),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor:  const Color(0xFFFF7000),
-                      side:const BorderSide(color: Color(0xFFFF7000)),  
-                    ),
-                  ),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.cancel, color: Colors.redAccent),
+                label: const Text(
+                  'Cancelar pedido',
+                  style: TextStyle(fontSize: 12),
                 ),
-              ],
-            );
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.redAccent,
+                  side: const BorderSide(color: Colors.redAccent),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: Icon(Icons.location_on, color: const Color(0xFFFF7000)),
+                label: Text(
+                  'Hacer seguimiento',
+                  style: TextStyle(fontSize: 11),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFFF7000),
+                  side: const BorderSide(color: Color(0xFFFF7000)),
+                ),
+              ),
+            ),
+          ],
+        );
       case OrderStatus.SHIPPED:
         return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                  Flexible(
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.cancel, color: Colors.redAccent),
-                      label: const Text(
-                        'Cancelar pedido',
-                        style: TextStyle(fontSize: 12),
-                        ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.redAccent,
-                        side: const BorderSide(color: Colors.redAccent),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 5,),
-                Flexible(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.location_on ,
-                      color: const Color(0xFFFF7000)    
-                    ),
-                    label: Text(
-                      'Hacer seguimiento',
-                      style: TextStyle(fontSize: 11),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor:  const Color(0xFFFF7000),
-                      side:const BorderSide(color: Color(0xFFFF7000)),  
-                    ),
-                  ),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.cancel, color: Colors.redAccent),
+                label: const Text(
+                  'Cancelar pedido',
+                  style: TextStyle(fontSize: 12),
                 ),
-              ],
-            );
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.redAccent,
+                  side: const BorderSide(color: Colors.redAccent),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: Icon(Icons.location_on, color: const Color(0xFFFF7000)),
+                label: Text(
+                  'Hacer seguimiento',
+                  style: TextStyle(fontSize: 11),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFFF7000),
+                  side: const BorderSide(color: Color(0xFFFF7000)),
+                ),
+              ),
+            ),
+          ],
+        );
       case OrderStatus.DELIVERED:
         return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                  Flexible(
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.refresh, color: Colors.redAccent),
-                      label: const Text('Solicitar reembolso',
-                      style: TextStyle(fontSize: 12),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.redAccent,
-                        side: const BorderSide(color: Colors.redAccent),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 1,),
-                Flexible(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.shopping_cart ,
-                      color: const Color(0xFFFF7000)    
-                    ),
-                    label: Text(
-                      'Reordenar',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor:  const Color(0xFFFF7000),
-                      side:const BorderSide(color: Color(0xFFFF7000))   
-                    ),
-                  ),
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.refresh, color: Colors.redAccent),
+                label: const Text(
+                  'Solicitar reembolso',
+                  style: TextStyle(fontSize: 12),
                 ),
-              ],
-            );
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.redAccent,
+                  side: const BorderSide(color: Colors.redAccent),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 1,
+            ),
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: Icon(Icons.shopping_cart, color: const Color(0xFFFF7000)),
+                label: Text(
+                  'Reordenar',
+                  style: TextStyle(fontSize: 12),
+                ),
+                style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFFF7000),
+                    side: const BorderSide(color: Color(0xFFFF7000))),
+              ),
+            ),
+          ],
+        );
       case OrderStatus.CANCELLED:
         return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                  Flexible(
-                    child: OutlinedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.warning, color: Colors.redAccent),
-                      label: const Text('Reportar problema'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.redAccent,
-                        side: const BorderSide(color: Colors.redAccent),
-                      ),
-                    ),
-                  ),
-              ],
-            );
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.warning, color: Colors.redAccent),
+                label: const Text('Reportar problema'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.redAccent,
+                  side: const BorderSide(color: Colors.redAccent),
+                ),
+              ),
+            ),
+          ],
+        );
       default:
         return Container(); // Return an empty container if no status matches
     }

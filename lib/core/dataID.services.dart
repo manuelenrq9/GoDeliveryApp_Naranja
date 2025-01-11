@@ -27,31 +27,19 @@ Future<T> fetchEntityById<T>(String id, String endpoint,
         'Content-Type': 'application/json',
       },
     );
-
+    print(
+        'https://orangeteam-deliverybackend-production.up.railway.app/$endpoint/$id');
     if (response.statusCode == 200) {
-      print('Dentro del if $endpoint/$id');
       final jsonData = jsonDecode(response.body);
-      print('1');
-      print(response.body);
-      print('2');
-      print(jsonData);
-      final entityData =
-          jsonData; // Acceder al objeto dentro de "value"
-          print('3');
-      print(entityData);
-      print('4');
-      print(fromJson(entityData));
+      final entityData = jsonData;
       return fromJson(entityData);
     } else {
-      print("Failed to fetch entity, status code: ${response.statusCode}");
       throw Exception('Failed to fetch entity');
     }
   } catch (e) {
     if (e is SocketException) {
-      print("No internet connection");
       throw 'No tienes conexión a Internet';
     } else {
-      print("Error fetching entity: $e");
       throw Exception('Error al cargar la entidad');
     }
   }

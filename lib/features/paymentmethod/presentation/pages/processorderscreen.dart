@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
+import 'package:godeliveryapp_naranja/core/dataID.services.dart';
+import 'package:godeliveryapp_naranja/features/cupon/domain/cupon.dart';
 import 'package:godeliveryapp_naranja/features/order/data/post_order.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
@@ -15,10 +17,10 @@ class ProcessOrderScreen extends StatefulWidget {
   final List<CartProduct> products; // Lista de productos
   final List<CartCombo> combos; // Lista de combos
   final String currency; // Moneda
-  final num totalDecimal; // Total del pedido
+  num totalDecimal; // Total del pedido
   final BuildContext context; // Contexto para posibles navegaciones
 
-  const ProcessOrderScreen({
+  ProcessOrderScreen({
     Key? key,
     required this.cartItems,
     required this.products,
@@ -34,25 +36,25 @@ class ProcessOrderScreen extends StatefulWidget {
 
 class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
   bool _isProcessing = false;
-  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController couponController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  var coupon;
   String? _selectedAddress;
   double? _latitude;
   double? _longitude;
-  double? _distanceKm;
+  double _distanceKm = 0;
   String? _envio;
-
+  String? _cupon;
   String? _selectedPaymentMethod;
+  String _codeCupon = "";
+  final converter = CurrencyConverter();
 
   void _confirmOrder() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    if (_selectedAddress == null ||
-        _latitude == null ||
-        _longitude == null ||
-        _distanceKm == null) {
+    if (_selectedAddress == null || _latitude == null || _longitude == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Por favor, selecciona una dirección.'),
@@ -83,12 +85,15 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
       _isProcessing = false;
     });
     await processOrder(
-      address: _addressController.text,
+      address: _selectedAddress ?? "",
+      latitude: _latitude ?? 0,
+      longitude: _longitude ?? 0,
       products: widget.products,
       combos: widget.combos,
       paymentMethod: _selectedPaymentMethod,
-      currency: widget.currency,
-      totalDecimal: widget.totalDecimal.toInt(),
+      currency: converter.selectedCurrency,
+      totalDecimal: converter.convert(widget.totalDecimal.toDouble()),
+      cupon: _codeCupon,
       context: context,
     );
   }
@@ -123,18 +128,49 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
 
     if (result != null) {
       setState(() {
+        widget.totalDecimal -= _distanceKm;
         _selectedAddress = result['direccion'];
         _latitude = result['latitud'];
         _longitude = result['longitud'];
-        _distanceKm = result['km'] * 0.2;
-        _envio = "${widget.currency} ${_distanceKm?.toStringAsFixed(1)}";
+        _distanceKm = result['km'] * 0.4;
+        _envio =
+            "${converter.selectedCurrency} ${converter.convert(_distanceKm.toDouble()).toStringAsFixed(2)}";
+        widget.totalDecimal += _distanceKm;
       });
     }
   }
 
+  Future<void> _validateCoupon() async {
+    if (_cupon == null) {
+      try {
+        var coupon = await fetchEntityById<Coupon>(
+          couponController.text,
+          'cupon/one/by',
+          (data) => Coupon.fromJson(data),
+        );
+        if (coupon != null) {
+          print('Cupón válido: ${(widget.totalDecimal - _distanceKm)}');
+          setState(() {
+            _codeCupon = coupon.name;
+            _cupon =
+                "${converter.selectedCurrency} ${converter.convert(double.parse((((widget.totalDecimal - _distanceKm) / (1 + coupon.value)) - (widget.totalDecimal - _distanceKm)).toStringAsFixed(2))).toStringAsFixed(2)}";
+          });
+          widget.totalDecimal += double.parse(
+              ((widget.totalDecimal / (1 + coupon.value)) - widget.totalDecimal)
+                  .toStringAsFixed(2));
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('El código del cupón no es válido')),
+        );
+      }
+    }
+    couponController.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final converter = CurrencyConverter();
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -235,6 +271,37 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                         },
                       ),
                       const Divider(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: couponController, //
+                              decoration: InputDecoration(
+                                labelText: 'Código de Cupón',
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.orange),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.orange),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.orange,
+                              shape: BoxShape.circle,
+                            ),
+                            child: IconButton(
+                              icon:
+                                  const Icon(Icons.check, color: Colors.white),
+                              onPressed: _validateCoupon,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Divider(),
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
@@ -249,7 +316,18 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          'Total: ${widget.currency} ${widget.totalDecimal.toStringAsFixed(2)}',
+                          'Cupon: ${_cupon ?? 'No aplicado'}',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            // fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          'Total: ${converter.selectedCurrency} ${converter.convert(widget.totalDecimal.toDouble()).toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

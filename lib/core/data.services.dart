@@ -47,9 +47,12 @@ class DataService<T> {
           'Content-Type': 'application/json',
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200) {  
         final jsonData = jsonDecode(response.body);
+        print('111111 $jsonData');
         final List<dynamic> items = jsonData;
+        print('222222 $items');
+        print('333333 ${items.map((item) => fromJson(item)).toList()}');
         return items.map((item) => fromJson(item)).toList();
       } else {
         throw Exception('Failed to fetch data');

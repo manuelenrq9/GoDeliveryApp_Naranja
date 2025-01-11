@@ -12,7 +12,7 @@ class ItemNamesBuilder extends StatefulWidget {
     required this.products, // Require products to be passed
     required this.combos, // Require combos to be passed
   }) : super(key: key);
-  
+
   @override
   State<ItemNamesBuilder> createState() => _ItemNamesBuilderState();
 }
@@ -27,10 +27,9 @@ class _ItemNamesBuilderState extends State<ItemNamesBuilder> {
     setState(() {});
   }
 
-  void loadNames(){
+  void loadNames() {
     itemNames = fetchItemNames(widget.products, widget.combos);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -45,23 +44,26 @@ class _ItemNamesBuilderState extends State<ItemNamesBuilder> {
         } else if (snapshot.hasError) {
           return Text(''); // Handle error case
         } else if (snapshot.hasData) {
-        // Limit to first 5 items and create a row
-        List<String> limitedItems = snapshot.data!.take(5).toList();
-        return Container(
-          height: 50,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: limitedItems.map((item) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0), // Add some spacing between items
-                child: Chip(
-                  label: Text(item, style: const TextStyle(fontSize: 12)), // Display each item name in a Chip
-                ),
-              );
-            }).toList(),
-          ),
-        );
-      } else {
+          // Limit to first 5 items and create a row
+          List<String> limitedItems = snapshot.data!.take(5).toList();
+          return Container(
+            height: 50,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: limitedItems.map((item) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 4.0), // Add some spacing between items
+                  child: Chip(
+                    label: Text(item,
+                        style: const TextStyle(
+                            fontSize: 12)), // Display each item name in a Chip
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        } else {
           return Text('No items found.'); // Handle no data case
         }
       },

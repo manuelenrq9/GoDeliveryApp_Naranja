@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
@@ -18,6 +19,15 @@ import '../widgets/summary_product.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
+  static final CartRepository _cartRepository = CartRepository();
+
+  static Future<void> clearCartStatic(BuildContext context) async {
+    final cartScreenState = context.findAncestorStateOfType<_CartScreenState>();
+    await _cartRepository.clearCart();
+    CounterManager().reset();
+    cartScreenState?._loadCart();
+    cartScreenState?.clearCart();
+  }
 
   @override
   _CartScreenState createState() => _CartScreenState();
@@ -101,6 +111,7 @@ class _CartScreenState extends State<CartScreen> {
   Future<void> clearCart() async {
     await _cartRepository.clearCart();
     setState(() {
+      CounterManager().reset();
       cartItems.clear();
     });
   }
@@ -137,7 +148,6 @@ class _CartScreenState extends State<CartScreen> {
             TextButton(
               onPressed: () {
                 clearCart();
-                CounterManager().reset();
                 Navigator.of(context).pop();
               },
               child: const Text(
@@ -160,6 +170,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+  final converter = CurrencyConverter();
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -269,11 +280,12 @@ class _CartScreenState extends State<CartScreen> {
               ),
               child: Column(
                 children: [
-                  ProductSummary(totalAmount: totalAmount),
                   const Divider(),
+                  ProductSummary(totalAmount: totalAmount),
+                  ProductSummary(totalAmount: 0),
                   SummaryRow(
                     label: 'Total',
-                    amount: '\$${(totalAmount).toStringAsFixed(2)}',
+                    amount: '${converter.selectedCurrency} ${converter.convert(totalAmount).toStringAsFixed(2)}',
                     isTotal: true,
                   ),
                   const SizedBox(height: 16),

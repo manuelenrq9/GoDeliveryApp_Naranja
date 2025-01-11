@@ -6,7 +6,7 @@ import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart'
 class OrdersRepository {
   late Future<List<Order>> futureOrders;
   late final DataService<Order> _orderService = DataService<Order>(
-    endpoint: '/order?take=30',
+    endpoint: '/order/many',
     repository: GenericRepository<Order>(
       storageKey: 'orders',
       fromJson: (json) => Order.fromJson(json),

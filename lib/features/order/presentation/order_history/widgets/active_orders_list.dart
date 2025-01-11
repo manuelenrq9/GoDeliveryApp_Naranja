@@ -40,6 +40,7 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
             // Filter orders based on status within the builder
             final deliveredOrders = orders
                 .where((order) =>  
+                  order.status == 'CREATED' ||
                   order.status == 'BEING PROCESSED' ||
                   order.status == 'SHIPPED'
                 )

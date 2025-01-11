@@ -88,7 +88,7 @@ Future<String?> _getToken() async {
         if (response.statusCode == 201) {
           // Si la respuesta es exitosa, guardar el token
           final responseBody = json.decode(response.body);
-          final token = responseBody['response']['token'];
+          final token = responseBody['token'];
 
           // Almacenar el token en shared preferences
           SharedPreferences prefs = await SharedPreferences.getInstance();

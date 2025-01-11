@@ -132,8 +132,8 @@ class _CustomNavBarState extends State<CustomNavBar>
         break;
       case 4:
         Navigator.pushReplacement(context,
-            // MaterialPageRoute(builder: (context) => CurrencySettingsScreen()));
-        MaterialPageRoute(builder: (context) => LocationPickerScreen()));
+            MaterialPageRoute(builder: (context) => CurrencySettingsScreen()));
+        // MaterialPageRoute(builder: (context) => LocationPickerScreen()));
         // MaterialPageRoute(builder: (context) => TrackOrderScreen()));
             // MaterialPageRoute(builder: (context) => UserProfileScreen()));
 
