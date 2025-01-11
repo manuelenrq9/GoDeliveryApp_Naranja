@@ -13,7 +13,7 @@ class ProductList extends StatefulWidget {
 class _ProductListState extends State<ProductList> {
   
   late Future<List<Product>> futureProducts;
-  late GetProductListUseCase useCase = GetProductListUseCase();
+  late final GetProductListUseCase useCase = GetProductListUseCase();
   
   void loadProducts() async {
     futureProducts = useCase.execute();
@@ -31,7 +31,7 @@ class _ProductListState extends State<ProductList> {
     return FutureBuilder<List<Product>>(
       future: futureProducts,
       builder: (context, snapshot) {
-        if (snapshot.hasData){
+        if (snapshot.hasData && snapshot.data!.isNotEmpty){
           return Wrap(
         children: snapshot.data!.map((product) => ProductItem(product: product)).toList(),
       );

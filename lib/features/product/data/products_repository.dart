@@ -4,11 +4,10 @@ import 'package:godeliveryapp_naranja/features/product/domain/entities/product.d
 
 class ProductsRepository  {
 
-  late final DataService<Product> _productService;
-
-  createService(){
-    _productService = DataService<Product>(
-      endpoint: '/product',
+  late Future<List<Product>> futureProducts;
+  
+  late final DataService<Product> _productService = DataService<Product>(
+      endpoint: '/product/many?perpage=15',
       repository: GenericRepository<Product>(
         storageKey: 'products',
         fromJson: (json) => Product.fromJson(json),
@@ -16,10 +15,9 @@ class ProductsRepository  {
       ),
       fromJson: (json) => Product.fromJson(json),
     );
-  }
 
-  fetch(){
-    createService();
-    return _productService.loadData();
+  Future<List<Product>> loadProducts() async {
+    futureProducts = _productService.loadData();
+    return futureProducts;
   }
 }

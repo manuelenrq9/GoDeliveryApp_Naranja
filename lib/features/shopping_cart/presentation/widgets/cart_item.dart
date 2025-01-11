@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
 import 'package:godeliveryapp_naranja/core/dataID.services.dart';
-import 'package:godeliveryapp_naranja/features/discount/data/discount_fetchID.dart';
 import 'package:godeliveryapp_naranja/features/discount/discount_logic.dart';
 import 'package:godeliveryapp_naranja/features/discount/domain/discount.dart';
 import 'package:photo_view/photo_view.dart';

@@ -3,7 +3,6 @@ import 'package:godeliveryapp_naranja/core/currencyConfiguracion.dart';
 import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/pages/order_history_screen.dart';
-import 'package:godeliveryapp_naranja/features/perfilusuario/presentation/pages/UserProfileScreen.dart';
 import 'package:godeliveryapp_naranja/features/search/presentation/pages/searchscreen.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 

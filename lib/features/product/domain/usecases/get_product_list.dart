@@ -5,10 +5,10 @@ import 'package:godeliveryapp_naranja/features/product/domain/entities/product.d
 class GetProductListUseCase {
   
   late Future<List<Product>> futureProducts;
-  late ProductsRepository repository = ProductsRepository();
+  late final ProductsRepository repository = ProductsRepository();
 
-  execute(){
-    futureProducts = repository.fetch();
+  Future<List<Product>> execute() async{
+    futureProducts =  repository.loadProducts();
     return futureProducts;
   }
 }
