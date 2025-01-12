@@ -31,7 +31,21 @@ class CategoryCard extends StatelessWidget {
             height: 120, // Ajustamos la altura para que todo encaje bien
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: const Color(0xFFFF7000),
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color.fromARGB(255, 25, 1, 1)
+                  : const Color(0xFFFF7000), // Cambiamos el color según el modo
+              boxShadow: Theme.of(context).brightness == Brightness.dark
+                  ? [
+                      BoxShadow(
+                        color: const Color.fromARGB(255, 128, 126, 126)
+                            .withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
+                      ),
+                    ]
+                  : [],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -75,7 +89,6 @@ class CategoryCard extends StatelessWidget {
               ],
             ),
           ),
-        )
-    );
+        ));
   }
 }
