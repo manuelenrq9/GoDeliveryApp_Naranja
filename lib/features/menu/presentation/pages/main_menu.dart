@@ -21,95 +21,121 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> {
   late String selectedCurrency;
-  // Variable para controlar el índice seleccionado en el BottomNavigationBar
   int _currentIndex = 0;
+
+  ThemeMode _themeMode = ThemeMode.light; // Tema inicial
 
   @override
   void initState() {
     super.initState();
-    _initializeCurrency(); // Inicializa la moneda seleccionada
+    _initializeCurrency();
     CounterManager().loadCounterFromStorage();
   }
 
-  // Cargar la moneda seleccionada
   Future<void> _initializeCurrency() async {
     final converter = CurrencyConverter();
     setState(() {
-      selectedCurrency = converter.selectedCurrency; // Carga la moneda actual
+      selectedCurrency = converter.selectedCurrency;
     });
     print('MONEDA ${selectedCurrency}');
   }
 
-  // Función para manejar el cambio de índice
-  void _onTap(int index) {
+  void _changeTheme(ThemeMode mode) {
     setState(() {
-      _currentIndex = index;
+      _themeMode = mode;
     });
   }
 
   Future<void> _refresh() async {
-    // Forzar la reconstrucción completa del widget MainMenu utilizando una nueva clave global
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (BuildContext context) => const MainMenu()));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white, // Establece el color de fondo a blanco
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                // Acción para abrir el menú (Drawer)
-                Scaffold.of(context)
-                    .openDrawer(); // Ahora Scaffold.of() funciona correctamente
-              },
-            );
-          },
-        ),
-        title: Center(
-          child: Image.asset(
-            'images/LogoLetrasGoDely.png',
-            height: 40,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              showLoadingScreen(context,
-                  destination: RecoverySearchmessagueScreen());
+    return MaterialApp(
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      themeMode: _themeMode,
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
             },
           ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _refresh, // Asocia la función de refresco
-        color: Colors.orange, // Establece el color del refresco a naranja
-        child: ListView(
-          children: [
-            CategoryListScreen(),
-            TituloLista(
-              titulo: "Combos de Productos",
-              next: ComboCatalogScreen(),
+          title: Center(
+            child: Image.asset(
+              'images/LogoLetrasGoDely.png',
+              height: 40,
             ),
-            const ComboListScreen(),
-            TituloLista(
-              titulo: "Productos Populares",
-              next: ProductCatalogScreen(),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                showLoadingScreen(context,
+                    destination: RecoverySearchmessagueScreen());
+              },
             ),
-            const ProductListScreen(),
+            PopupMenuButton<String>(
+              icon:
+                  const Icon(Icons.brightness_6), // Ícono del selector de tema
+              onSelected: (value) {
+                if (value == 'Claro') {
+                  _changeTheme(ThemeMode.light);
+                } else if (value == 'Oscuro') {
+                  _changeTheme(ThemeMode.dark);
+                } else if (value == 'Degradado') {
+                  _changeTheme(ThemeMode.system);
+                }
+              },
+              itemBuilder: (BuildContext context) {
+                return {'Claro', 'Oscuro', 'Degradado'}
+                    .map((String choice) => PopupMenuItem<String>(
+                          value: choice,
+                          child: Text(choice),
+                        ))
+                    .toList();
+              },
+            ),
           ],
         ),
+        body: RefreshIndicator(
+          onRefresh: _refresh,
+          color: Colors.orange,
+          child: ListView(
+            children: [
+              CategoryListScreen(),
+              TituloLista(
+                titulo: "Combos de Productos",
+                next: ComboCatalogScreen(),
+              ),
+              const ComboListScreen(),
+              TituloLista(
+                titulo: "Productos Populares",
+                next: ProductCatalogScreen(),
+              ),
+              const ProductListScreen(),
+            ],
+          ),
+        ),
+        bottomNavigationBar: CustomNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
+        drawer: CustomDrawer(),
       ),
-      bottomNavigationBar: CustomNavBar(
-        currentIndex: _currentIndex,
-        onTap: _onTap,
-      ),
-      drawer: CustomDrawer(),
     );
   }
 }
