@@ -61,11 +61,24 @@ class _MainMenuState extends State<MainMenu> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData(
+        brightness: Brightness.light,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 4,
+        ),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.grey,
+          elevation: 4,
+        ),
+      ),
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
           leading: Builder(
             builder: (BuildContext context) {
               return IconButton(
@@ -102,10 +115,6 @@ class _MainMenuState extends State<MainMenu> {
                 const PopupMenuItem<ThemeMode>(
                   value: ThemeMode.dark,
                   child: Text('Modo Oscuro'),
-                ),
-                const PopupMenuItem<ThemeMode>(
-                  value: ThemeMode.system,
-                  child: Text('Modo Degradado'),
                 ),
               ],
             ),
