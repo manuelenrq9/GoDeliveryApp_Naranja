@@ -6,7 +6,9 @@ import 'package:godeliveryapp_naranja/features/product/domain/repositories/Iprod
 class GetProductListUseCase {
   
   late Future<List<Product>> futureProducts;
-  late final IProductsRepository repository = ProductsRepository();
+  late final IProductsRepository repository;
+
+  GetProductListUseCase(this.repository);
 
   Future<List<Product>> execute() async{
     futureProducts =  repository.loadProducts();

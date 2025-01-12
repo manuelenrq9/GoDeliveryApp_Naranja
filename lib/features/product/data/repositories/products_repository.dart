@@ -5,7 +5,7 @@ import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.r
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/repositories/Iproducts_repository.dart';
 
-class ProductsRepository extends IProductsRepository{
+class ProductsRepository implements IProductsRepository{
 
   late Future<List<Product>> futureProducts;
   
