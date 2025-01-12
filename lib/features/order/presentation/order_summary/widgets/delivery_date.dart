@@ -1,12 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class DeliveryDate extends StatefulWidget {
+  final Order order;
+  DeliveryDate({Key? key, required this.order}) : super(key: key);
+
   @override
   _DeliveryDateState createState() => _DeliveryDateState();
 }
 
 class _DeliveryDateState extends State<DeliveryDate> {
-  String _deliveryDate = 'Entrega: 28/12/24'; // Estado inicial
+  String createdDate = '';
+  String deliveredDate = '';
+  String _deliveryDate = '';
+
+  @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting('es_ES').then((_) {
+      setState(() {
+        createdDate = formatDate(widget.order.createdDate);
+        deliveredDate = formatDate(widget.order.receivedDate);
+        _deliveryDate = deliveredDate;
+      });
+    });
+  }
+
+  String formatDate(DateTime dateTime) {
+    // Format the DateTime object into the desired format in Spanish
+    return DateFormat('EEE dd MMM yyyy', 'es_ES').format(dateTime);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +185,6 @@ class _DeliveryDateState extends State<DeliveryDate> {
               },
               child: const Text(
                 'Cerrar',
-                style: TextStyle(color: Colors.deepOrange),
               ),
             ),
           ],
@@ -170,8 +194,7 @@ class _DeliveryDateState extends State<DeliveryDate> {
 
     if (pickedDate != null) {
       setState(() {
-        _deliveryDate =
-            'Entrega: ${pickedDate.day}/${pickedDate.month}/${pickedDate.year}';
+        _deliveryDate = formatDate(pickedDate);
       });
     }
   }

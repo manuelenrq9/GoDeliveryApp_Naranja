@@ -1,24 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/orderPayment.dart';
 
 class OrderSummary extends StatelessWidget {
-  final List<Map<String, String>> summaryData = [
-    {'label': 'Subtotal', 'value': '\$ 39.00'},
-    {'label': 'Tarifa de entrega', 'value': '\$ 60'},
-    {'label': 'Descuento', 'value': '-\$ 1.40'},
-  ];
+  final Order order;
+
+  const OrderSummary({
+    Key? key,
+    required this.order,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    List<OrderPayment> payment = order.paymentMethod;
+    double total = 0;
+    String currency = '';
+    payment.forEach((payment) {
+      total = payment.total;
+      currency = payment.currency;
+    });
+
     return Column(
       children: [
-        ...summaryData.map(
-          (data) => SummaryRow(
-            label: data['label']!,
-            value: data['value']!,
-          ),
-        ),
+        SummaryRow(
+            label: 'Subtotal', value: '$currency ${total.toStringAsFixed(2)}'),
+        SummaryRow(label: 'Tarifa de entrega', value: '\$60'),
+        SummaryRow(label: 'Descuento', value: '-\$67'),
         const Divider(thickness: 1),
-        SummaryRow(label: 'Total', value: '\$ 97.60', isTotal: true),
+        SummaryRow(label: 'Total', value: '\$78'),
       ],
     );
   }

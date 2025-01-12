@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:intl/intl.dart';
 
 class DeliveryTime extends StatefulWidget {
+  final Order order;
+  DeliveryTime({Key? key, required this.order}) : super(key: key);
   @override
   _DeliveryTimeState createState() => _DeliveryTimeState();
 }
 
 class _DeliveryTimeState extends State<DeliveryTime> {
-  String _deliveryTime = 'Entrega a las 15:00 pm'; // Estado inicial de la hora
+  String _deliveryTime = '';
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      _deliveryTime = formatTime(widget.order.receivedDate);
+    });
+  }
+
+  String formatTime(DateTime dateTime) {
+    // Format the DateTime object into the desired time format
+    return DateFormat('hh:mm a', 'es_ES').format(dateTime);
+  }
 
   @override
   Widget build(BuildContext context) {

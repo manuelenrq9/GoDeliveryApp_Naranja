@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/data.services.dart';
+import 'package:godeliveryapp_naranja/core/dataID.services.dart';
+import 'package:godeliveryapp_naranja/features/combo/data/combo_fetchID.dart';
+import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/orderPayment.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/delivery_address.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/delivery_date.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/delivery_time.dart';
@@ -16,7 +20,7 @@ import 'package:godeliveryapp_naranja/features/product/data/product_fetchID.dart
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
-    final Order order;
+  final Order order;
 
   const OrderSummaryScreen({super.key, required this.order});
   @override
@@ -27,7 +31,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   int _selectedIndex = 0;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-
 
   void _onNavBarTapped(int index) {
     setState(() {
@@ -94,9 +97,16 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<CartCombo> combos = widget.order.combos;
-    String formatedId = widget.order.id.length>8
-      ? widget.order.id.substring(0,8) : widget.order.id; 
+    List<OrderPayment> payment = widget.order.paymentMethod;
+
+    String paymentMethod = '';
+    payment.forEach((payment) {
+      paymentMethod = payment.paymentMethod;
+    });
+
+    String formatedId = widget.order.id.length > 8
+        ? widget.order.id.substring(0, 8)
+        : widget.order.id;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -118,7 +128,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             const Divider(thickness: 1, height: 32),
             _buildSection(
               icon: Icons.credit_card,
-              text: 'Método de pago: ${widget.order.status}',
+              text: 'Método de pago: ${paymentMethod}',
             ),
             const Divider(thickness: 1, height: 32),
             const Text(
@@ -128,30 +138,30 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             const SizedBox(height: 16),
             // ..._buildProductList(),
             FutureBuilder<List<Widget>>(
-            future: _buildProductList(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else if (snapshot.hasData) {
-                return Column(children: snapshot.data!);
-              } else {
-                return const Text('No products available');
-              }
-            },
-          ),
+              future: _buildProductList(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (snapshot.hasData) {
+                  return Column(children: snapshot.data!);
+                } else {
+                  return const Text('No products available');
+                }
+              },
+            ),
             const Divider(thickness: 1, height: 32),
             const Text(
               'Resumen del pedido',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            OrderSummary(),
+            OrderSummary(order: widget.order),
             const SizedBox(height: 16),
-            DeliveryDate(),
+            DeliveryDate(order: widget.order),
             const SizedBox(height: 16),
-            DeliveryTime(),
+            DeliveryTime(order: widget.order),
             const Divider(thickness: 1, height: 32),
             DeliveryAddress(),
             const SizedBox(height: 32),
@@ -183,38 +193,73 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     );
   }
 
+  Future<List<Widget>> _buildProductList() async {
+    List<CartProduct> products = widget.order.products;
+    List<CartCombo> combos = widget.order.combos;
 
-Future<List<Widget>> _buildProductList() async {
-  List<CartProduct> products = widget.order.products;
-
-  List<Product> productList = [];
-  try {
-    for (var cartProduct in products) {
-      Product product = await fetchProductById(cartProduct.id);
-      productList.add(product);
+    List<Product> productList = [];
+    try {
+      for (var product in products) {
+        var id = product.id;
+        var productObject = await fetchEntityById<Product>(id, 'product/one',
+            (json) => Product.fromJson(json)); // Await the asynchronous call
+        productList
+            .add(productObject); //    Add the product object to the productList
+      }
+    } catch (e) {
+      print('Error fetching productos: \$e');
     }
-  } catch (e) {
-    print('Error fetching products: \$e');
-  }
 
-  return List<Widget>.generate(productList.length, (index) {
-    final product = productList[index];
-    final quantity = products[index].quantity;
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      elevation: 2,
-      child: ProductTile(
-        name: product.name,
-        presentation: '${product.weight}${product.measurement}',
-        price: '${quantity}',
-        imageUrl: product.image.isNotEmpty ? product.image.first : '',
-      ),
-    );
-  });
-}
+    List<Combo> comboList = [];
+    try {
+      for (var cartCombo in combos) {
+        Combo combo = await fetchComboById(cartCombo.id);
+        comboList.add(combo);
+      }
+    } catch (e) {
+      print('Error fetching combos: \$e');
+    }
+
+    return List<Widget>.generate(productList.length + comboList.length,
+        (index) {
+      if (index < productList.length) {
+        final product = productList[index];
+        final quantity = products[index].quantity;
+
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
+          child: ProductTile(
+            name: product.name,
+            presentation: '${product.weight}${product.measurement}',
+            price: '$quantity',
+            imageUrl: product.image.isNotEmpty ? product.image.first : '',
+          ),
+        );
+      } else {
+        final comboIndex = index - productList.length;
+        final combo = comboList[comboIndex];
+        final quantityCombo = combos[comboIndex].quantity;
+
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
+          child: ProductTile(
+            name: combo.name,
+            presentation: '${combo.weight}${combo.measurement}',
+            price: '$quantityCombo',
+            imageUrl: combo.comboImage.isNotEmpty ? combo.comboImage.first : '',
+          ),
+        );
+      }
+    });
+  }
 
   // Future<List<Widget>> _buildProductList() async {
   //   List<CartProduct> products = widget.order.products;
