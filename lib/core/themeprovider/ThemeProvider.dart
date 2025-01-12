@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:godeliveryapp_naranja/theme/theme_provider.dart';
+import 'package:godeliveryapp_naranja/core/theme/theme_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {

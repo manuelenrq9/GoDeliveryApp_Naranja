@@ -34,7 +34,9 @@ class ComboCard extends StatelessWidget {
         child: Container(
           width: cardWidth, // Ancho dinámico de la tarjeta
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[800]
+                : Colors.white,
             borderRadius: BorderRadius.circular(12), // Borde redondeado
             boxShadow: [
               BoxShadow(
@@ -96,8 +98,7 @@ class ComboCard extends StatelessWidget {
                   DiscountPriceMenu(
                       specialPrice: combo.specialPrice,
                       discountId: combo.discount,
-                      currency: combo.currency
-                    ),
+                      currency: combo.currency),
                 ],
               ),
             ),

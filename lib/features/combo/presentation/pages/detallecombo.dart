@@ -187,7 +187,9 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]
+                      : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: const [
                     BoxShadow(
@@ -322,9 +324,16 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                                 color: Color.fromARGB(255, 175, 91, 7),
                                 fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
-                        Text(widget.combo.description,
-                            style: const TextStyle(
-                                fontSize: 16, color: Colors.black87)),
+                        Text(
+                          widget.combo.description,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black87,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),

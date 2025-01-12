@@ -19,7 +19,10 @@ class ProductItem extends StatelessWidget {
             destination: ProductDetailScreen(product: product));
       },
       child: Card(
-        color: Colors.white, // Fondo blanco para la tarjeta
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey[800]
+            : Colors
+                .white, // Fondo blanco para la tarjeta en modo claro y gris en modo oscuro
         elevation: 5, // Elevación moderada para más profundidad
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16), // Bordes más redondeados
@@ -72,10 +75,12 @@ class ProductItem extends StatelessWidget {
                       // Nombre del producto
                       Text(
                         product.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -95,10 +100,9 @@ class ProductItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           DiscountPriceMenu(
-                            specialPrice: product.price,
-                            discountId: product.discount,
-                            currency: product.currency
-                          ),
+                              specialPrice: product.price,
+                              discountId: product.discount,
+                              currency: product.currency),
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
