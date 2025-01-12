@@ -59,6 +59,7 @@ class _MainMenuState extends State<MainMenu> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
