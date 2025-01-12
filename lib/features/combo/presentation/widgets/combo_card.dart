@@ -35,7 +35,7 @@ class ComboCard extends StatelessWidget {
           width: cardWidth, // Ancho dinámico de la tarjeta
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey[800]
+                ? const Color.fromARGB(255, 25, 1, 1)
                 : Colors.white,
             borderRadius: BorderRadius.circular(12), // Borde redondeado
             boxShadow: [

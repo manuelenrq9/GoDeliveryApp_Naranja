@@ -20,16 +20,18 @@ class ProductItem extends StatelessWidget {
       },
       child: Card(
         color: Theme.of(context).brightness == Brightness.dark
-            ? Colors.grey[800]
-            : Colors
-                .white, // Fondo blanco para la tarjeta en modo claro y gris en modo oscuro
-        elevation: 5, // Elevación moderada para más profundidad
+            ? const Color.fromARGB(255, 25, 1, 1)
+            : Colors.white,
+        elevation: 5,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16), // Bordes más redondeados
+          borderRadius: BorderRadius.circular(16),
         ),
         margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+        shadowColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white.withOpacity(0.2)
+            : Colors.black.withOpacity(0.2),
         child: InkWell(
-          borderRadius: BorderRadius.circular(16), // Añadir efecto ripple
+          borderRadius: BorderRadius.circular(16),
           onTap: () {
             showLoadingScreen(context,
                 destination: ProductDetailScreen(product: product));
@@ -39,18 +41,15 @@ class ProductItem extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Imagen del producto, centrada
                 Center(
                   child: Container(
                     width: 90,
                     height: 90,
                     decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(12), // Bordes redondeados
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(12), // Bordes redondeados
+                      borderRadius: BorderRadius.circular(12),
                       child: CachedNetworkImage(
                         imageUrl: product.image[0],
                         fit: BoxFit.cover,
@@ -67,12 +66,10 @@ class ProductItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Información del producto
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Nombre del producto
                       Text(
                         product.name,
                         style: TextStyle(
@@ -86,7 +83,6 @@ class ProductItem extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
-                      // Peso del producto
                       Text(
                         "${product.weight} gr",
                         style: const TextStyle(
@@ -95,7 +91,6 @@ class ProductItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      // Precio y botón para añadir al carrito
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -108,7 +103,10 @@ class ProductItem extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.grey.withOpacity(0.9)
+                                      : Colors.black.withOpacity(0.2),
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),
                                 ),
