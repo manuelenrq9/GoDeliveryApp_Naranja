@@ -56,6 +56,18 @@ class _MainMenuState extends State<MainMenu> {
     });
   }
 
+  ThemeData getGradientTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black, // Íconos negros para buena visibilidad
+        elevation: 0,
+      ),
+      scaffoldBackgroundColor: Colors.orange[50],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -73,12 +85,26 @@ class _MainMenuState extends State<MainMenu> {
         brightness: Brightness.dark,
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.black,
-          foregroundColor: Colors.grey,
+          foregroundColor: Color.fromARGB(255, 255, 255, 255),
           elevation: 4,
         ),
       ),
       home: Scaffold(
         appBar: AppBar(
+          flexibleSpace: _themeMode == ThemeMode.system
+              ? Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 255, 255, 255), // Naranja claro
+                        Color.fromARGB(215, 250, 84, 34), // Blanco
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                )
+              : null,
           leading: Builder(
             builder: (BuildContext context) {
               return IconButton(
@@ -115,6 +141,10 @@ class _MainMenuState extends State<MainMenu> {
                 const PopupMenuItem<ThemeMode>(
                   value: ThemeMode.dark,
                   child: Text('Modo Oscuro'),
+                ),
+                const PopupMenuItem<ThemeMode>(
+                  value: ThemeMode.system,
+                  child: Text('Modo Degradado'),
                 ),
               ],
             ),
