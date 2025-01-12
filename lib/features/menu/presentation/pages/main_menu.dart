@@ -22,8 +22,7 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> {
   late String selectedCurrency;
   int _currentIndex = 0;
-
-  ThemeMode _themeMode = ThemeMode.light; // Tema inicial
+  ThemeMode _themeMode = ThemeMode.light;
 
   @override
   void initState() {
@@ -40,9 +39,9 @@ class _MainMenuState extends State<MainMenu> {
     print('MONEDA ${selectedCurrency}');
   }
 
-  void _changeTheme(ThemeMode mode) {
+  void _onTap(int index) {
     setState(() {
-      _themeMode = mode;
+      _currentIndex = index;
     });
   }
 
@@ -51,12 +50,18 @@ class _MainMenuState extends State<MainMenu> {
         MaterialPageRoute(builder: (BuildContext context) => const MainMenu()));
   }
 
+  void _changeTheme(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      themeMode: _themeMode,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
-      themeMode: _themeMode,
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -84,26 +89,24 @@ class _MainMenuState extends State<MainMenu> {
                     destination: RecoverySearchmessagueScreen());
               },
             ),
-            PopupMenuButton<String>(
-              icon:
-                  const Icon(Icons.brightness_6), // Ícono del selector de tema
-              onSelected: (value) {
-                if (value == 'Claro') {
-                  _changeTheme(ThemeMode.light);
-                } else if (value == 'Oscuro') {
-                  _changeTheme(ThemeMode.dark);
-                } else if (value == 'Degradado') {
-                  _changeTheme(ThemeMode.system);
-                }
-              },
-              itemBuilder: (BuildContext context) {
-                return {'Claro', 'Oscuro', 'Degradado'}
-                    .map((String choice) => PopupMenuItem<String>(
-                          value: choice,
-                          child: Text(choice),
-                        ))
-                    .toList();
-              },
+            PopupMenuButton<ThemeMode>(
+              icon: const Icon(Icons.brightness_6),
+              onSelected: _changeTheme,
+              itemBuilder: (BuildContext context) =>
+                  <PopupMenuEntry<ThemeMode>>[
+                const PopupMenuItem<ThemeMode>(
+                  value: ThemeMode.light,
+                  child: Text('Modo Claro'),
+                ),
+                const PopupMenuItem<ThemeMode>(
+                  value: ThemeMode.dark,
+                  child: Text('Modo Oscuro'),
+                ),
+                const PopupMenuItem<ThemeMode>(
+                  value: ThemeMode.system,
+                  child: Text('Modo Degradado'),
+                ),
+              ],
             ),
           ],
         ),
@@ -128,11 +131,7 @@ class _MainMenuState extends State<MainMenu> {
         ),
         bottomNavigationBar: CustomNavBar(
           currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
+          onTap: _onTap,
         ),
         drawer: CustomDrawer(),
       ),
