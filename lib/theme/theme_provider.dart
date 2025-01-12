@@ -23,12 +23,12 @@ final ThemeData darkTheme = ThemeData(
 // Tema con Degradado Naranja
 final ThemeData gradientTheme = ThemeData(
   brightness: Brightness.light,
-  primaryColor: Colors.orange,
-  scaffoldBackgroundColor: Colors.orange[50],
+  primaryColor: const Color.fromARGB(255, 61, 33, 187),
+  scaffoldBackgroundColor: const Color.fromARGB(255, 241, 97, 7),
   appBarTheme: AppBarTheme(
-    backgroundColor: Colors.transparent,
+    backgroundColor: const Color.fromARGB(255, 255, 12, 12),
     elevation: 0,
-    foregroundColor: Colors.white,
+    foregroundColor: const Color.fromARGB(255, 183, 43, 43),
   ),
   textTheme: const TextTheme(
     headlineSmall: TextStyle(color: Colors.white),

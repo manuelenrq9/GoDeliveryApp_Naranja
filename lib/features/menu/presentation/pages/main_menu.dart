@@ -56,6 +56,7 @@ class _MainMenuState extends State<MainMenu> {
     });
   }
 
+  // Fondo degradado solo para el Modo Degradado
   ThemeData getGradientTheme() {
     return ThemeData(
       brightness: Brightness.light,
@@ -64,7 +65,8 @@ class _MainMenuState extends State<MainMenu> {
         foregroundColor: Colors.black, // Íconos negros para buena visibilidad
         elevation: 0,
       ),
-      scaffoldBackgroundColor: Colors.orange[50],
+      scaffoldBackgroundColor:
+          Colors.transparent, // Deja el fondo transparente para el gradiente
     );
   }
 
@@ -80,6 +82,8 @@ class _MainMenuState extends State<MainMenu> {
           foregroundColor: Colors.black,
           elevation: 4,
         ),
+        scaffoldBackgroundColor:
+            Colors.white, // Fondo blanco para el modo claro
       ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
@@ -88,6 +92,8 @@ class _MainMenuState extends State<MainMenu> {
           foregroundColor: Color.fromARGB(255, 255, 255, 255),
           elevation: 4,
         ),
+        scaffoldBackgroundColor:
+            Colors.black, // Fondo negro para el modo oscuro
       ),
       home: Scaffold(
         appBar: AppBar(
@@ -153,21 +159,49 @@ class _MainMenuState extends State<MainMenu> {
         body: RefreshIndicator(
           onRefresh: _refresh,
           color: Colors.orange,
-          child: ListView(
-            children: [
-              CategoryListScreen(),
-              TituloLista(
-                titulo: "Combos de Productos",
-                next: ComboCatalogScreen(),
-              ),
-              const ComboListScreen(),
-              TituloLista(
-                titulo: "Productos Populares",
-                next: ProductCatalogScreen(),
-              ),
-              const ProductListScreen(),
-            ],
-          ),
+          child: _themeMode == ThemeMode.system
+              ? Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 255, 255, 255), // Naranja claro
+                        Color.fromARGB(215, 250, 84, 34), // Blanco
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: ListView(
+                    children: [
+                      CategoryListScreen(),
+                      TituloLista(
+                        titulo: "Combos de Productos",
+                        next: ComboCatalogScreen(),
+                      ),
+                      const ComboListScreen(),
+                      TituloLista(
+                        titulo: "Productos Populares",
+                        next: ProductCatalogScreen(),
+                      ),
+                      const ProductListScreen(),
+                    ],
+                  ),
+                )
+              : ListView(
+                  children: [
+                    CategoryListScreen(),
+                    TituloLista(
+                      titulo: "Combos de Productos",
+                      next: ComboCatalogScreen(),
+                    ),
+                    const ComboListScreen(),
+                    TituloLista(
+                      titulo: "Productos Populares",
+                      next: ProductCatalogScreen(),
+                    ),
+                    const ProductListScreen(),
+                  ],
+                ),
         ),
         bottomNavigationBar: CustomNavBar(
           currentIndex: _currentIndex,
