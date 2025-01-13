@@ -5,12 +5,12 @@ import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/register.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:local_auth/local_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
@@ -19,60 +19,50 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final LocalAuthentication _localAuth = LocalAuthentication();
 
-Future<String?> _getToken() async {
+  Future<String?> _getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token'); // Obtén el token almacenado
+    return prefs.getString('auth_token');
   }
 
-  Future<void> fetchAndSaveUserId(String email) async {
-  try {
-    final token = await _getToken();
+  Future<void> _loginWithBiometrics() async {
+    try {
+      // Verificar si el dispositivo admite biometría
+      bool canAuthenticate = await _localAuth.canCheckBiometrics ||
+          await _localAuth.isDeviceSupported();
 
-      // Si no hay token, puede que quieras manejarlo, como redirigir al login
-      if (token == null) {
-        throw Exception('No hay token de autenticación');
+      if (!canAuthenticate) {
+        _showErrorDialog('El dispositivo no admite autenticación biométrica.');
+        return;
       }
-    // Construir la URL con el correo
-    final url = Uri.parse(
-      'https://orangeteam-deliverybackend-production.up.railway.app/User/byEmail/${Uri.encodeComponent(email)}',
-    );
 
-    // Realizar la solicitud HTTP
-    final response = await http.get(url,
-        headers: {
-          'Authorization':
-              'Bearer $token', // Incluimos el token en el encabezado
-          'Content-Type': 'application/json',
-        },);
+      // Intentar autenticar al usuario con biometría
+      bool authenticated = await _localAuth.authenticate(
+        localizedReason: 'Usa tu huella digital para iniciar sesión',
+        options: const AuthenticationOptions(biometricOnly: true),
+      );
 
-    // Verificar la respuesta
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
+      if (authenticated) {
+        // Si la autenticación es exitosa, recuperar el token almacenado
+        final token = await _getToken();
 
-      if (responseData['value'] != null) {
-        final userId = responseData['value']['id']; // Extraer el ID del usuario
-
-        // Guardar el ID en SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_id', userId);
-      
+        if (token != null) {
+          // Redirigir al menú principal si el token existe
+          showLoadingScreen(context, destination: const MainMenu());
+        } else {
+          _showErrorDialog('No se encontró un token de autenticación válido.');
+        }
       } else {
-        print('No se encontró información del usuario.');
+        _showErrorDialog('Autenticación biométrica fallida.');
       }
-    } else {
-      print('Error al obtener el ID del usuario: ${response.body}');
+    } catch (e) {
+      _showErrorDialog('Error durante la autenticación biométrica: $e');
     }
-  } catch (e) {
-    print('Error al realizar la solicitud para obtener el ID: $e');
   }
-}
 
-
-  // Método para realizar la validación y el login
   void _login() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Si la validación es correcta, enviar los datos
       final loginData = {
         'email': _emailController.text,
         'password': _passwordController.text,
@@ -80,49 +70,48 @@ Future<String?> _getToken() async {
 
       try {
         final response = await http.post(
-          Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/auth/login'),
+          Uri.parse(
+              'https://orangeteam-deliverybackend-production.up.railway.app/auth/login'),
           headers: {'accept': '*/*', 'Content-Type': 'application/json'},
           body: json.encode(loginData),
         );
 
         if (response.statusCode == 201) {
-          // Si la respuesta es exitosa, guardar el token
           final responseBody = json.decode(response.body);
           final token = responseBody['token'];
 
-          // Almacenar el token en shared preferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
 
-          // Llamar al método para obtener y guardar el ID del usuario
-        await fetchAndSaveUserId(_emailController.text);
-
-          // Redirigir a la pantalla principal
           showLoadingScreen(context, destination: const MainMenu());
         } else {
           _showErrorDialog('Error al iniciar sesión. Revisa tus credenciales.');
         }
       } catch (e) {
-        _showErrorDialog('Contraseña invalida\n');
+        _showErrorDialog('Contraseña inválida\n');
       }
     }
   }
 
-  // Mostrar un diálogo de error
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Error', style: TextStyle(color: Colors.orange),),
+          title: const Text(
+            'Error',
+            style: TextStyle(color: Colors.orange),
+          ),
           content: Text(message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('OK', style: TextStyle(color: Colors.orange),),
-              
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
           ],
         );
@@ -145,12 +134,10 @@ Future<String?> _getToken() async {
                 height: 270,
               ),
               const SizedBox(height: 16),
-              // Formulario de login
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
-                    // Campo Correo/Usuario
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TextFormField(
@@ -171,8 +158,6 @@ Future<String?> _getToken() async {
                       ),
                     ),
                     const SizedBox(height: 10),
-
-                    // Campo Contraseña
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: TextFormField(
@@ -206,8 +191,6 @@ Future<String?> _getToken() async {
                       ),
                     ),
                     const SizedBox(height: 10),
-
-                    // Botón de Iniciar sesión
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: ElevatedButton(
@@ -229,14 +212,37 @@ Future<String?> _getToken() async {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 5),
-
-                    // Otros botones
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: _loginWithBiometrics,
+                        child: const Text(
+                          'Iniciar sesión con Huella',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
                     TextButton(
                       onPressed: () {
-                        showLoadingScreen(context, destination: const RegisterScreen());
+                        showLoadingScreen(context,
+                            destination: const RegisterScreen());
                       },
-                      child: const Text('¿No tienes cuenta? Regístrate', style: TextStyle(color: Color(0xFFFF7000))),
+                      child: const Text(
+                        '¿No tienes cuenta? Regístrate',
+                        style: TextStyle(color: Color(0xFFFF7000)),
+                      ),
                     ),
                   ],
                 ),
