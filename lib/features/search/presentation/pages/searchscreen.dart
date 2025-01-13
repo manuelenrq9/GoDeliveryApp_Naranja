@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
+import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/product/data/product_search.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
@@ -10,7 +11,9 @@ class SearchScreen extends StatefulWidget {
   _SearchScreenState createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
+class _SearchScreenState extends State<SearchScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _controller;
   final TextEditingController _searchController = TextEditingController();
   Timer? _debounce;
   String _currentSearchText = '';
@@ -20,13 +23,22 @@ class _SearchScreenState extends State<SearchScreen> {
     setState(() {
       _currentIndex = index;
     });
-  } 
+  }
 
   @override
   void dispose() {
     _debounce?.cancel(); // Cancelar el timer si el widget es destruido
     _searchController.dispose();
     super.dispose();
+  }
+
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
   }
 
   void _onSearchChanged(String query) {
@@ -36,6 +48,62 @@ class _SearchScreenState extends State<SearchScreen> {
         _currentSearchText = query;
       });
     });
+  }
+
+  Widget _buildCartIcon() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Icon(
+            Icons.shopping_cart,
+            color: Color(0xFFFF9027),
+            size: 28,
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: ScaleTransition(
+            scale: Tween(begin: 1.0, end: 1.2).animate(
+              CurvedAnimation(
+                parent: _controller,
+                curve: Curves.elasticOut,
+              ),
+            ),
+            child: ValueListenableBuilder<int>(
+              valueListenable: CounterManager().counterNotifier,
+              builder: (context, counter, child) {
+                return Visibility(
+                  visible: counter > 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      '$counter',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -99,8 +167,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                   ),
                 IconButton(
-                  icon:
-                      const Icon(Icons.shopping_cart, color: Color(0xFFFF7000)),
+                  icon: _buildCartIcon(),
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,

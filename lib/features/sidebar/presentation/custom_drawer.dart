@@ -1,13 +1,88 @@
 // custom_drawer.dart
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
+import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/category/data/categoryScreen.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/pages/order_history_screen.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/OrderSummaryScreen.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
-class CustomDrawer extends StatelessWidget {
+
+class CustomDrawer extends StatefulWidget {
+  @override
+  _CustomDrawerState createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer>
+    with TickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+  }
+
+  Widget _buildCartIcon() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Icon(
+            Icons.shopping_cart,
+            color: Colors.grey,
+            size: 28,
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: ScaleTransition(
+            scale: Tween(begin: 1.0, end: 1.2).animate(
+              CurvedAnimation(
+                parent: _controller,
+                curve: Curves.elasticOut,
+              ),
+            ),
+            child: ValueListenableBuilder<int>(
+              valueListenable: CounterManager().counterNotifier,
+              builder: (context, counter, child) {
+                return Visibility(
+                  visible: counter > 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      '$counter',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -51,7 +126,7 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.shopping_cart),
+            leading: _buildCartIcon(),
             title: const Text('Carrito'),
             onTap: () {
               showLoadingScreen(context, destination: const CartScreen());
