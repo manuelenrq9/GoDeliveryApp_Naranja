@@ -28,7 +28,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _loginWithBiometrics() async {
     try {
-      // Verificar si el dispositivo admite biometría
       bool canAuthenticate = await _localAuth.canCheckBiometrics ||
           await _localAuth.isDeviceSupported();
 
@@ -37,18 +36,15 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      // Intentar autenticar al usuario con biometría
       bool authenticated = await _localAuth.authenticate(
         localizedReason: 'Usa tu huella digital para iniciar sesión',
         options: const AuthenticationOptions(biometricOnly: true),
       );
 
       if (authenticated) {
-        // Si la autenticación es exitosa, recuperar el token almacenado
         final token = await _getToken();
 
         if (token != null) {
-          // Redirigir al menú principal si el token existe
           showLoadingScreen(context, destination: const MainMenu());
         } else {
           _showErrorDialog('No se encontró un token de autenticación válido.');
@@ -193,47 +189,46 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF7000),
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFFF7000),
+                                minimumSize: const Size(double.infinity, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: _login,
+                              child: const Text(
+                                'Iniciar sesión',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                        onPressed: _login,
-                        child: const Text(
-                          'Iniciar sesión',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                          const SizedBox(width: 10),
+                          GestureDetector(
+                            onTap: _loginWithBiometrics,
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.fingerprint,
+                                  color: Colors.white, size: 30),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: _loginWithBiometrics,
-                        child: const Text(
-                          'Iniciar sesión con Huella',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
                     TextButton(
                       onPressed: () {
                         showLoadingScreen(context,
