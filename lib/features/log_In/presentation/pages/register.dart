@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -24,11 +26,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   String? _region;
   String? _emailErrorMessage;
-  
+
   @override
   void dispose() {
     _dateController.dispose();
@@ -40,46 +43,75 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-
+  Future<String?> _getApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('api_url'); // Obtén el token almacenado
+  }
 
   // Método para realizar la validación y enviar los datos
- // Método para realizar la validación y enviar los datos
   void _register() async {
+    final apiUrl = await _getApi();
+    setState(() {
+      _emailErrorMessage = null;
+    });
+    if (apiUrl != 'https://orangeteam-deliverybackend-production.up.railway.app') {
+      _validateEmail(_emailController.text);
+    }
     if (_formKey.currentState?.validate() ?? false) {
-      if (_emailErrorMessage != null) {
+      if (_emailErrorMessage != null &&
+          apiUrl ==
+              'https://orangeteam-deliverybackend-production.up.railway.app') {
         // Si hay un error de correo, no permitir el registro
         return;
       }
-
+      print('3');
       // Continuar con el proceso de registro
       final email = _emailController.text;
-
+      print('4');
       try {
-        final emailAvailable = await isEmailAvailable(email);
+        print('5');
+        if (apiUrl ==
+            'https://orangeteam-deliverybackend-production.up.railway.app') {
+          final emailAvailable = await isEmailAvailable(email);
 
-        if (!emailAvailable) {
-          setState(() {
-            _emailErrorMessage = 'El correo electrónico ya está registrado.';
-          });
-          return;
+          if (!emailAvailable) {
+            setState(() {
+              _emailErrorMessage = 'El correo electrónico ya está registrado.';
+            });
+            return;
+          }
         }
-
-        final newUser = {
-          'name': _nameController.text,
-          'email': email,
-          'password': _passwordController.text,
-          'phone': _phoneController.text,
-          'type': 'CLIENT',
-        };
-
+        Map<String, String> newUser = {};
+        if (apiUrl ==
+            'https://orangeteam-deliverybackend-production.up.railway.app') {
+          newUser = {
+            'name': _nameController.text,
+            'email': email,
+            'password': _passwordController.text,
+            'phone': _phoneController.text,
+            'type': 'CLIENT',
+          };
+        } else {
+          newUser = {
+            'name': _nameController.text,
+            'email': email,
+            'password': _passwordController.text,
+            'phone': _phoneController.text,
+            "image": ""
+          };
+        }
         final response = await http.post(
-          Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/auth/register'),
-          headers: {'accept': '*/*', 'Content-Type': 'application/json'},
+          Uri.parse('$apiUrl/auth/register'),
+          headers: {'Content-Type': 'application/json'},
           body: json.encode(newUser),
         );
-
+        print('HOLA  $apiUrl/auth/register');
+        print(response.statusCode);
+        print('URL');
+        print(json.encode(newUser));
         if (response.statusCode == 201) {
-          showLoadingScreen(context, destination: const RegisterSuccessScreen());
+          showLoadingScreen(context,
+              destination: const RegisterSuccessScreen());
         } else {
           // Mostrar mensaje genérico de error
           setState(() {
@@ -88,42 +120,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
       } catch (e) {
         setState(() {
-          _emailErrorMessage = 'Ocurrió un error. Por favor verifica tu conexión.';
+          _emailErrorMessage =
+              'Ocurrió un error. Por favor verifica tu conexión.';
         });
       }
     }
   }
-
-
-  // void _register() async {
-  //   if (_formKey.currentState?.validate() ?? false) {
-  //     // Si la validación es correcta, enviar los datos
-  //     final newUser = {
-  //       'name': _nameController.text,
-  //       'email': _emailController.text,
-  //       'password': _passwordController.text,
-  //       'phone': _phoneController.text,
-  //       'type': 'CLIENT', // Tipo siempre es CLIENT
-  //     };
-
-  //     try {
-  //       final response = await http.post(
-  //         Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/auth/register'),
-  //         headers: {'accept': '*/*', 'Content-Type': 'application/json'},
-  //         body: json.encode(newUser),
-  //       );
-
-  //       if (response.statusCode == 201) {
-  //         // Si la respuesta es exitosa, redirige a la pantalla de éxito
-  //         showLoadingScreen(context, destination: const RegisterSuccessScreen());
-  //       } else {
-  //         _showErrorDialog('Error al crear cuenta. Intenta nuevamente.\n${response.body}');
-  //       }
-  //     } catch (e) {
-  //       _showErrorDialog('Ocurrió un error. Por favor verifica tu conexión.\n$e');
-  //     }
-  //   }
-  // }
 
   // Método para mostrar el diálogo de error
   void _showErrorDialog(String message) {
@@ -145,35 +147,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<bool> isEmailAvailable(String email) async {
-  try {
-    final response = await http.get(
-      Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/User/byEmail/$email'),
-    );
+    try {
+      final response = await http.get(
+        Uri.parse(
+            'https://orangeteam-deliverybackend-production.up.railway.app/User/byEmail/$email'),
+      );
 
-    if (response.statusCode == 500) {
-      // El servidor responde 500 si el correo no está registrado
-      return true;
-    } else if (response.statusCode == 200) {
-      // El servidor responde 200 si el correo ya está registrado
-      return false;
-    } else {
-      throw Exception('Error al verificar el correo electrónico');
+      if (response.statusCode == 500) {
+        // El servidor responde 500 si el correo no está registrado
+        return true;
+      } else if (response.statusCode == 200) {
+        // El servidor responde 200 si el correo ya está registrado
+        return false;
+      } else {
+        throw Exception('Error al verificar el correo electrónico');
+      }
+    } catch (e) {
+      throw Exception('Error al conectar con el servidor: $e');
     }
-  } catch (e) {
-    throw Exception('Error al conectar con el servidor: $e');
   }
-}
 
-Future<void> _validateEmail(String email) async {
-  if (email.isNotEmpty && RegExp(r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+').hasMatch(email)) {
-    final emailAvailable = await isEmailAvailable(email);
-    setState(() {
-      _emailErrorMessage = emailAvailable ? null : 'El correo electrónico ya está registrado.';
-    });
+  Future<void> _validateEmail(String email) async {
+    final apiUrl = await _getApi();
+
+    if (email.isNotEmpty &&
+        RegExp(r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+').hasMatch(email) &&
+        apiUrl ==
+            'https://orangeteam-deliverybackend-production.up.railway.app') {
+      final emailAvailable = await isEmailAvailable(email);
+      setState(() {
+        _emailErrorMessage =
+            emailAvailable ? null : 'El correo electrónico ya está registrado.';
+      });
+    }
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +189,7 @@ Future<void> _validateEmail(String email) async {
       body: Center(
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey,  // Aquí se agrega el formulario
+            key: _formKey, // Aquí se agrega el formulario
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -233,11 +240,14 @@ Future<void> _validateEmail(String email) async {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: _emailErrorMessage == null ? Colors.grey : Colors.red,
+                          color: _emailErrorMessage == null
+                              ? Colors.grey
+                              : Colors.red,
                         ),
                       ),
                       prefixIcon: const Icon(Icons.email),
-                      errorText: _emailErrorMessage, // Muestra el mensaje de error
+                      errorText:
+                          _emailErrorMessage, // Muestra el mensaje de error
                     ),
                     onChanged: (value) {
                       _validateEmail(value);
@@ -246,6 +256,10 @@ Future<void> _validateEmail(String email) async {
                       if (value == null || value.isEmpty) {
                         return 'Por favor ingresa tu correo.';
                       }
+                      if (!RegExp(r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+')
+                          .hasMatch(value)) {
+                        return 'Correo no válido';
+                      }
                       if (_emailErrorMessage != null) {
                         return _emailErrorMessage; // Valida si hay un error ya establecido
                       }
@@ -253,28 +267,6 @@ Future<void> _validateEmail(String email) async {
                     },
                   ),
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                //   child: TextFormField(
-                //     controller: _emailController,
-                //     decoration: InputDecoration(
-                //       hintText: 'Correo Electronico',
-                //       border: OutlineInputBorder(
-                //         borderRadius: BorderRadius.circular(10),
-                //       ),
-                //       prefixIcon: const Icon(Icons.email),
-                //     ),
-                //     validator: (value) {
-                //       if (value == null || value.isEmpty) {
-                //         return 'Por favor ingresa tu correo';
-                //       }
-                //       if (!RegExp(r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]+').hasMatch(value)) {
-                //         return 'Correo no válido';
-                //       }
-                //       return null;
-                //     },
-                //   ),
-                // ),
                 const SizedBox(height: 10),
 
                 // Campo Contraseña
@@ -291,7 +283,9 @@ Future<void> _validateEmail(String email) async {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
@@ -327,11 +321,14 @@ Future<void> _validateEmail(String email) async {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          _isConfirmPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: () {
                           setState(() {
-                            _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                            _isConfirmPasswordVisible =
+                                !_isConfirmPasswordVisible;
                           });
                         },
                       ),
@@ -475,7 +472,7 @@ Future<void> _validateEmail(String email) async {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF7000), 
+                      backgroundColor: const Color(0xFFFF7000),
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -497,7 +494,8 @@ Future<void> _validateEmail(String email) async {
                 // Texto de ir al Login
                 TextButton(
                   onPressed: () {
-                    showLoadingScreen(context, destination: const LoginScreen());
+                    showLoadingScreen(context,
+                        destination: const LoginScreen());
                   },
                   child: const Text(
                     '¿Ya tienes cuenta? Inicia sesión',

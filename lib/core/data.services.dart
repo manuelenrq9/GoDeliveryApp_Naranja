@@ -8,8 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DataService<T> {
   static const String baseUrl =
-      'https://orangeteam-deliverybackend-production.up.railway.app';
-  // 'https://amarillo-backend-production.up.railway.app';
+      // 'https://orangeteam-deliverybackend-production.up.railway.app';
+  'https://amarillo-backend-production.up.railway.app';
   //'http://192.168.68.113:3000';
   final String endpoint;
   final GenericRepository<T> repository;
@@ -49,10 +49,7 @@ class DataService<T> {
       );
       if (response.statusCode == 200) {  
         final jsonData = jsonDecode(response.body);
-        print('111111 $jsonData');
         final List<dynamic> items = jsonData;
-        print('222222 $items');
-        print('333333 ${items.map((item) => fromJson(item)).toList()}');
         return items.map((item) => fromJson(item)).toList();
       } else {
         throw Exception('Failed to fetch data');

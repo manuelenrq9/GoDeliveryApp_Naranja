@@ -20,15 +20,15 @@ Future<T> fetchEntityById<T>(String id, String endpoint,
     }
 
     final response = await http.get(
-      Uri.parse(
-          'https://orangeteam-deliverybackend-production.up.railway.app/$endpoint/$id'),
+      // Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/$endpoint/$id'),
+      Uri.parse('https://amarillo-backend-production.up.railway.app/$endpoint/$id'),
       headers: {
         'Authorization': 'Bearer $token', // Incluimos el token en el encabezado
         'Content-Type': 'application/json',
       },
     );
-    print(
-        'https://orangeteam-deliverybackend-production.up.railway.app/$endpoint/$id');
+    // print(
+    //     'https://orangeteam-deliverybackend-production.up.railway.app/$endpoint/$id');
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
       final entityData = jsonData;

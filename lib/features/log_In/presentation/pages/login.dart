@@ -19,55 +19,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String _selectedApi =
+      'https://orangeteam-deliverybackend-production.up.railway.app';
 
-Future<String?> _getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token'); // Obtén el token almacenado
+  @override
+  void initState() {
+    super.initState();
+    _setApiUrl(_selectedApi);
   }
-
-  Future<void> fetchAndSaveUserId(String email) async {
-  try {
-    final token = await _getToken();
-
-      // Si no hay token, puede que quieras manejarlo, como redirigir al login
-      if (token == null) {
-        throw Exception('No hay token de autenticación');
-      }
-    // Construir la URL con el correo
-    final url = Uri.parse(
-      'https://orangeteam-deliverybackend-production.up.railway.app/User/byEmail/${Uri.encodeComponent(email)}',
-    );
-
-    // Realizar la solicitud HTTP
-    final response = await http.get(url,
-        headers: {
-          'Authorization':
-              'Bearer $token', // Incluimos el token en el encabezado
-          'Content-Type': 'application/json',
-        },);
-
-    // Verificar la respuesta
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-
-      if (responseData['value'] != null) {
-        final userId = responseData['value']['id']; // Extraer el ID del usuario
-
-        // Guardar el ID en SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_id', userId);
-      
-      } else {
-        print('No se encontró información del usuario.');
-      }
-    } else {
-      print('Error al obtener el ID del usuario: ${response.body}');
-    }
-  } catch (e) {
-    print('Error al realizar la solicitud para obtener el ID: $e');
-  }
-}
-
 
   // Método para realizar la validación y el login
   void _login() async {
@@ -80,8 +39,8 @@ Future<String?> _getToken() async {
 
       try {
         final response = await http.post(
-          Uri.parse('https://orangeteam-deliverybackend-production.up.railway.app/auth/login'),
-          headers: {'accept': '*/*', 'Content-Type': 'application/json'},
+          Uri.parse('$_selectedApi/auth/login'),
+          headers: {'Content-Type': 'application/json'},
           body: json.encode(loginData),
         );
 
@@ -93,9 +52,6 @@ Future<String?> _getToken() async {
           // Almacenar el token en shared preferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
-
-          // Llamar al método para obtener y guardar el ID del usuario
-        await fetchAndSaveUserId(_emailController.text);
 
           // Redirigir a la pantalla principal
           showLoadingScreen(context, destination: const MainMenu());
@@ -114,15 +70,20 @@ Future<String?> _getToken() async {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Error', style: TextStyle(color: Colors.orange),),
+          title: const Text(
+            'Error',
+            style: TextStyle(color: Colors.orange),
+          ),
           content: Text(message),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('OK', style: TextStyle(color: Colors.orange),),
-              
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Colors.orange),
+              ),
             ),
           ],
         );
@@ -130,121 +91,187 @@ Future<String?> _getToken() async {
     );
   }
 
+  void _setApiUrl(String apiUrl) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('api_url', apiUrl);
+    setState(() {
+      _selectedApi = apiUrl;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'images/LogoGoDely.png',
-                width: 270,
-                height: 270,
-              ),
-              const SizedBox(height: 16),
-              // Formulario de login
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    // Campo Correo/Usuario
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: TextFormField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          hintText: 'Email/Usuario',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          prefixIcon: const Icon(Icons.person),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa un correo electrónico';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Campo Contraseña
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: TextFormField(
-                        controller: _passwordController,
-                        obscureText: !_isPasswordVisible,
-                        decoration: InputDecoration(
-                          hintText: 'Contraseña',
-                          prefixIcon: const Icon(Icons.lock),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isPasswordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
+      body: Stack(
+        children: [
+          Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'images/LogoGoDely.png',
+                    width: 270,
+                    height: 270,
+                  ),
+                  const SizedBox(height: 16),
+                  // Formulario de login
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        // Campo Correo/Usuario
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: TextFormField(
+                            controller: _emailController,
+                            decoration: InputDecoration(
+                              hintText: 'Email/Usuario',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              prefixIcon: const Icon(Icons.person),
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor ingresa un correo electrónico';
+                              }
+                              return null;
                             },
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu contraseña';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                        const SizedBox(height: 10),
 
-                    // Botón de Iniciar sesión
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF7000),
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                        // Campo Contraseña
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: TextFormField(
+                            controller: _passwordController,
+                            obscureText: !_isPasswordVisible,
+                            decoration: InputDecoration(
+                              hintText: 'Contraseña',
+                              prefixIcon: const Icon(Icons.lock),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _isPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isPasswordVisible = !_isPasswordVisible;
+                                  });
+                                },
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Por favor ingresa tu contraseña';
+                              }
+                              return null;
+                            },
                           ),
                         ),
-                        onPressed: _login,
-                        child: const Text(
-                          'Iniciar sesión',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                        const SizedBox(height: 10),
+
+                        // Botón de Iniciar sesión
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFFF7000),
+                              minimumSize: const Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: _login,
+                            child: const Text(
+                              'Iniciar sesión',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 5),
+                        const SizedBox(height: 5),
 
-                    // Otros botones
-                    TextButton(
-                      onPressed: () {
-                        showLoadingScreen(context, destination: const RegisterScreen());
-                      },
-                      child: const Text('¿No tienes cuenta? Regístrate', style: TextStyle(color: Color(0xFFFF7000))),
+                        // Otros botones
+                        TextButton(
+                          onPressed: () {
+                            showLoadingScreen(context,
+                                destination: const RegisterScreen());
+                          },
+                          child: const Text('¿No tienes cuenta? Regístrate',
+                              style: TextStyle(color: Color(0xFFFF7000))),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+          Positioned(
+            top: 25,
+            right: 10,
+            child: IconButton(
+              icon: const Icon(Icons.wifi, color: Colors.orange, size: 30),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Selecciona la API',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange)),
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0)),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _apiOption('Naranja', 'https://orangeteam-deliverybackend-production.up.railway.app', Colors.orange, 'orangeteam'),
+                          _apiOption('Amarillo', 'https://amarillo-backend-production.up.railway.app', Color(0xFFFFD700), 'amarillo'),
+                          _apiOption('Verde', 'https://verde-backend-production.up.railway.app', Colors.green, 'verde'),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  Widget _apiOption(String title, String url, Color color, String key) {
+    return ListTile(
+      leading: Icon(Icons.circle, color: color),
+      title: Text('${title}'),
+      trailing: _selectedApi.contains(key)
+          ? Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+              ),
+              padding: EdgeInsets.all(6),
+              child: Icon(Icons.check, color: color, size: 30),
+            )
+          : null,
+      onTap: () {
+        _setApiUrl(url);
+        Navigator.pop(context);
+      },
     );
   }
 }
