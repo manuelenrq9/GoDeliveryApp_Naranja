@@ -8,22 +8,24 @@ class DiscountPriceDisplay extends StatelessWidget {
   final num specialPrice;
   final String? discountId;
   final String currency;
+  final int quantity;
 
   const DiscountPriceDisplay(
       {super.key,
       required this.specialPrice,
       required this.discountId,
-      required this.currency});
+      required this.currency,
+      required this.quantity});
 
   @override
   Widget build(BuildContext context) {
     final converter = CurrencyConverter();
-    
+
     // Usamos FutureBuilder para manejar la obtención del descuento asíncrona
     return FutureBuilder<Discount>(
       future: fetchEntityById<Discount>(
         discountId ?? '', // Si el ID es null, se pasa una cadena vacía
-        'discount/one',       // Endpoint específico para descuentos
+        'discount/one', // Endpoint específico para descuentos
         (json) => Discount.fromJson(json),
       ),
       builder: (context, snapshot) {
@@ -43,7 +45,9 @@ class DiscountPriceDisplay extends StatelessWidget {
 
         return _buildPriceDisplay(
           converter.convert(priceInUSD.toDouble()), // Convertir precios
-          discountedPrice != null ? converter.convert(discountedPrice.toDouble()) : null,
+          discountedPrice != null
+              ? converter.convert(discountedPrice.toDouble())
+              : null,
           converter.selectedCurrency,
         );
       },
@@ -72,7 +76,8 @@ class DiscountPriceDisplay extends StatelessWidget {
   }
 
   // Método que construye la visualización del precio, manteniendo el estilo consistente
-  Widget _buildPriceDisplay(num originalPrice, num? discountedPrice, String currency) {
+  Widget _buildPriceDisplay(
+      num originalPrice, num? discountedPrice, String currency) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -89,7 +94,7 @@ class DiscountPriceDisplay extends StatelessWidget {
             // Si el descuento es válido, mostramos el precio original tachado
             if (discountedPrice != null && discountedPrice != originalPrice)
               Text(
-                '${currency} ${originalPrice.toStringAsFixed(2)}',
+                '${currency} ${(originalPrice*quantity).toStringAsFixed(2)}',
                 style: const TextStyle(
                     fontSize: 16,
                     color: Colors.grey,
@@ -97,7 +102,7 @@ class DiscountPriceDisplay extends StatelessWidget {
               ),
             // Mostrar el precio con descuento o el precio original si no hay descuento
             Text(
-              '${currency} ${(discountedPrice ?? originalPrice).toStringAsFixed(2)}',
+              '${currency} ${((discountedPrice ?? originalPrice)*quantity).toStringAsFixed(2)}',
               style: const TextStyle(
                   fontSize: 22,
                   color: Color(0xFFFF9027),

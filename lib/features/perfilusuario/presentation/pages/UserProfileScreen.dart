@@ -55,30 +55,32 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     return prefs.getString('auth_token');
   }
 
-  Future<User?> _getUserData() async {
+  Future<String?> _getApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? userID = prefs.getString('user_id');
+    return prefs.getString('api_url'); // Obtén el token almacenado
+  }
+
+  Future<User?> _getUserData() async {
+    String? userID = await _getUserID();
 
     if (userID == null) {
       return null;
     }
-
+    final apiUrl = await _getApi();
     try {
       final token = await _getToken();
       if (token == null) throw Exception('No hay token de autenticación');
 
       final response = await http.get(
-        Uri.parse(
-            'https://orangeteam-deliverybackend-production.up.railway.app/User/$userID'),
+        Uri.parse('$apiUrl/user/$userID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
       );
-
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        return User.fromJson(data['value']);
+        return User.fromJson(data);
       } else {
         return null;
       }
@@ -89,13 +91,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Future<void> _updateUserData() async {
+    final apiUrl = await _getApi();
     try {
       final token = await _getToken();
       if (token == null) throw Exception('No hay token de autenticación');
 
       final response = await http.put(
-        Uri.parse(
-            'https://orangeteam-deliverybackend-production.up.railway.app/User/${_user.id}'),
+        Uri.parse('$apiUrl/user/one/${_user.id}'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -123,8 +125,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   Future<String?> _getUserID() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('user_id');
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref.getString('user_id');
   }
 
   @override

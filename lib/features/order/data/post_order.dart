@@ -12,6 +12,11 @@ Future<String?> _getToken() async {
   return prefs.getString('auth_token'); // Obtén el token almacenado
 }
 
+  Future<String?> _getApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('api_url'); // Obtén el token almacenado
+  }
+
 Future<void> processOrder({
   required String address,
   required List<CartProduct> products,
@@ -46,7 +51,7 @@ Future<void> processOrder({
     'total': double.parse(totalDecimal.toStringAsFixed(2)),
     'cupon': cupon,
   };
-
+  final apiUrl = await _getApi();
   try {
     final token = await _getToken();
 
@@ -59,21 +64,14 @@ Future<void> processOrder({
 
     final response = await http.post(
       Uri.parse(
-          'https://orangeteam-deliverybackend-production.up.railway.app/order/create'),
+          '$apiUrl/order/create'),
       headers: {
-        'accept': '*/*',
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
       body: json.encode(orderData),
     );
-
-    // Imprimir la respuesta completa para ver el error detallado
-    print('Response Status: ${response.statusCode}');
-    print('Response Body: ${response.body}');
-
     if (response.statusCode == 201) {
-      print('Orden procesada correctamente');
       // Si la orden fue procesada con éxito, muestra un mensaje
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

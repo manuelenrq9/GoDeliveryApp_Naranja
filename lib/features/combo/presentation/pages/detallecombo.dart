@@ -53,12 +53,12 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
   }
 
   void decrementQuantity() {
-    setState(() {
-      if (quantity > 1) {
-        quantity--;
-        price = widget.combo.specialPrice * quantity;
-      }
-    });
+    if (quantity > 1) {
+      setState(() {
+          quantity--;
+          price = widget.combo.specialPrice * quantity; 
+      });
+    }
   }
 
   void resetQuantity() {
@@ -335,6 +335,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                       specialPrice: widget.combo.specialPrice,
                       discountId: widget.combo.discount,
                       currency: widget.combo.currency,
+                      quantity: quantity
                     ),
                   ],
                 ),
@@ -347,7 +348,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                     onPressed: decrementQuantity,
                     style: ElevatedButton.styleFrom(
                       shape: const CircleBorder(),
-                      backgroundColor: quantity > 1
+                      backgroundColor: quantity <= 1
                           ? Color.fromARGB(255, 206, 205, 204)
                           : Color(0xFFFF9027),
                       padding: const EdgeInsets.all(12),

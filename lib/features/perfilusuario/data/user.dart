@@ -3,7 +3,6 @@ class User {
   final String name;
   final String email;
   final String phone;
-  final String password;
   final String profileImageUrl;
 
   User({
@@ -11,7 +10,6 @@ class User {
     required this.name,
     required this.email,
     required this.phone,
-    required this.password,
     required this.profileImageUrl,
   });
 
@@ -22,8 +20,7 @@ class User {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      password: json['password'] ?? '',
-      profileImageUrl: json['profileImageUrl'] ??
+      profileImageUrl: json['image'] ??
           'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
     );
   }

@@ -19,13 +19,25 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _selectedApi =
-      'https://orangeteam-deliverybackend-production.up.railway.app';
+  String _selectedApi = 'https://orangeteam-deliverybackend-production.up.railway.app';
 
   @override
   void initState() {
     super.initState();
-    _setApiUrl(_selectedApi);
+    _loadApiUrl();
+  }
+
+  void _loadApiUrl() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? storedApiUrl = prefs.getString('api_url');
+    if (storedApiUrl != null) {
+      setState(() {
+        _selectedApi = storedApiUrl;
+      });
+    } else {
+      _setApiUrl(
+          _selectedApi); // Solo establece la URL si no estaba guardada previamente
+    }
   }
 
   // Método para realizar la validación y el login
@@ -48,10 +60,14 @@ class _LoginScreenState extends State<LoginScreen> {
           // Si la respuesta es exitosa, guardar el token
           final responseBody = json.decode(response.body);
           final token = responseBody['token'];
+          final userId = responseBody['user']['id'];
 
           // Almacenar el token en shared preferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
+
+          SharedPreferences pref = await SharedPreferences.getInstance();
+          await pref.setString('user_id', userId);
 
           // Redirigir a la pantalla principal
           showLoadingScreen(context, destination: const MainMenu());
@@ -238,9 +254,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _apiOption('Naranja', 'https://orangeteam-deliverybackend-production.up.railway.app', Colors.orange, 'orangeteam'),
-                          _apiOption('Amarillo', 'https://amarillo-backend-production.up.railway.app', Color(0xFFFFD700), 'amarillo'),
-                          _apiOption('Verde', 'https://verde-backend-production.up.railway.app', Colors.green, 'verde'),
+                          _apiOption(
+                              'Naranja',
+                              'https://orangeteam-deliverybackend-production.up.railway.app',
+                              Colors.orange,
+                              'orangeteam'),
+                          _apiOption(
+                              'Amarillo',
+                              'https://amarillo-backend-production.up.railway.app',
+                              Color(0xFFFFD700),
+                              'amarillo'),
+                          _apiOption(
+                              'Verde',
+                              'https://verde-backend-production.up.railway.app',
+                              Colors.green,
+                              'verde'),
                         ],
                       ),
                     );

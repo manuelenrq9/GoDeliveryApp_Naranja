@@ -44,12 +44,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void decrementQuantity() {
-    setState(() {
-      if (quantity > 1) {
-        quantity--;
-        price = widget.product.price * quantity;
-      }
-    });
+    if (quantity > 1) {
+      setState(() {
+          quantity--;
+          price = widget.product.price * quantity;
+      });
+    }
   }
 
   void resetQuantity() {
@@ -237,6 +237,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     specialPrice: widget.product.price,
                     discountId: widget.product.discount,
                     currency: widget.product.currency,
+                    quantity: quantity,
                   ),
                 ],
               ),
@@ -249,7 +250,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   onPressed: decrementQuantity,
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
-                    backgroundColor: quantity > 1
+                    backgroundColor: quantity <= 1
                         ? Color.fromARGB(255, 206, 205, 204)
                         : Color(0xFFFF9027),
                     padding: const EdgeInsets.all(12),

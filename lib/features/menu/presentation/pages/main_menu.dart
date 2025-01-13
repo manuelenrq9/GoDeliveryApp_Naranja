@@ -78,11 +78,8 @@ class _MainMenuState extends State<MainMenu> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              showLoadingScreen(context,
-                  destination: RecoverySearchmessagueScreen());
-            },
+            icon: const Icon(Icons.search, color: Colors.transparent),
+            onPressed: () {},
           ),
         ],
       ),

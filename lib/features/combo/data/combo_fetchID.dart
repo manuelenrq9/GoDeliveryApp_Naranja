@@ -4,12 +4,18 @@ import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+  Future<String?> _getApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('api_url'); // Obtén el token almacenado
+  }
+
 Future<Combo> fetchComboById(String comboId) async {
   // Método para obtener el token de SharedPreferences
     Future<String?> _getToken() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       return prefs.getString('auth_token'); // Obtén el token almacenado
     }
+    final apiUrl = await _getApi();
   try {
     final token = await _getToken();
 
@@ -19,7 +25,7 @@ Future<Combo> fetchComboById(String comboId) async {
       }
 
     final response = await http.get(Uri.parse(
-        'https://orangeteam-deliverybackend-production.up.railway.app/bundle/one/$comboId'),
+        '$apiUrl/bundle/one/$comboId'),
         headers: {
           'Authorization':
               'Bearer $token', // Incluimos el token en el encabezado

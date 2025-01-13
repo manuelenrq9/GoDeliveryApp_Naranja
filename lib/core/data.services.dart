@@ -6,11 +6,11 @@ import 'package:http/http.dart' as http;
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+  Future<String?> _getApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('api_url'); // Obtén el token almacenado
+  }
 class DataService<T> {
-  static const String baseUrl =
-      // 'https://orangeteam-deliverybackend-production.up.railway.app';
-  'https://amarillo-backend-production.up.railway.app';
-  //'http://192.168.68.113:3000';
   final String endpoint;
   final GenericRepository<T> repository;
   final T Function(Map<String, dynamic>) fromJson;
@@ -21,7 +21,7 @@ class DataService<T> {
     required this.fromJson,
   });
 
-  String get apiUrl => '$baseUrl$endpoint';
+  // String get apiUrl => '$baseUrl$endpoint';
 
   // Método para obtener el token de SharedPreferences
   Future<String?> _getToken() async {
@@ -30,6 +30,8 @@ class DataService<T> {
   }
 
   Future<List<T>> fetchDataFromApi() async {
+    final baseUrl = await _getApi();
+    String apiUrl = '$baseUrl$endpoint';
     try {
       final token = await _getToken();
 
@@ -68,9 +70,7 @@ class DataService<T> {
 
     if (hasInternet) {
       try {
-        print("LOADDATA");
         final data = await fetchDataFromApi();
-        print("DATA LOAD DATA ${data}");
         await repository.saveData(data);
         return data;
       } catch (e) {

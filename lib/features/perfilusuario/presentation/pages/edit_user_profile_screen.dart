@@ -9,7 +9,6 @@ class User {
   final String name;
   final String email;
   final String phone;
-  final String password;
   final String profileImageUrl;
 
   User({
@@ -17,7 +16,6 @@ class User {
     required this.name,
     required this.email,
     required this.phone,
-    required this.password,
     required this.profileImageUrl,
   });
 
@@ -27,9 +25,8 @@ class User {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      password: json['password'] ?? '',
-      profileImageUrl: json['profileImageUrl'] ??
-          'https://covalto-production-website.s3.amazonaws.com/Hero_Mobile_Cuenta_Personas_V1_1_8046e424ea.webp',
+      profileImageUrl: json['image'] ??
+          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
     );
   }
 }
@@ -44,6 +41,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+   final TextEditingController _imageController = TextEditingController();
 
   late User _user;
   bool _isPasswordVisible = false;
@@ -56,20 +54,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return token;
   }
 
+  Future<String?> _getApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('api_url'); // Obtén el token almacenado
+  }
   // Obtener datos de usuario desde el backend
   Future<User?> _getUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userID = prefs.getString('user_id');
     print('UserID: $userID'); // Bandera para verificar el userID
     if (userID == null) return null;
-
+  final apiUrl = await _getApi();
     try {
       final token = await _getToken();
       if (token == null) throw Exception('No hay token de autenticación');
 
       final response = await http.get(
         Uri.parse(
-            'https://orangeteam-deliverybackend-production.up.railway.app/User/$userID'),
+            '$apiUrl/user/one/$userID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -96,6 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // Actualizar datos del usuario
   Future<void> _updateUserData() async {
+      final apiUrl = await _getApi();
     try {
       final token = await _getToken();
       if (token == null) {
@@ -105,7 +108,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       final response = await http.put(
         Uri.parse(
-          'https://orangeteam-deliverybackend-production.up.railway.app/User/${_user.id}',
+          '$apiUrl/user/one/${_user.id}',
         ),
         headers: {
           'Authorization': 'Bearer $token',
@@ -115,9 +118,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'name': _nameController.text,
           'email': _emailController.text,
           'phone': _phoneController.text,
-          'password': _passwordController.text.isEmpty
-              ? _user.password
-              : _passwordController.text,
+          'image': _imageController.text
         }),
       );
 
@@ -132,10 +133,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             name: _nameController.text,
             email: _emailController.text,
             phone: _phoneController.text,
-            password: _passwordController.text.isEmpty
-                ? _user.password
-                : _passwordController.text,
-            profileImageUrl: _user.profileImageUrl,
+            profileImageUrl: _imageController.text,
           );
         });
       } else {
@@ -194,7 +192,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _nameController.text = _user.name;
           _phoneController.text = _user.phone;
           _emailController.text = _user.email;
-          _passwordController.text = _user.password;
 
           return SingleChildScrollView(
             child: Padding(
