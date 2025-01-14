@@ -102,8 +102,8 @@ class _MainMenuState extends State<MainMenu> {
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color.fromARGB(255, 255, 255, 255), // Naranja claro
-                        Color.fromARGB(215, 250, 84, 34), // Blanco
+                        Color.fromARGB(255, 0, 0, 0), // Negro
+                        Color.fromARGB(255, 0, 0, 0), // Negro
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -164,8 +164,8 @@ class _MainMenuState extends State<MainMenu> {
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Color.fromARGB(255, 255, 255, 255), // Naranja claro
-                        Color.fromARGB(215, 250, 84, 34), // Blanco
+                        Color.fromARGB(255, 0, 0, 0), // Naranja claro
+                        const Color.fromARGB(255, 168, 62, 0) // Blanco
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,

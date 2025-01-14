@@ -30,8 +30,9 @@ class ThemeProvider extends ChangeNotifier {
     if (_themeName == 'dark') {
       _themeMode = ThemeMode.dark;
     } else if (_themeName == 'gradient') {
-      _themeMode = ThemeMode.light; // Usa ThemeMode.light para degradado
-    } else {
+    } else if (_themeName == 'gradient') {
+      _themeMode =
+          ThemeMode.light; // Usa ThemeMode.light para temas personalizados
       _themeMode = ThemeMode.light;
     }
   }
@@ -40,7 +41,7 @@ class ThemeProvider extends ChangeNotifier {
     if (_themeName == 'dark') {
       return darkTheme;
     } else if (_themeName == 'gradient') {
-      return gradientTheme;
+      return orangeGradientTheme;
     } else {
       return lightTheme;
     }

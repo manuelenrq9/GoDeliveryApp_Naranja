@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 // Tema Claro
 final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  primarySwatch: Colors.orange,
+  primarySwatch: Colors.grey,
   appBarTheme: AppBarTheme(
-    backgroundColor: Colors.orange,
+    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
     foregroundColor: Colors.white,
   ),
 );
@@ -21,17 +21,13 @@ final ThemeData darkTheme = ThemeData(
 );
 
 // Tema con Degradado Naranja
-final ThemeData gradientTheme = ThemeData(
+final ThemeData orangeGradientTheme = ThemeData(
   brightness: Brightness.light,
-  primaryColor: const Color.fromARGB(255, 61, 33, 187),
-  scaffoldBackgroundColor: const Color.fromARGB(255, 241, 97, 7),
+  primarySwatch: Colors.orange,
   appBarTheme: AppBarTheme(
-    backgroundColor: const Color.fromARGB(255, 255, 12, 12),
+    backgroundColor: Colors.transparent,
+    foregroundColor: const Color.fromARGB(255, 0, 0, 0),
     elevation: 0,
-    foregroundColor: const Color.fromARGB(255, 183, 43, 43),
   ),
-  textTheme: const TextTheme(
-    headlineSmall: TextStyle(color: Colors.white),
-    bodyLarge: TextStyle(color: Colors.orange),
-  ),
+  scaffoldBackgroundColor: Colors.transparent,
 );

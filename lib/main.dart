@@ -76,30 +76,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final themeProvider =
         Provider.of<ThemeProvider>(context); // Accedemos al ThemeProvider
-    final gradientBackground = themeProvider.themeMode == ThemeMode.light
-        ? LinearGradient(
-            colors: [
-              Colors.orange.withOpacity(0.8),
-              Colors.orangeAccent.withOpacity(0.6),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
-        : null;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
       body: Container(
-        decoration: BoxDecoration(
-          gradient: gradientBackground ??
-              const LinearGradient(
-                colors: [Colors.black, Colors.grey],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-        ),
+        color: themeProvider.themeMode == ThemeMode.light
+            ? Colors.white
+            : Colors.black,
         child: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

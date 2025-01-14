@@ -26,7 +26,6 @@ class CustomNavBar extends StatefulWidget {
 class _CustomNavBarState extends State<CustomNavBar>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  
 
   @override
   void initState() {
@@ -135,74 +134,75 @@ class _CustomNavBarState extends State<CustomNavBar>
             MaterialPageRoute(builder: (context) => CurrencySettingsScreen()));
         // MaterialPageRoute(builder: (context) => LocationPickerScreen()));
         // MaterialPageRoute(builder: (context) => TrackOrderScreen()));
-            // MaterialPageRoute(builder: (context) => UserProfileScreen()));
+        // MaterialPageRoute(builder: (context) => UserProfileScreen()));
 
         break;
     }
   }
-Widget _buildCartIcon() {
-  return Stack(
-    alignment: Alignment.center,
-    children: [
-      const Material(
-        elevation: 10,
-        shape: CircleBorder(),
-        color: Color(0xFFFF9027),
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Icon(
-            Icons.shopping_bag,
-            color: Colors.white,
-            size: 28,
-          ),
-        ),
-      ),
-      Positioned(
-        right: 0,
-        top: 0,
-        child: ScaleTransition(
-          scale: Tween(begin: 1.0, end: 1.2).animate(
-            CurvedAnimation(
-              parent: _controller,
-              curve: Curves.elasticOut,
+
+  Widget _buildCartIcon() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        const Material(
+          elevation: 10,
+          shape: CircleBorder(),
+          color: Color(0xFFFF9027),
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Icon(
+              Icons.shopping_bag,
+              color: Colors.white,
+              size: 28,
             ),
           ),
-          child: ValueListenableBuilder<int>(
-            valueListenable: CounterManager().counterNotifier,
-            builder: (context, counter, child) {
-              return Container(
-                padding: const EdgeInsets.all(2),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Container(
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: ScaleTransition(
+            scale: Tween(begin: 1.0, end: 1.2).animate(
+              CurvedAnimation(
+                parent: _controller,
+                curve: Curves.elasticOut,
+              ),
+            ),
+            child: ValueListenableBuilder<int>(
+              valueListenable: CounterManager().counterNotifier,
+              builder: (context, counter, child) {
+                return Container(
                   padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
-                    color: Colors.red,
+                    color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  constraints: const BoxConstraints(
-                    minWidth: 16,
-                    minHeight: 16,
-                  ),
-                  child: Text(
-                    '$counter',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
                     ),
-                    textAlign: TextAlign.center,
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      '$counter',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   // Widget _buildCartIcon() {
   //   return Stack(
