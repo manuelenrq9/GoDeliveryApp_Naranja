@@ -229,7 +229,9 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
                         icon: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
                           color: isFavorite
-                              ? const Color.fromARGB(255, 245, 121, 20)
+                              ? Theme.of(context).brightness == Brightness.dark
+                                  ? const Color.fromARGB(255, 168, 62, 0)
+                                  : const Color.fromARGB(255, 245, 121, 20)
                               : Colors.grey,
                         ),
                         onPressed: () {

@@ -7,7 +7,7 @@ import 'discount_logic.dart'; // Importamos la lógica de descuento
 class DiscountPriceMenu extends StatelessWidget {
   final num specialPrice;
   final String? discountId;
-  final String currency;  // Nuevo parámetro para la moneda
+  final String currency; // Nuevo parámetro para la moneda
 
   const DiscountPriceMenu({
     super.key,
@@ -18,13 +18,13 @@ class DiscountPriceMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  final converter = CurrencyConverter();
+    final converter = CurrencyConverter();
 
     // Usamos FutureBuilder para manejar la obtención del descuento asíncrona
     return FutureBuilder<Discount>(
       future: fetchEntityById<Discount>(
         discountId ?? '', // Si el ID es null, se pasa una cadena vacía
-        'discount/one',       // Endpoint específico para descuentos
+        'discount/one', // Endpoint específico para descuentos
         (json) => Discount.fromJson(json),
       ),
       builder: (context, snapshot) {
@@ -44,7 +44,9 @@ class DiscountPriceMenu extends StatelessWidget {
 
         return _buildPriceDisplay(
           converter.convert(priceInUSD.toDouble()), // Convertir precios
-          discountedPrice != null ? converter.convert(discountedPrice.toDouble()) : null,
+          discountedPrice != null
+              ? converter.convert(discountedPrice.toDouble())
+              : null,
           converter.selectedCurrency,
         );
       },
@@ -52,28 +54,33 @@ class DiscountPriceMenu extends StatelessWidget {
   }
 
   // Método que construye la visualización del precio, manteniendo el estilo consistente
-  Widget _buildPriceDisplay(num originalPrice, num? discountedPrice, String currency) {
+  Widget _buildPriceDisplay(
+      num originalPrice, num? discountedPrice, String currency) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,  // Alineamos todo a la izquierda
+      mainAxisAlignment:
+          MainAxisAlignment.start, // Alineamos todo a la izquierda
       children: [
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,  // Alineación a la izquierda para el precio
+          crossAxisAlignment: CrossAxisAlignment
+              .start, // Alineación a la izquierda para el precio
           children: [
             // Si el descuento es válido, mostramos el precio original tachado
             if (discountedPrice != null && discountedPrice != originalPrice)
               Text(
-                '$currency ${originalPrice.toStringAsFixed(2)}',  // Mostramos el precio original con la moneda
+                '$currency ${originalPrice.toStringAsFixed(2)}', // Mostramos el precio original con la moneda
                 style: const TextStyle(
-                    fontSize: 12,  // Un tamaño de fuente más pequeño para el precio original
+                    fontSize:
+                        12, // Un tamaño de fuente más pequeño para el precio original
                     color: Colors.grey,
-                    decoration: TextDecoration.lineThrough),  // Precio tachado
+                    decoration: TextDecoration.lineThrough), // Precio tachado
               ),
             // Mostrar el precio con descuento o el precio original si no hay descuento
             Text(
-              '$currency ${(discountedPrice ?? originalPrice).toStringAsFixed(2)}',  // Mostramos el precio con la moneda
+              '$currency ${(discountedPrice ?? originalPrice).toStringAsFixed(2)}', // Mostramos el precio con la moneda
               style: const TextStyle(
-                  fontSize: 16,  // Tamaño de fuente reducido para el precio con descuento
-                  color: Color(0xFFFF9027),  // Color del precio con descuento
+                  fontSize:
+                      16, // Tamaño de fuente reducido para el precio con descuento
+                  color: Color(0xFFFF9027), // Color del precio con descuento
                   fontWeight: FontWeight.bold),
             ),
           ],

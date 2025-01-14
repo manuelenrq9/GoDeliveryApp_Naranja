@@ -90,7 +90,9 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                         child: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
                           color: isFavorite
-                              ? Color(0xFFFF9027)
+                              ? Theme.of(context).brightness == Brightness.dark
+                                  ? const Color.fromARGB(255, 168, 62, 0)
+                                  : const Color(0xFFFF9027)
                               : const Color.fromARGB(255, 194, 192, 192),
                           size: 24,
                         ),
