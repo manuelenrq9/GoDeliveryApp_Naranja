@@ -1,17 +1,18 @@
 import 'dart:async';
-import 'package:godeliveryapp_naranja/features/product/data/repositories/products_repository.dart';
+import 'package:dartz/dartz.dart';
+import 'package:godeliveryapp_naranja/core/error/failures.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/repositories/Iproducts_repository.dart';
 
 class GetProductListUseCase {
   
-  late Future<List<Product>> futureProducts;
+  //late Future<Either<Failure,List<Product>>> futureProducts;
   late final IProductsRepository repository;
 
   GetProductListUseCase(this.repository);
 
-  Future<List<Product>> execute() async{
-    futureProducts =  repository.loadProducts();
-    return futureProducts;
+  Future<Either<Failure,List<Product>>> execute() async{
+    //futureProducts =  repository.loadProducts();
+    return repository.loadProducts();
   }
 }

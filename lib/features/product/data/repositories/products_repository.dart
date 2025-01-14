@@ -10,7 +10,7 @@ class ProductsRepository implements IProductsRepository{
   late Future<List<Product>> futureProducts;
   
   late final DataService<Product> _productService = DataService<Product>(
-      endpoint: '/product/many?perpage=15',
+      endpoint: '/product/many?perpage=13',
       repository: GenericRepository<Product>(
         storageKey: 'products',
         fromJson: (json) => Product.fromJson(json),
@@ -19,8 +19,17 @@ class ProductsRepository implements IProductsRepository{
       fromJson: (json) => Product.fromJson(json),
     );
 
-  Future<Either<Failure,List<Product>>> loadProducts() async {
-    futureProducts = _productService.loadData();
-    return futureProducts;
+  Future<Either<Failure, List<Product>>> loadProducts() async {
+    try {
+      final products = await _productService.loadData();
+      if (products.isEmpty) {
+        return Left(NoProductsReceivedFailure()); // Assuming NoProductsReceivedFailure is defined in your failures package
+      } else {
+        return Right(products);
+      }
+    } on Exception catch (e) {
+      return Left(ServerFailure(message: e.toString()));
+    }
   }
+
 }
