@@ -28,7 +28,9 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
         );
       },
       child: Card(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color.fromARGB(255, 37, 37, 37)
+            : const Color.fromARGB(255, 255, 253, 253),
         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
@@ -67,10 +69,13 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                       Expanded(
                         child: Text(
                           widget.product.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: 13,
-                            color: Colors.black87,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black87,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,

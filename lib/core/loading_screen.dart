@@ -69,14 +69,15 @@ class _LoadingScreenState extends State<LoadingScreen>
 
   @override
   Widget build(BuildContext context) {
+    bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Colors.white,
-              Color.fromARGB(246, 245, 243, 243),
-            ],
+            colors: isDarkMode
+                ? [Colors.black, Colors.black87]
+                : [Colors.white, Color.fromARGB(246, 245, 243, 243)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

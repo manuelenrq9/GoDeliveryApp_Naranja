@@ -169,7 +169,9 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
       child: Card(
         elevation: 5,
         shadowColor: Colors.grey,
-        color: const Color.fromARGB(255, 255, 253, 253),
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color.fromARGB(255, 37, 37, 37)
+            : const Color.fromARGB(255, 255, 253, 253),
         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -194,7 +196,8 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
                             if (loadingProgress == null) return child;
                             return Center(
                               child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes != null
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
                                     ? loadingProgress.cumulativeBytesLoaded /
                                         loadingProgress.expectedTotalBytes!
                                     : null,

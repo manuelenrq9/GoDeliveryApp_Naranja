@@ -16,7 +16,7 @@ import 'package:godeliveryapp_naranja/features/product/data/product_fetchID.dart
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 
 class OrderSummaryScreen extends StatefulWidget {
-    final Order order;
+  final Order order;
 
   const OrderSummaryScreen({super.key, required this.order});
   @override
@@ -27,7 +27,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   int _selectedIndex = 0;
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
-
 
   void _onNavBarTapped(int index) {
     setState(() {
@@ -95,16 +94,19 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   @override
   Widget build(BuildContext context) {
     List<CartCombo> combos = widget.order.combos;
-    String formatedId = widget.order.id.length>8
-      ? widget.order.id.substring(0,8) : widget.order.id; 
+    String formatedId = widget.order.id.length > 8
+        ? widget.order.id.substring(0, 8)
+        : widget.order.id;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Resumen del Pedido',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black
+            : Colors.white,
+        foregroundColor: Color.fromARGB(255, 175, 91, 7),
         elevation: 1,
         centerTitle: true,
       ),
@@ -128,19 +130,19 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             const SizedBox(height: 16),
             // ..._buildProductList(),
             FutureBuilder<List<Widget>>(
-            future: _buildProductList(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
-              } else if (snapshot.hasData) {
-                return Column(children: snapshot.data!);
-              } else {
-                return const Text('No products available');
-              }
-            },
-          ),
+              future: _buildProductList(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (snapshot.hasData) {
+                  return Column(children: snapshot.data!);
+                } else {
+                  return const Text('No products available');
+                }
+              },
+            ),
             const Divider(thickness: 1, height: 32),
             const Text(
               'Resumen del pedido',
@@ -183,38 +185,37 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
     );
   }
 
+  Future<List<Widget>> _buildProductList() async {
+    List<CartProduct> products = widget.order.products;
 
-Future<List<Widget>> _buildProductList() async {
-  List<CartProduct> products = widget.order.products;
-
-  List<Product> productList = [];
-  try {
-    for (var cartProduct in products) {
-      Product product = await fetchProductById(cartProduct.id);
-      productList.add(product);
+    List<Product> productList = [];
+    try {
+      for (var cartProduct in products) {
+        Product product = await fetchProductById(cartProduct.id);
+        productList.add(product);
+      }
+    } catch (e) {
+      print('Error fetching products: \$e');
     }
-  } catch (e) {
-    print('Error fetching products: \$e');
-  }
 
-  return List<Widget>.generate(productList.length, (index) {
-    final product = productList[index];
-    final quantity = products[index].quantity;
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      elevation: 2,
-      child: ProductTile(
-        name: product.name,
-        presentation: '${product.weight}${product.measurement}',
-        price: '${quantity}',
-        imageUrl: product.image.isNotEmpty ? product.image.first : '',
-      ),
-    );
-  });
-}
+    return List<Widget>.generate(productList.length, (index) {
+      final product = productList[index];
+      final quantity = products[index].quantity;
+      return Card(
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 2,
+        child: ProductTile(
+          name: product.name,
+          presentation: '${product.weight}${product.measurement}',
+          price: '${quantity}',
+          imageUrl: product.image.isNotEmpty ? product.image.first : '',
+        ),
+      );
+    });
+  }
 
   // Future<List<Widget>> _buildProductList() async {
   //   List<CartProduct> products = widget.order.products;

@@ -20,7 +20,7 @@ class ProductItem extends StatelessWidget {
       },
       child: Card(
         color: Theme.of(context).brightness == Brightness.dark
-            ? const Color.fromARGB(255, 25, 1, 1)
+            ? const Color.fromARGB(255, 36, 36, 36)
             : Colors.white,
         elevation: 5,
         shape: RoundedRectangleBorder(
@@ -28,8 +28,8 @@ class ProductItem extends StatelessWidget {
         ),
         margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
         shadowColor: Theme.of(context).brightness == Brightness.dark
-            ? Colors.white.withOpacity(0.2)
-            : Colors.black.withOpacity(0.2),
+            ? Colors.grey.withOpacity(0.9)
+            : Colors.black.withOpacity(0.9),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
@@ -105,7 +105,7 @@ class ProductItem extends StatelessWidget {
                                 BoxShadow(
                                   color: Theme.of(context).brightness ==
                                           Brightness.dark
-                                      ? Colors.grey.withOpacity(0.9)
+                                      ? Colors.grey.withOpacity(0.2)
                                       : Colors.black.withOpacity(0.2),
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),

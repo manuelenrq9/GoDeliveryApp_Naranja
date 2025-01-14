@@ -70,7 +70,9 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 175, 91, 7),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color.fromARGB(255, 0, 0, 0)
+            : const Color.fromARGB(255, 255, 255, 255),
         elevation: 1,
       ),
       body: SingleChildScrollView(
@@ -93,8 +95,11 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: 'Selecciona tu Banco',
-                  labelStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : const Color.fromARGB(255, 0, 0, 0),
+                  ),
                   prefixIcon: const Icon(Icons.account_balance),
                   filled: true,
                   fillColor: Colors.white,
@@ -110,8 +115,10 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                           ? const Color(0xFFFF7000)
                           : const Color.fromARGB(255, 0, 0, 0)),
                 ),
-                dropdownColor:
-                    Colors.white, // Fondo blanco para la lista desplegable
+                dropdownColor: (Theme.of(context).brightness == Brightness.dark
+                    ? const Color.fromARGB(255, 255, 255, 255)
+                    : const Color.fromARGB(255, 0, 0,
+                        0)), // Fondo blanco para la lista desplegable
                 items: _banks.map((bank) {
                   return DropdownMenuItem<String>(
                     value: bank,
@@ -382,81 +389,80 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
   }
 
   void _confirmarPago(BuildContext context) {
-  final String amount = '100.00'; // Aquí puedes usar el monto real
-  final String email = 'user@example.com'; // Aquí puedes usar el email real
+    final String amount = '100.00'; // Aquí puedes usar el monto real
+    final String email = 'user@example.com'; // Aquí puedes usar el email real
 
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 24.0,
-      title: const Center(
-        child: Column(
-          children: [
-            Icon(
-              Icons.check_circle_outline,
-              color: Color(0xFFFF7000),
-              size: 50,
-            ),
-            SizedBox(height: 10),
-            Text(
-              'Pago realizado',
-              style: TextStyle(
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        elevation: 24.0,
+        title: const Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.check_circle_outline,
                 color: Color(0xFFFF7000),
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
+                size: 50,
               ),
+              SizedBox(height: 10),
+              Text(
+                'Pago realizado',
+                style: TextStyle(
+                  color: Color(0xFFFF7000),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                ),
+              ),
+            ],
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Tu pago de \$${amount} ha sido procesado con éxito.',
+              style: const TextStyle(
+                color: Color(0xFF6D4C41),
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Correo: $email',
+              style: const TextStyle(
+                color: Color(0xFF6D4C41),
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Tu pago de \$${amount} ha sido procesado con éxito.',
-            style: const TextStyle(
-              color: Color(0xFF6D4C41),
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Correo: $email',
-            style: const TextStyle(
-              color: Color(0xFF6D4C41),
-              fontSize: 16,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-      actions: [
-        Center(
-          child: TextButton(
-            onPressed: () {
-              Navigator.pop(context); // Cierra el diálogo
-              Navigator.pop(context); // Regresa a ProcessOrderScreen
-            },
-            child: const Text(
-              'Aceptar',
-              style: TextStyle(
-                color: Color(0xFFFF7000),
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
+        actions: [
+          Center(
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Cierra el diálogo
+                Navigator.pop(context); // Regresa a ProcessOrderScreen
+              },
+              child: const Text(
+                'Aceptar',
+                style: TextStyle(
+                  color: Color(0xFFFF7000),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+        ],
+      ),
+    );
+  }
 
   /// Método para seleccionar mes/año
   Future<DateTime?> _selectMonthYear(BuildContext context) async {

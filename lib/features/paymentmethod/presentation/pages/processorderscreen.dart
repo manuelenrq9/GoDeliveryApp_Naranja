@@ -195,7 +195,9 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
             children: [
               // Resumen del Pedido
               Card(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color.fromARGB(255, 36, 36, 36)
+                    : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
                 ),
@@ -306,10 +308,13 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                         alignment: Alignment.centerRight,
                         child: Text(
                           'Tarifa de envío: ${_envio ?? 'Seleccione la ubicación'}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             // fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color:
+                                (Theme.of(context).brightness == Brightness.dark
+                                    ? const Color.fromARGB(255, 255, 255, 255)
+                                    : const Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ),
                       ),
@@ -317,10 +322,13 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                         alignment: Alignment.centerRight,
                         child: Text(
                           'Cupon: ${_cupon ?? 'No aplicado'}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             // fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color:
+                                (Theme.of(context).brightness == Brightness.dark
+                                    ? const Color.fromARGB(255, 255, 255, 255)
+                                    : const Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ),
                       ),
@@ -328,10 +336,13 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                         alignment: Alignment.centerRight,
                         child: Text(
                           'Total: ${converter.selectedCurrency} ${converter.convert(widget.totalDecimal.toDouble()).toStringAsFixed(2)}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color:
+                                (Theme.of(context).brightness == Brightness.dark
+                                    ? const Color.fromARGB(255, 255, 255, 255)
+                                    : const Color.fromARGB(255, 0, 0, 0)),
                           ),
                         ),
                       ),

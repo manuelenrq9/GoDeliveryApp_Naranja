@@ -38,7 +38,7 @@ class _CartItemState extends State<CartItem> {
 
   // Future<void> _fetchDiscount() async {
   //   if (widget.data.discount != null) {
-  //     final discount = await fetchDiscountById(widget.data.discount); 
+  //     final discount = await fetchDiscountById(widget.data.discount);
   //     setState(() {
   //       discountedPrice = getDiscountedPrice(widget.data.price, discount);
   //     });
@@ -51,7 +51,8 @@ class _CartItemState extends State<CartItem> {
         final discount = await fetchEntityById<Discount>(
           widget.data.discount!, // El ID del descuento
           'discount', // Endpoint genérico para descuentos
-          (json) => Discount.fromJson(json), // Función para mapear JSON a Discount
+          (json) =>
+              Discount.fromJson(json), // Función para mapear JSON a Discount
         );
         setState(() {
           discountedPrice = getDiscountedPrice(widget.data.price, discount);
@@ -67,7 +68,9 @@ class _CartItemState extends State<CartItem> {
   Widget build(BuildContext context) {
     final converter = CurrencyConverter();
     return Card(
-      color: Colors.white,
+      color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color.fromARGB(255, 36, 36, 36)
+                      : Colors.white,
       elevation: 4.0,
       shadowColor: Colors.grey,
       margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
@@ -78,7 +81,8 @@ class _CartItemState extends State<CartItem> {
         borderRadius: BorderRadius.circular(16), // Añadir efecto ripple
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Row( // Usamos Row para alinear los elementos horizontalmente
+          child: Row(
+            // Usamos Row para alinear los elementos horizontalmente
             children: [
               // Imagen y nombre del producto a la izquierda
               GestureDetector(
@@ -127,7 +131,6 @@ class _CartItemState extends State<CartItem> {
                 children: [
                   if (discountedPrice != null &&
                       discountedPrice != widget.data.price)
-                      
                     Text(
                       '${converter.selectedCurrency} ${(converter.convert(widget.data.price.toDouble()) * widget.data.quantity).toStringAsFixed(2)}',
                       style: const TextStyle(
@@ -145,11 +148,13 @@ class _CartItemState extends State<CartItem> {
                     ),
                   ),
                   Row(
-                    mainAxisSize: MainAxisSize.min, // Evitar que el Row ocupe todo el espacio
+                    mainAxisSize: MainAxisSize
+                        .min, // Evitar que el Row ocupe todo el espacio
                     children: [
                       IconButton(
                         onPressed: widget.onDecrease,
-                        icon: const Icon(Icons.remove, color: Color(0xFFFF7000)),
+                        icon:
+                            const Icon(Icons.remove, color: Color(0xFFFF7000)),
                       ),
                       Text(
                         widget.data.quantity.toString(),

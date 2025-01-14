@@ -16,11 +16,11 @@ class _CustomTabBarState extends State<CustomTabBar> {
   final GetOrdersQuantityUsecase usecase = GetOrdersQuantityUsecase();
   late Future<num> quantity;
 
-  void loadQuantity() async{
+  void loadQuantity() async {
     quantity = usecase.getActiveOrdersQuantity();
   }
 
-   @override
+  @override
   void initState() {
     super.initState();
     loadQuantity();
@@ -32,10 +32,12 @@ class _CustomTabBarState extends State<CustomTabBar> {
       children: [
         TabBar(
           controller: widget.tabController,
-          labelColor: Colors.black,
+          labelColor: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : Colors.black,
           unselectedLabelColor: Colors.grey,
           indicatorColor: const Color(0xFFFF7000),
-          tabs:  [
+          tabs: [
             FutureBuilder<num>(
               future: quantity,
               builder: (BuildContext context, AsyncSnapshot<num> snapshot) {
@@ -63,13 +65,12 @@ class _CustomTabBarState extends State<CustomTabBar> {
             ),
           ],
         ),
-
         Expanded(
           child: TabBarView(
             controller: widget.tabController,
             children: [
-                ActiveOrdersScreen(),              
-                PastOrdersScreen(),
+              ActiveOrdersScreen(),
+              PastOrdersScreen(),
             ],
           ),
         ),

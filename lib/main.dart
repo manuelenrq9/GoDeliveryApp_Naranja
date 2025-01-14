@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
 import 'package:godeliveryapp_naranja/core/http.dart';
-import 'package:godeliveryapp_naranja/core/themeprovider/ThemeProvider.dart';
+import 'package:godeliveryapp_naranja/themeprovider/ThemeProvider.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:provider/provider.dart'; // Para manejar el estado de tema

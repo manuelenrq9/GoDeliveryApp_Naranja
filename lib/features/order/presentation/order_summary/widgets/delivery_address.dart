@@ -7,7 +7,9 @@ class DeliveryAddress extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color.fromARGB(255, 36, 36, 36)
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -36,10 +38,12 @@ class DeliveryAddress extends StatelessWidget {
                     'Luminous tower, Flat E2, Sheikh ghat, Sylhet',
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1, // Limita el texto a una línea
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black87,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
                     ),
                   ),
                 ),

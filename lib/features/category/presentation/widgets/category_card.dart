@@ -32,7 +32,7 @@ class CategoryCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               color: Theme.of(context).brightness == Brightness.dark
-                  ? const Color.fromARGB(255, 25, 1, 1)
+                  ? const Color.fromARGB(255, 168, 62, 0)
                   : const Color(0xFFFF7000), // Cambiamos el color según el modo
               boxShadow: Theme.of(context).brightness == Brightness.dark
                   ? [

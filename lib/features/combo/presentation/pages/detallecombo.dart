@@ -188,7 +188,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? const Color.fromARGB(255, 25, 1, 1)
+                      ? const Color.fromARGB(255, 36, 36, 36)
                       : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: const [
