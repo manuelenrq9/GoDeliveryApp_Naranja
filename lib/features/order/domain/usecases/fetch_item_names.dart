@@ -22,7 +22,7 @@ Future<void> fetchProducts(List<String> items, List<CartProduct> products) async
     id = product.id;
     productObject = await fetchEntityById<Product>(id, 'product/one/',
         (json) => Product.fromJson(json)); // Await the asynchronous call
-    myText = '${productObject.name}(${product.quantity.toString()})'; // Await the asynchronous call
+    myText = '${productObject.name} (${product.quantity.toString()})'; // Await the asynchronous call
     items.add(myText); // Add the product name directly to the passed list
 
   }
