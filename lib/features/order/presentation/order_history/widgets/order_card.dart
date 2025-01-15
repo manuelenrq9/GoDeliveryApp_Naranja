@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/order/data/cancel_order.dart';
+import 'package:godeliveryapp_naranja/features/order/data/make_reorder.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
@@ -8,6 +9,8 @@ import 'package:godeliveryapp_naranja/features/order/domain/entities/orderReport
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/item_names_builder.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_report/make_order_report_screen.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/OrderSummaryScreen.dart';
+import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/processorderscreen.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -398,7 +401,12 @@ class _OrderCardState extends State<OrderCard> {
             ),
             Flexible(
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () async {
+                  MakeReorder logic = MakeReorder(widget.order);
+                  await logic.execute();
+                  Navigator.push(context, MaterialPageRoute(
+                    builder:(context) => CartScreen(),));
+                },
                 icon: Icon(Icons.shopping_cart, color: const Color(0xFFFF7000)),
                 label: Text(
                   'Reordenar',

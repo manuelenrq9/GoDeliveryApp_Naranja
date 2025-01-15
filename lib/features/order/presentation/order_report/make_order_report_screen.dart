@@ -77,7 +77,7 @@ class _MakeOrderReportScreenState extends State<MakeOrderReportScreen> {
                         onPressed: () {
                           makeOrderReport(widget.order.id,_reportController.text);},
                         child: const Text(
-                          'Iniciar sesión',
+                          'Enviar reporte',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
