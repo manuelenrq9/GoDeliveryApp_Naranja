@@ -19,9 +19,9 @@ class ComboCard extends StatelessWidget {
 
     // Calcular ancho y altura de la tarjeta en función del tamaño de la pantalla
     double cardWidth =
-        screenWidth * 0.45; // Por ejemplo, el 45% del ancho de la pantalla
+        screenWidth * 0.44; // Por ejemplo, el 45% del ancho de la pantalla
     double imageHeight =
-        screenHeight * 0.15; // 15% de la altura de la pantalla para la imagen
+        screenHeight * 0.14; // 15% de la altura de la pantalla para la imagen
 
     return Padding(
       padding: const EdgeInsets.all(
