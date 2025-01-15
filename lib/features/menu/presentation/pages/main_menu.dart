@@ -21,26 +21,24 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> {
   late String selectedCurrency;
-  // Variable para controlar el índice seleccionado en el BottomNavigationBar
   int _currentIndex = 0;
+  ThemeMode _themeMode = ThemeMode.light;
 
   @override
   void initState() {
     super.initState();
-    _initializeCurrency(); // Inicializa la moneda seleccionada
+    _initializeCurrency();
     CounterManager().loadCounterFromStorage();
   }
 
-  // Cargar la moneda seleccionada
   Future<void> _initializeCurrency() async {
     final converter = CurrencyConverter();
     setState(() {
-      selectedCurrency = converter.selectedCurrency; // Carga la moneda actual
+      selectedCurrency = converter.selectedCurrency;
     });
     print('MONEDA ${selectedCurrency}');
   }
 
-  // Función para manejar el cambio de índice
   void _onTap(int index) {
     setState(() {
       _currentIndex = index;
@@ -48,65 +46,169 @@ class _MainMenuState extends State<MainMenu> {
   }
 
   Future<void> _refresh() async {
-    // Forzar la reconstrucción completa del widget MainMenu utilizando una nueva clave global
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (BuildContext context) => const MainMenu()));
   }
 
+  void _changeTheme(ThemeMode themeMode) {
+    setState(() {
+      _themeMode = themeMode;
+    });
+  }
+
+  // Fondo degradado solo para el Modo Degradado
+  ThemeData getGradientTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black, // Íconos negros para buena visibilidad
+        elevation: 0,
+      ),
+      scaffoldBackgroundColor:
+          Colors.transparent, // Deja el fondo transparente para el gradiente
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white, // Establece el color de fondo a blanco
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                // Acción para abrir el menú (Drawer)
-                Scaffold.of(context)
-                    .openDrawer(); // Ahora Scaffold.of() funciona correctamente
-              },
-            );
-          },
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      themeMode: _themeMode,
+      theme: ThemeData(
+        brightness: Brightness.light,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 4,
         ),
-        title: Center(
-          child: Image.asset(
-            'images/LogoLetrasGoDely.png',
-            height: 40,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.transparent),
-            onPressed: () {},
-          ),
-        ],
+        scaffoldBackgroundColor:
+            Colors.white, // Fondo blanco para el modo claro
       ),
-      body: RefreshIndicator(
-        onRefresh: _refresh, // Asocia la función de refresco
-        color: Colors.orange, // Establece el color del refresco a naranja
-        child: ListView(
-          children: [
-            CategoryListScreen(),
-            TituloLista(
-              titulo: "Combos de Productos",
-              next: ComboCatalogScreen(),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Color.fromARGB(255, 255, 255, 255),
+          elevation: 4,
+        ),
+        scaffoldBackgroundColor:
+            Colors.black, // Fondo negro para el modo oscuro
+      ),
+      home: Scaffold(
+        appBar: AppBar(
+          flexibleSpace: _themeMode == ThemeMode.system
+              ? Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 0, 0, 0), // Negro
+                        Color.fromARGB(255, 0, 0, 0), // Negro
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                )
+              : null,
+          leading: Builder(
+            builder: (BuildContext context) {
+              return IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+              );
+            },
+          ),
+          title: Center(
+            child: Image.asset(
+              'images/LogoLetrasGoDely.png',
+              height: 40,
             ),
-            const ComboListScreen(),
-            TituloLista(
-              titulo: "Productos Populares",
-              next: ProductCatalogScreen(),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search, color: Colors.transparent,),
+              onPressed: () {
+                // showLoadingScreen(context,
+                //     destination: RecoverySearchmessagueScreen());
+              },
             ),
-            const ProductListScreen(),
+            PopupMenuButton<ThemeMode>(
+              icon: const Icon(Icons.brightness_6),
+              onSelected: _changeTheme,
+              itemBuilder: (BuildContext context) =>
+                  <PopupMenuEntry<ThemeMode>>[
+                const PopupMenuItem<ThemeMode>(
+                  value: ThemeMode.light,
+                  child: Text('Modo Claro'),
+                ),
+                const PopupMenuItem<ThemeMode>(
+                  value: ThemeMode.dark,
+                  child: Text('Modo Oscuro'),
+                ),
+                const PopupMenuItem<ThemeMode>(
+                  value: ThemeMode.system,
+                  child: Text('Modo Degradado'),
+                ),
+              ],
+            ),
           ],
         ),
+        body: RefreshIndicator(
+          onRefresh: _refresh,
+          color: Colors.orange,
+          child: _themeMode == ThemeMode.system
+              ? Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 0, 0, 0), // Naranja claro
+                        const Color.fromARGB(255, 168, 62, 0) // Blanco
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: ListView(
+                    children: [
+                      CategoryListScreen(),
+                      TituloLista(
+                        titulo: "Combos de Productos",
+                        next: ComboCatalogScreen(),
+                      ),
+                      const ComboListScreen(),
+                      TituloLista(
+                        titulo: "Productos Populares",
+                        next: ProductCatalogScreen(),
+                      ),
+                      const ProductListScreen(),
+                    ],
+                  ),
+                )
+              : ListView(
+                  children: [
+                    CategoryListScreen(),
+                    TituloLista(
+                      titulo: "Combos de Productos",
+                      next: ComboCatalogScreen(),
+                    ),
+                    const ComboListScreen(),
+                    TituloLista(
+                      titulo: "Productos Populares",
+                      next: ProductCatalogScreen(),
+                    ),
+                    const ProductListScreen(),
+                  ],
+                ),
+        ),
+        bottomNavigationBar: CustomNavBar(
+          currentIndex: _currentIndex,
+          onTap: _onTap,
+        ),
+        drawer: CustomDrawer(),
       ),
-      bottomNavigationBar: CustomNavBar(
-        currentIndex: _currentIndex,
-        onTap: _onTap,
-      ),
-      drawer: CustomDrawer(),
     );
   }
 }

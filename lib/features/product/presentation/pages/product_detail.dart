@@ -226,7 +226,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color.fromARGB(255, 36, 36, 36)
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: const [
                   BoxShadow(
@@ -333,7 +335,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                   // Descripción
                   Text(
                     widget.product.description,
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
@@ -352,8 +359,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                       ),
                       Text(
                         '${widget.product.weight} gramos',
-                        style: const TextStyle(
-                            fontSize: 16, color: Colors.black87),
+                        style: TextStyle(
+                            fontSize: 16,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black87),
                       ),
                     ],
                   ),

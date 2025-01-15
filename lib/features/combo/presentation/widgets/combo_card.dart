@@ -34,11 +34,13 @@ class ComboCard extends StatelessWidget {
         child: Container(
           width: cardWidth, // Ancho dinámico de la tarjeta
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? const Color.fromARGB(255, 37, 37, 37)
+                : Colors.white,
             borderRadius: BorderRadius.circular(12), // Borde redondeado
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
+                color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 2,
                 blurRadius: 5,
                 offset: const Offset(
@@ -96,8 +98,7 @@ class ComboCard extends StatelessWidget {
                   DiscountPriceMenu(
                       specialPrice: combo.specialPrice,
                       discountId: combo.discount,
-                      currency: combo.currency
-                    ),
+                      currency: combo.currency),
                 ],
               ),
             ),

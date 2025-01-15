@@ -14,7 +14,9 @@ class _DeliveryTimeState extends State<DeliveryTime> {
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color.fromARGB(255, 36, 36, 36)
+            : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -44,10 +46,12 @@ class _DeliveryTimeState extends State<DeliveryTime> {
                     overflow:
                         TextOverflow.ellipsis, // Texto con puntos suspensivos
                     maxLines: 1, // Limita el texto a una línea
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black87,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
                     ),
                   ),
                 ),
@@ -90,12 +94,14 @@ class _DeliveryTimeState extends State<DeliveryTime> {
             children: [
               Row(
                 children: [
-                  const Text(
+                  Text(
                     'Entrega a:',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black87,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black87,
                     ),
                   ),
                   const SizedBox(width: 8),

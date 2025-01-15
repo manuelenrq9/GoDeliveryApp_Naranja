@@ -28,7 +28,6 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
   Timer?
       _debounceTimer; // Timer para esperar 2 segundos después de dejar de presionar
   bool _isAddingToCart = false; // Estado para saber si ya se añadió al carrito
-  
 
   // Lógica para agregar al carrito usando AddToCartLogic
   Future<void> _sendToCart() async {
@@ -124,7 +123,6 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
       onTap: () {
         if (!_isAddingToCart) {
           _expandAndReset();
-          
         }
       },
       child: AnimatedContainer(
@@ -132,7 +130,9 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
         height: 30,
         width: _isExpanded ? 100 : 30,
         decoration: BoxDecoration(
-          color: Colors.orange,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color.fromARGB(255, 168, 62, 0)
+              : const Color(0xFFFF9027),
           borderRadius: BorderRadius.circular(30),
         ),
         child: Column(
@@ -142,8 +142,10 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
               Container(
                 height: 30,
                 child: OverflowBox(
-                  maxWidth: double.infinity,  // Permite que el contenido sobrepase el ancho del contenedor
-                  maxHeight: double.infinity, // Permite que el contenido sobrepase el alto del contenedor
+                  maxWidth: double
+                      .infinity, // Permite que el contenido sobrepase el ancho del contenedor
+                  maxHeight: double
+                      .infinity, // Permite que el contenido sobrepase el alto del contenedor
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

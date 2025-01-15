@@ -19,14 +19,19 @@ class ProductItem extends StatelessWidget {
             destination: ProductDetailScreen(product: product));
       },
       child: Card(
-        color: Colors.white, // Fondo blanco para la tarjeta
-        elevation: 5, // Elevación moderada para más profundidad
+        color: Theme.of(context).brightness == Brightness.dark
+            ? const Color.fromARGB(255, 36, 36, 36)
+            : Colors.white,
+        elevation: 5,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16), // Bordes más redondeados
+          borderRadius: BorderRadius.circular(16),
         ),
         margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 12.0),
+        shadowColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.grey.withOpacity(0.9)
+            : Colors.black.withOpacity(0.9),
         child: InkWell(
-          borderRadius: BorderRadius.circular(16), // Añadir efecto ripple
+          borderRadius: BorderRadius.circular(16),
           onTap: () {
             showLoadingScreen(context,
                 destination: ProductDetailScreen(product: product));
@@ -36,18 +41,15 @@ class ProductItem extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Imagen del producto, centrada
                 Center(
                   child: Container(
                     width: 90,
                     height: 90,
                     decoration: BoxDecoration(
-                      borderRadius:
-                          BorderRadius.circular(12), // Bordes redondeados
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: ClipRRect(
-                      borderRadius:
-                          BorderRadius.circular(12), // Bordes redondeados
+                      borderRadius: BorderRadius.circular(12),
                       child: CachedNetworkImage(
                         imageUrl: product.image[0],
                         fit: BoxFit.cover,
@@ -64,24 +66,23 @@ class ProductItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Información del producto
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Nombre del producto
                       Text(
                         product.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black87,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
-                      // Peso del producto
                       Text(
                         "${product.weight} gr",
                         style: const TextStyle(
@@ -90,21 +91,22 @@ class ProductItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      // Precio y botón para añadir al carrito
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           DiscountPriceMenu(
-                            specialPrice: product.price,
-                            discountId: product.discount,
-                            currency: product.currency
-                          ),
+                              specialPrice: product.price,
+                              discountId: product.discount,
+                              currency: product.currency),
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.grey.withOpacity(0.2)
+                                      : Colors.black.withOpacity(0.2),
                                   blurRadius: 5,
                                   offset: const Offset(0, 3),
                                 ),

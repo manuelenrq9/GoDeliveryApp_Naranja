@@ -112,7 +112,9 @@ class _SearchScreenState extends State<SearchScreen>
       appBar: AppBar(
         automaticallyImplyLeading: false,
         toolbarHeight: 60.0,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.black
+            : Colors.white,
         elevation: 0,
         flexibleSpace: SafeArea(
           child: Padding(
@@ -132,7 +134,9 @@ class _SearchScreenState extends State<SearchScreen>
                   child: Container(
                     height: 40.0,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color.fromARGB(255, 36, 36, 36)
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(30.0),
                       border: Border.all(
                         color: Color(0xFFFF7000),

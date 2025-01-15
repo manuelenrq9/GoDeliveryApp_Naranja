@@ -69,7 +69,9 @@ class _CartItemState extends State<CartItem> {
   Widget build(BuildContext context) {
     final converter = CurrencyConverter();
     return Card(
-      color: Colors.white,
+      color: Theme.of(context).brightness == Brightness.dark
+                      ? const Color.fromARGB(255, 36, 36, 36)
+                      : Colors.white,
       elevation: 4.0,
       shadowColor: Colors.grey,
       margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),

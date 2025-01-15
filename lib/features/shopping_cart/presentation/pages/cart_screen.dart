@@ -117,6 +117,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void _showClearCartDialog() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -129,9 +130,12 @@ class _CartScreenState extends State<CartScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: const Text(
+          content: Text(
             'Se eliminaran todos los artículos de tu carrito',
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(
+              fontSize: 16,
+              color: isDarkMode ? Colors.white : Colors.black,
+            ),
           ),
           actions: <Widget>[
             TextButton(
@@ -161,7 +165,7 @@ class _CartScreenState extends State<CartScreen> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
           elevation: 5,
         );
       },
@@ -170,7 +174,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-  final converter = CurrencyConverter();
+    final converter = CurrencyConverter();
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -266,7 +270,9 @@ class _CartScreenState extends State<CartScreen> {
             Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color.fromARGB(255, 36, 36, 36)
+                    : Colors.white,
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(20),
                 ),
@@ -285,7 +291,8 @@ class _CartScreenState extends State<CartScreen> {
                   ProductSummary(totalAmount: 0),
                   SummaryRow(
                     label: 'Total',
-                    amount: '${converter.selectedCurrency} ${converter.convert(totalAmount).toStringAsFixed(2)}',
+                    amount:
+                        '${converter.selectedCurrency} ${converter.convert(totalAmount).toStringAsFixed(2)}',
                     isTotal: true,
                   ),
                   const SizedBox(height: 16),
@@ -295,15 +302,15 @@ class _CartScreenState extends State<CartScreen> {
                         : () async {
                             getProducts();
                             getCombos();
-                            showLoadingScreen(context, destination: ProcessOrderScreen(
-                              cartItems: cartItems,
-                              products: getProducts(),
-                              combos: getCombos(),
-                              currency: 'USD', // La moneda
-                              totalDecimal: totalAmount,
-                              context: context,
-                            ));
-                            
+                            showLoadingScreen(context,
+                                destination: ProcessOrderScreen(
+                                  cartItems: cartItems,
+                                  products: getProducts(),
+                                  combos: getCombos(),
+                                  currency: 'USD', // La moneda
+                                  totalDecimal: totalAmount,
+                                  context: context,
+                                ));
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFF7000),

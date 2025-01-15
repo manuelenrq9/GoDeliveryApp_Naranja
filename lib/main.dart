@@ -2,15 +2,24 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
 import 'package:godeliveryapp_naranja/core/http.dart';
+import 'package:godeliveryapp_naranja/themeprovider/ThemeProvider.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
+import 'package:provider/provider.dart'; // Para manejar el estado de tema
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = MyHttpOverrides();
   final converter = CurrencyConverter();
   await converter.updateRates();
-  runApp(const MyApp());
+
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) =>
+          ThemeProvider(), // Asegúrate de que el ThemeProvider esté correctamente inicializado
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -18,19 +27,34 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider =
+        Provider.of<ThemeProvider>(context); // Accedemos al ThemeProvider
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      themeMode:
+          themeProvider.themeMode, // Cambiar el tema basado en el ThemeProvider
       theme: ThemeData(
+        brightness: Brightness.light,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple, // Tema basado en un color base
+          seedColor: Colors.deepPurple,
         ),
-        scaffoldBackgroundColor: Colors.white, // Fondo global
-        useMaterial3:
-            false, // Desactivamos Material 3 para evitar ajustes automáticos
+        scaffoldBackgroundColor:
+            Colors.white, // Fondo blanco para el tema claro
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white, // Color global del AppBar
-          foregroundColor: Colors.black, // Color del texto y los iconos
-          elevation: 4, // Sombra del AppBar
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          elevation: 4,
+        ),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor:
+            Colors.black, // Fondo negro para el tema oscuro
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
+          elevation: 4,
         ),
       ),
       home: const LoginScreen(),
@@ -50,17 +74,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    final themeProvider =
+        Provider.of<ThemeProvider>(context); // Accedemos al ThemeProvider
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title), // El color ya está configurado globalmente
+        title: Text(widget.title),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background.jpg'), // Imagen de fondo
-            fit: BoxFit.cover,
-          ),
-        ),
+        color: themeProvider.themeMode == ThemeMode.light
+            ? Colors.white
+            : Colors.black,
         child: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

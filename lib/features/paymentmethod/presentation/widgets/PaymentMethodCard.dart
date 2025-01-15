@@ -17,7 +17,9 @@ class PaymentMethodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white, // Establece el color del Card a blanco
+      color: Theme.of(context).brightness == Brightness.dark
+          ? const Color.fromARGB(255, 36, 36, 36)
+          : Colors.white, // Establece el color del Card a blanco
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -60,9 +62,11 @@ class PaymentMethodCard extends StatelessWidget {
                     const SizedBox(height: 5),
                     Text(
                       description,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black54,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color.fromARGB(255, 255, 255, 255)
+                            : const Color.fromARGB(255, 0, 0, 0),
                       ),
                     ),
                   ],
