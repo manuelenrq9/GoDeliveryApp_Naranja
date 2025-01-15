@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/currencyConfiguracion.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/perfilusuario/presentation/pages/edit_user_profile_screen.dart';
@@ -127,6 +128,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               );
             },
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings, color: Color(0xFFFF7000)),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => CurrencySettingsScreen()),
+                );
+              },
+            ),
+          ],
         ),
         body: FutureBuilder<User?>(
           future: _getUserData(),
