@@ -12,7 +12,6 @@ import 'package:godeliveryapp_naranja/features/product/domain/entities/product.d
 import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/cart_item_data.dart';
 import '../widgets/cart_items_list.dart';
 import '../widgets/summary_product.dart';

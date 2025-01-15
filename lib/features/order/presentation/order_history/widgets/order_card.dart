@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/features/order/data/cancel_order.dart';
+import 'package:godeliveryapp_naranja/features/order/data/make_reorder.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/orderPayment.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/orderReport.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/cancel_order_dialog.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/item_names_builder.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_history/pages/make_order_report_screen.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_history/pages/make_refund_report_screen.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/report_dialog.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/OrderSummaryScreen.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -96,12 +105,14 @@ class _OrderCardState extends State<OrderCard> {
     List<OrderPayment> payment = widget.order.paymentMethod;
     double total = 0;
     String currency = '';
+    OrderReport report = widget.order.report[0];
+    String reportText = report.description;
     payment.forEach((payment) {
       total = payment.total;
       currency = payment.currency;
     });
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 16.0),
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -184,6 +195,17 @@ class _OrderCardState extends State<OrderCard> {
               children: [
                 const Icon(Icons.schedule, size: 18, color: Colors.grey),
                 const SizedBox(width: 4),
+                if (status == "CREATED")
+                  Flexible(
+                    child: Text(
+                      'Tu pedido fue creado exitosamente',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
                 if (status == "DELIVERED")
                   Flexible(
                     child: Text(
@@ -233,6 +255,7 @@ class _OrderCardState extends State<OrderCard> {
             const Divider(),
             // Botones de acciones
             ButtonsByStatus(),
+            SizedBox(height: 10,),
           ],
         ),
       ),
@@ -244,15 +267,17 @@ class _OrderCardState extends State<OrderCard> {
       case OrderStatus.CREATED:
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [],
-        );
-      case OrderStatus.BEING_PROCESSED:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context, // Use the context from the build method
+                    builder: (BuildContext context) {
+                      return CancelOrderDialog(order:widget.order);
+                    },
+                  );
+                },
                 icon: const Icon(Icons.cancel, color: Colors.redAccent),
                 label: const Text(
                   'Cancelar pedido',
@@ -269,7 +294,61 @@ class _OrderCardState extends State<OrderCard> {
             ),
             Flexible(
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () {Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrderSummaryScreen(order: widget.order),
+                            ),
+                          );},
+                icon: Icon(Icons.location_on, color: const Color(0xFFFF7000)),
+                label: Text(
+                  'Hacer seguimiento',
+                  style: TextStyle(fontSize: 11),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFFF7000),
+                  side: const BorderSide(color: Color(0xFFFF7000)),
+                ),
+              ),
+            ),
+          ],
+        );
+      case OrderStatus.BEING_PROCESSED:
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  showDialog(
+                    context: context, // Use the context from the build method
+                    builder: (BuildContext context) {
+                      return CancelOrderDialog(order:widget.order);
+                    },
+                  );
+                  },
+                icon: const Icon(Icons.cancel, color: Colors.redAccent),
+                label: const Text(
+                  'Cancelar pedido',
+                  style: TextStyle(fontSize: 12),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.redAccent,
+                  side: const BorderSide(color: Colors.redAccent),
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: () {Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrderSummaryScreen(order: widget.order),
+                            ),
+                          );},
                 icon: Icon(Icons.location_on, color: const Color(0xFFFF7000)),
                 label: Text(
                   'Hacer seguimiento',
@@ -289,7 +368,14 @@ class _OrderCardState extends State<OrderCard> {
           children: [
             Flexible(
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context, // Use the context from the build method
+                    builder: (BuildContext context) {
+                      return CancelOrderDialog(order:widget.order);
+                    },
+                  );
+                },
                 icon: const Icon(Icons.cancel, color: Colors.redAccent),
                 label: const Text(
                   'Cancelar pedido',
@@ -306,7 +392,12 @@ class _OrderCardState extends State<OrderCard> {
             ),
             Flexible(
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () {Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrderSummaryScreen(order: widget.order),
+                            ),
+                          );},
                 icon: Icon(Icons.location_on, color: const Color(0xFFFF7000)),
                 label: Text(
                   'Hacer seguimiento',
@@ -321,39 +412,79 @@ class _OrderCardState extends State<OrderCard> {
           ],
         );
       case OrderStatus.DELIVERED:
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return Column(
           children: [
-            Flexible(
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.refresh, color: Colors.redAccent),
-                label: const Text(
-                  'Solicitar reembolso',
-                  style: TextStyle(fontSize: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.push(context, 
+                        MaterialPageRoute(
+                          builder: (context) => 
+                            MakeRefundReportScreen(order:widget.order),)
+                      );
+                    },
+                    icon: const Icon(Icons.refresh, color: Colors.redAccent),
+                    label: const Text(
+                      'Solicitar reembolso',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.redAccent,
+                      side: const BorderSide(color: Colors.redAccent),
+                    ),
+                  ),
                 ),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.redAccent,
-                  side: const BorderSide(color: Colors.redAccent),
+                SizedBox(
+                  width: 1,
                 ),
-              ),
-            ),
-            SizedBox(
-              width: 1,
-            ),
-            Flexible(
-              child: OutlinedButton.icon(
-                onPressed: () {},
-                icon: Icon(Icons.shopping_cart, color: const Color(0xFFFF7000)),
-                label: Text(
-                  'Reordenar',
-                  style: TextStyle(fontSize: 12),
+                Flexible(
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      MakeReorder logic = MakeReorder(widget.order);
+                      await logic.execute();
+                      Navigator.push(context, MaterialPageRoute(
+                        builder:(context) => CartScreen(),));
+                    },
+                    icon: Icon(Icons.shopping_cart, color: const Color(0xFFFF7000)),
+                    label: Text(
+                      'Reordenar',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFFF7000),
+                        side: const BorderSide(color: Color(0xFFFF7000))),
+                  ),
                 ),
-                style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFFF7000),
-                    side: const BorderSide(color: Color(0xFFFF7000))),
-              ),
+                SizedBox(
+                  width: 1,
+                ),
+                
+              ],
             ),
+            SizedBox(height: 2,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Flexible(
+                  child: OutlinedButton.icon(
+                    onPressed: ()  {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context)=> OrderSummaryScreen(order: widget.order)));
+                    },
+                    icon: Icon(Icons.report, color: Colors.amber,),
+                    label: Text(
+                      'Detalles',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.amber,
+                        side: const BorderSide(color: Colors.amber)),
+                  ),
+                ),
+            ],)
           ],
         );
       case OrderStatus.CANCELLED:
@@ -362,13 +493,35 @@ class _OrderCardState extends State<OrderCard> {
           children: [
             Flexible(
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => MakeOrderReportScreen(order:widget.order),
+                            ),
+                );
+                },
                 icon: const Icon(Icons.warning, color: Colors.redAccent),
                 label: const Text('Reportar problema'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.redAccent,
                   side: const BorderSide(color: Colors.redAccent),
                 ),
+              ),
+            ),
+            SizedBox(width: 5,),
+            Flexible(
+              child: OutlinedButton.icon(
+                onPressed: ()  {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context)=> OrderSummaryScreen(order: widget.order)));
+                },
+                icon: Icon(Icons.report, color: Colors.amber,),
+                label: Text(
+                  'Detalles',
+                  style: TextStyle(fontSize: 16),
+                ),
+                style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.amber,
+                    side: const BorderSide(color: Colors.amber)),
               ),
             ),
           ],
