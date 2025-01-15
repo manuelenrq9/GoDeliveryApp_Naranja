@@ -27,7 +27,7 @@ class CategoryCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(7.0),
           child: Container(
-            width: 110, // Incrementamos el ancho
+            width: 114, // Incrementamos el ancho
             height: 120, // Ajustamos la altura para que todo encaje bien
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),

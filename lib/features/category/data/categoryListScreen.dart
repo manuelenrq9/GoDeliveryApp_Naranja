@@ -37,7 +37,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      height: 155,
       child: FutureBuilder<List<Category>>(
         future: futureCategories,
         builder: (context, snapshot) {
