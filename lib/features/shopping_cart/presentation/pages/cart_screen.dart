@@ -4,8 +4,8 @@ import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
-import 'package:godeliveryapp_naranja/features/order/data/post_order.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
+
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/processorderscreen.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
@@ -34,6 +34,7 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  bool _isProcessing = false;
   late final CartRepository _cartRepository;
   List<CartItemData> cartItems = [];
   List<Product> products = [];
@@ -318,9 +319,18 @@ class _CartScreenState extends State<CartScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text(
-                      'Procesar Orden',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: _isProcessing
+                          ? const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            )
+                          : const Text(
+                              'Procesar Orden',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white),
+                            ),
                     ),
                   ),
                 ],

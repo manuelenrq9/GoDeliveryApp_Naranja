@@ -19,16 +19,61 @@ class MainMenu extends StatefulWidget {
   _MainMenuState createState() => _MainMenuState();
 }
 
-class _MainMenuState extends State<MainMenu> {
+class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   late String selectedCurrency;
   int _currentIndex = 0;
   ThemeMode _themeMode = ThemeMode.light;
+
+  late AnimationController _categoryController;
+  late AnimationController _comboController;
+  late AnimationController _productController;
+  late AnimationController _menuController;
+
+  late Animation<double> _categoryAnimation;
+  late Animation<double> _comboAnimation;
+  late Animation<double> _productAnimation;
+  late Animation<Offset> _menuAnimation;
 
   @override
   void initState() {
     super.initState();
     _initializeCurrency();
     CounterManager().loadCounterFromStorage();
+
+    // Inicializar controladores de animación
+    _categoryController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _comboController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _productController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _menuController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    // Inicializar las animaciones luego de crear los controladores
+    _categoryAnimation = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: _categoryController, curve: Curves.easeIn));
+    _comboAnimation = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: _comboController, curve: Curves.easeIn));
+    _productAnimation = Tween<double>(begin: 0, end: 1).animate(
+        CurvedAnimation(parent: _productController, curve: Curves.easeIn));
+    _menuAnimation = Tween<Offset>(begin: Offset(-1, 0), end: Offset(0, 0))
+        .animate(
+            CurvedAnimation(parent: _menuController, curve: Curves.easeInOut));
+
+    // Iniciar las animaciones
+    _categoryController.forward();
+    _comboController.forward();
+    _productController.forward();
+    _menuController.forward();
   }
 
   Future<void> _initializeCurrency() async {
@@ -210,5 +255,14 @@ class _MainMenuState extends State<MainMenu> {
         drawer: CustomDrawer(),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _categoryController.dispose();
+    _comboController.dispose();
+    _productController.dispose();
+    _menuController.dispose();
+    super.dispose();
   }
 }

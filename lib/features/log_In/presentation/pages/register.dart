@@ -18,10 +18,10 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isLoading = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Controlador para el campo de fecha nacimiento
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -31,6 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _phoneController = TextEditingController();
   String? _region;
   String? _emailErrorMessage;
+  String _selectedCountryCode = '+1';
 
   @override
   void dispose() {
@@ -113,7 +114,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           showLoadingScreen(context,
               destination: const RegisterSuccessScreen());
         } else {
-          // Mostrar mensaje genérico de error
           setState(() {
             _emailErrorMessage = 'Error al crear cuenta. Intenta nuevamente.';
           });
@@ -127,7 +127,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  // Método para mostrar el diálogo de error
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -189,7 +188,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: Center(
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey, // Aquí se agrega el formulario
+            key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -207,8 +206,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
-                // Campo Nombre de Usuario
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -229,8 +226,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Correo Electronico
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -261,15 +256,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         return 'Correo no válido';
                       }
                       if (_emailErrorMessage != null) {
-                        return _emailErrorMessage; // Valida si hay un error ya establecido
+                        return _emailErrorMessage;
                       }
                       return null;
                     },
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Contraseña
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -306,8 +299,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Confirmar Contraseña
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -345,8 +336,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Región
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: DropdownButtonFormField<String>(
@@ -385,34 +374,113 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Teléfono
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextFormField(
-                    controller: _phoneController,
-                    decoration: InputDecoration(
-                      hintText: 'Teléfono',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: DropdownButtonFormField<String>(
+                          value: _selectedCountryCode,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          items: <String>[
+                            '+1', // USA
+                            '+52', // Mexico
+                            '+91', // India
+                            '+44', // UK
+                            '+81', // Japan
+                            '+58', // Venezuela
+                          ].map<DropdownMenuItem<String>>((String value) {
+                            String flagUrl;
+                            switch (value) {
+                              case '+1':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/us.png'; // USA
+                                break;
+                              case '+52':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/mx.png'; // Mexico
+                                break;
+                              case '+91':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/in.png'; // India
+                                break;
+                              case '+44':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/gb.png'; // UK
+                                break;
+                              case '+81':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/jp.png'; // Japan
+                                break;
+                              case '+58':
+                                flagUrl =
+                                    'https://flagcdn.com/w320/ve.png'; // Venezuela
+                                break;
+                              default:
+                                flagUrl =
+                                    'https://flagcdn.com/w320/default.png'; // Default flag
+                            }
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Row(
+                                children: [
+                                  Image.network(
+                                    flagUrl,
+                                    width: 15,
+                                    height: 15,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(value),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _selectedCountryCode = newValue!;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor selecciona un prefijo';
+                            }
+                            return null;
+                          },
+                        ),
                       ),
-                      prefixIcon: const Icon(Icons.phone),
-                    ),
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa tu teléfono';
-                      }
-                      if (!RegExp(r'^\d+$').hasMatch(value)) {
-                        return 'Teléfono no válido';
-                      }
-                      return null;
-                    },
+                      const SizedBox(width: 10),
+                      Expanded(
+                        flex: 5,
+                        child: TextFormField(
+                          controller: _phoneController,
+                          decoration: InputDecoration(
+                            hintText: 'Teléfono',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            prefixIcon: const Icon(Icons.phone),
+                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor ingresa tu teléfono';
+                            }
+                            if (!RegExp(r'^\d+$').hasMatch(value)) {
+                              return 'Teléfono no válido';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Campo Fecha de Nacimiento
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextFormField(
@@ -435,13 +503,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           return Theme(
                             data: ThemeData.light().copyWith(
                               colorScheme: const ColorScheme.light(
-                                primary: Color(0xFFFF7000), // Color naranja
-                                onPrimary: Color.fromARGB(255, 15, 15,
-                                    15), // Color del texto en el botón
-                                surface: Color.fromARGB(255, 255, 255,
-                                    255), // Color de fondo del calendario
-                                onSurface: Colors
-                                    .black, // Color del texto en el calendario
+                                primary: Color(0xFFFF7000),
+                                onPrimary: Color.fromARGB(255, 15, 15, 15),
+                                surface: Color.fromARGB(255, 255, 255, 255),
+                                onSurface: Colors.black,
                               ),
                               dialogBackgroundColor: Colors.white,
                             ),
@@ -466,32 +531,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-
-                // Botón de Crear Cuenta
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF7000),
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: _register, // Llamamos la función de registro
-                    child: const Text(
-                      'Crear Cuenta',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: _isLoading
+                        ? ElevatedButton(
+                            key: const ValueKey('loading'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                              minimumSize: const Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: () {},
+                            child: const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          )
+                        : ElevatedButton(
+                            key: const ValueKey('login'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFFF7000),
+                              minimumSize: const Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: _register,
+                            child: const Text(
+                              'Crear Cuenta',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                   ),
                 ),
                 const SizedBox(height: 10),
-
-                // Texto de ir al Login
                 TextButton(
                   onPressed: () {
                     showLoadingScreen(context,

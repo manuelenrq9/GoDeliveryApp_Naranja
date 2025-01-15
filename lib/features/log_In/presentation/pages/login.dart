@@ -17,6 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -82,6 +83,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
   void _login() async {
     if (_formKey.currentState?.validate() ?? false) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Si la validación es correcta, enviar los datos
       final loginData = {
         'email': _emailController.text,
         'password': _passwordController.text,
@@ -101,7 +107,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
-
           SharedPreferences pref = await SharedPreferences.getInstance();
           await pref.setString('user_id', userId);
 
@@ -272,7 +277,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                         const SizedBox(height: 5),
-
                         // Otros botones
                         TextButton(
                           onPressed: () {

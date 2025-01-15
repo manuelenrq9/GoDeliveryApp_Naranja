@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/add_to_cart.dart';
 
 class ButtonAddCartMenu extends StatefulWidget {
@@ -49,10 +50,67 @@ class _ButtonAddCartMenuState extends State<ButtonAddCartMenu> {
         showSnackBar: (message) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
-                  '${widget.product?.name ?? widget.combo?.name} añadido al carrito'),
-              duration: const Duration(seconds: 2),
+              content: Row(
+                children: [
+                  if (widget.product != null &&
+                      widget.product!.image.isNotEmpty)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Image.network(
+                        widget.product!.image.first,
+                        width: 48,
+                        height: 48,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  else if (widget.combo != null &&
+                      widget.combo!.comboImage.isNotEmpty)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: Image.network(
+                        widget.combo!.comboImage.first,
+                        width: 58,
+                        height: 58,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  else
+                    Container(width: 48, height: 48),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${widget.product != null ? widget.product!.name : widget.combo!.name} añadido al carrito',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.fade,
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              duration: const Duration(seconds: 4),
               backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              action: SnackBarAction(
+                label: 'Ir al carrito',
+                textColor: Colors.white,
+                onPressed: () {
+                  // Navegar a la pantalla del carrito
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CartScreen()),
+                  );
+                },
+              ),
             ),
           );
         },
