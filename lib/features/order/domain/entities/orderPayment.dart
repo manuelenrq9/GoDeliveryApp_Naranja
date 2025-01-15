@@ -1,11 +1,11 @@
 class OrderPayment {
-  final String id;
+  // final String id;
   final String paymentMethod;
   final String currency;
   final double total;
 
   OrderPayment({
-    required this.id, 
+    // required this.id, 
     required this.paymentMethod, 
     required this.currency, 
     required this.total
@@ -13,7 +13,7 @@ class OrderPayment {
 
   factory OrderPayment.fromJson(Map<String, dynamic> json) {
     return OrderPayment(
-      id: json['id'] ?? '',
+      // id: json['id'] ?? '',
       paymentMethod: json['paymentMethod'] ?? '',
       currency: json['currency'] ?? '',
       total: (json['total'] is num) 
@@ -22,9 +22,20 @@ class OrderPayment {
       );
   }
 
+    factory OrderPayment.fromJson2(Map<String, dynamic> json) {
+    return OrderPayment(
+      // id: json['id'] ?? '',
+      paymentMethod: json['paymentMethod'] ?? '',
+      currency: (json['currency'] ?? '').toUpperCase(),
+      total: (json['amount'] is num) 
+          ? (json['amount'] as num).toDouble() 
+          : 0.0,
+      );
+  }
+
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      // 'id': id,
       'paymentMethod': paymentMethod,
       'currency': currency,
       'total': total

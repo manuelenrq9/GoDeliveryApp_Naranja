@@ -51,7 +51,7 @@ class _CartItemState extends State<CartItem> {
       try {
         final discount = await fetchEntityById<Discount>(
           widget.data.discount!, // El ID del descuento
-          'discount/one', // Endpoint genérico para descuentos
+          'discount/one/', // Endpoint genérico para descuentos
           (json) =>
               Discount.fromJson(json), // Función para mapear JSON a Discount
         );

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/register.dart';
+import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -113,6 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _selectedApi = apiUrl;
     });
+    await CartScreen.clearCartStatic(context);
   }
 
   @override

@@ -25,7 +25,7 @@ class DiscountPriceDisplay extends StatelessWidget {
     return FutureBuilder<Discount>(
       future: fetchEntityById<Discount>(
         discountId ?? '', // Si el ID es null, se pasa una cadena vacía
-        'discount/one', // Endpoint específico para descuentos
+        'discount/one/', // Endpoint específico para descuentos
         (json) => Discount.fromJson(json),
       ),
       builder: (context, snapshot) {

@@ -12,10 +12,10 @@ Future<String?> _getToken() async {
   return prefs.getString('auth_token'); // Obtén el token almacenado
 }
 
-  Future<String?> _getApi() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('api_url'); // Obtén el token almacenado
-  }
+Future<String?> _getApi() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('api_url'); // Obtén el token almacenado
+}
 
 Future<void> processOrder({
   required String address,
@@ -30,28 +30,56 @@ Future<void> processOrder({
   required BuildContext context,
 }) async {
   // Estructura de la orden que se enviará al backend
-  final orderData = {
-    'address': address,
-    'latitude': latitude,
-    'longitude': longitude,
-    'products': products.map((product) {
-      return {
-        'id': product.id,
-        'quantity': product.quantity,
-      };
-    }).toList(),
-    'combos': combos.map((combo) {
-      return {
-        'id': combo.id,
-        'quantity': combo.quantity,
-      };
-    }).toList(),
-    'paymentMethod': paymentMethod,
-    'currency': currency,
-    'total': double.parse(totalDecimal.toStringAsFixed(2)),
-    'cupon': cupon,
-  };
   final apiUrl = await _getApi();
+  var orderData = {};
+  if (apiUrl == 'https://amarillo-backend-production.up.railway.app') {
+     orderData = {
+      'address': address,
+      'latitude': latitude,
+      'longitude': longitude,
+      'products': products.map((product) {
+        return {
+          'id': product.id,
+          'quantity': product.quantity,
+        };
+      }).toList(),
+      'combos': combos.map((combo) {
+        return {
+          'id': combo.id,
+          'quantity': combo.quantity,
+        };
+      }).toList(),
+      'paymentMethod': paymentMethod,
+      // 'currency': currency,
+      'idPayment': "c9710a23-6748-4841-aaf3-007a0a4caf74",
+      // 'total': double.parse(totalDecimal.toStringAsFixed(2)),
+      if (cupon != '') ...{
+        'cupon_code': cupon,
+      }
+    };
+  } else {
+    orderData = {
+      'address': address,
+      'latitude': latitude,
+      'longitude': longitude,
+      'products': products.map((product) {
+        return {
+          'id': product.id,
+          'quantity': product.quantity,
+        };
+      }).toList(),
+      'combos': combos.map((combo) {
+        return {
+          'id': combo.id,
+          'quantity': combo.quantity,
+        };
+      }).toList(),
+      'paymentMethod': 'Efectivo',
+      'currency': currency,
+      'total': double.parse(totalDecimal.toStringAsFixed(2)),
+      'cupon_code': cupon,
+    };
+  }
   try {
     final token = await _getToken();
 
@@ -63,14 +91,14 @@ Future<void> processOrder({
     print('Datos de la solicitud: ${json.encode(orderData)}');
 
     final response = await http.post(
-      Uri.parse(
-          '$apiUrl/order/create'),
+      Uri.parse('$apiUrl/order/create'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
       },
       body: json.encode(orderData),
     );
+    print('$apiUrl/order/create');
     if (response.statusCode == 201) {
       // Si la orden fue procesada con éxito, muestra un mensaje
       ScaffoldMessenger.of(context).showSnackBar(
@@ -83,7 +111,6 @@ Future<void> processOrder({
       // Espera un momento y redirige al menú principal
       await Future.delayed(Duration(seconds: 2));
       await CartScreen.clearCartStatic(context);
-
 
       // Redirigir al menú principal
       Navigator.pushReplacement(

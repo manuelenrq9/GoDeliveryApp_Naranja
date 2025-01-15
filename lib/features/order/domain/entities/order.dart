@@ -2,6 +2,7 @@ import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.d
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/orderPayment.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/orderReport.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Order {
   final String id;
@@ -19,56 +20,132 @@ class Order {
   final DateTime shippedDate;
   final DateTime beignProcessedDate;
 
-  const Order({
-    required this.id,
-    required this.createdDate,
-    required this.status,
-    required this.address,
-    required this.latitude,
-    required this.longitude,
-    required this.products,
-    required this.combos,
-    required this.receivedDate,
-    required this.paymentMethod,
-    required this.report,
-    required this.cancelledDate,
-    required this.shippedDate,
-    required this.beignProcessedDate
-  });
+  const Order({    
+      required this.id,
+      required this.createdDate,
+      required this.status,
+      required this.address,
+      required this.latitude,
+      required this.longitude,
+      required this.products,
+      required this.combos,
+      required this.receivedDate,
+      required this.paymentMethod,
+      required this.report,
+      required this.cancelledDate,
+      required this.shippedDate,
+      required this.beignProcessedDate
+      });
+      
 
   factory Order.fromJson(Map<String, dynamic> json) {
-    try {
+  try {
       return Order(
         id: json['id'] ?? '',
-        createdDate: json['createdDate'] != null ? DateTime.parse(json['createdDate']) : DateTime.now(),
+        createdDate: json['createdDate'] != null
+            ? DateTime.parse(json['createdDate'])
+            : DateTime.now(),
         status: json['status'] ?? 'UNKNOWN',
         address: json['address'] ?? 'Sin dirección',
         latitude: json['latitude'] ?? 0.0,
         longitude: json['longitude'] ?? 0.0,
         receivedDate: DateTime.parse(json['receivedDate']),
-        products: (json['products'] as List<dynamic>?)?.map((item) => CartProduct.fromJson(item)).toList() ?? [],
-        combos: (json['combos'] as List<dynamic>?)?.map((item) => CartCombo.fromJson(item)).toList() ?? [],
-        // products: (json['products'] as List<dynamic>)
-        //     .map((item) => CartProduct.fromJson(item))
-        //     .toList(),
-        // combos: (json['combos'] as List<dynamic>)
-        //     .map((item) => CartCombo.fromJson(item))
-        //     .toList(),
+        products: (json['products'] as List<dynamic>?)
+                ?.map((item) => CartProduct.fromJson(item))
+                .toList() ??
+            [],
+        combos: (json['combos'] as List<dynamic>?)
+                ?.map((item) => CartCombo.fromJson(item))
+                .toList() ??
+            [],
         paymentMethod: json['paymentMethod'] != null
             ? [OrderPayment.fromJson(json['paymentMethod'])]
             : [],
         report: json['report'] != null
             ? [OrderReport.fromJson(json['report'])]
             : [],
-        cancelledDate: json['cancelledDate'] != null ? DateTime.parse(json['cancelledDate']) : DateTime.now(),
-        shippedDate: json['shippedDate'] != null ? DateTime.parse(json['shippedDate']) : DateTime.now(),
-        beignProcessedDate: json['beignProcessedDate'] != null ? DateTime.parse(json['beignProcessedDate']) : DateTime.now(),
+        cancelledDate: json['cancelledDate'] != null
+            ? DateTime.parse(json['cancelledDate'])
+            : DateTime.now(),
+        shippedDate: json['shippedDate'] != null
+            ? DateTime.parse(json['shippedDate'])
+            : DateTime.now(),
+        beignProcessedDate: json['beignProcessedDate'] != null
+            ? DateTime.parse(json['beignProcessedDate'])
+            : DateTime.now(),
       );
-    } catch (e) {
-      print("Error al deserializar Order: $e");
-      throw Exception("Error al procesar el JSON de Order");
-    }
+    
+  } catch (e) {
+    print("Error al deserializar Order3: $e");
+    throw Exception("Error al procesar el JSON de Order3");
   }
+}
+
+
+  factory Order.fromJson2(Map<String, dynamic> json) {
+  try {
+      final receivedDate = json['orderReciviedDate'] != null
+          ? DateTime.parse(json['orderReciviedDate'])
+          : DateTime.now(); // Definir un valor predeterminado si es null
+      return Order(
+        id: json['id'] ?? '',
+        createdDate: json['orderCreatedDate'] != null
+            ? DateTime.parse(json['orderCreatedDate'])
+            : DateTime.now(),
+        status: json['orderState'] ?? 'UNKNOWN',
+        address: json['directionName'] ?? 'Sin dirección',
+        latitude: json['orderDirection']?['lat'] ?? 0.0,
+        longitude: json['orderDirection']?['long'] ?? 0.0,
+        receivedDate: receivedDate,
+        products: (json['products'] as List<dynamic>?)
+                ?.map((item) => CartProduct.fromJson(item))
+                .toList() ??
+            [],
+        combos: (json['bundles'] as List<dynamic>?)
+                ?.map((item) => CartCombo.fromJson(item))
+                .toList() ??
+            [],
+        paymentMethod: json['orderPayment'] != null
+            ? [OrderPayment.fromJson2(json['orderPayment'])]
+            : [],
+        report: [], // El backend de "amarillo" no proporciona reportes
+        cancelledDate: receivedDate,
+        shippedDate: receivedDate,
+        beignProcessedDate: receivedDate,
+      );    
+  } catch (e) {
+    print("Error al deserializar Order2: $e");
+    throw Exception("Error al procesar el JSON de Order2");
+  }
+}
+
+  // factory Order.fromJson(Map<String, dynamic> json) {
+  //   try {
+  //     return Order(
+  //       id: json['id'] ?? '',
+  //       createdDate: json['createdDate'] != null ? DateTime.parse(json['createdDate']) : DateTime.now(),
+  //       status: json['status'] ?? 'UNKNOWN',
+  //       address: json['address'] ?? 'Sin dirección',
+  //       latitude: json['latitude'] ?? 0.0,
+  //       longitude: json['longitude'] ?? 0.0,
+  //       receivedDate: DateTime.parse(json['receivedDate']),
+  //       products: (json['products'] as List<dynamic>?)?.map((item) => CartProduct.fromJson(item)).toList() ?? [],
+  //       combos: (json['combos'] as List<dynamic>?)?.map((item) => CartCombo.fromJson(item)).toList() ?? [],
+  //       paymentMethod: json['paymentMethod'] != null
+  //           ? [OrderPayment.fromJson(json['paymentMethod'])]
+  //           : [],
+  //       report: json['report'] != null
+  //           ? [OrderReport.fromJson(json['report'])]
+  //           : [],
+  //       cancelledDate: json['cancelledDate'] != null ? DateTime.parse(json['cancelledDate']) : DateTime.now(),
+  //       shippedDate: json['shippedDate'] != null ? DateTime.parse(json['shippedDate']) : DateTime.now(),
+  //       beignProcessedDate: json['beignProcessedDate'] != null ? DateTime.parse(json['beignProcessedDate']) : DateTime.now(),
+  //     );
+  //   } catch (e) {
+  //     print("Error al deserializar Order: $e");
+  //     throw Exception("Error al procesar el JSON de Order");
+  //   }
+  // }
 
   Map<String, dynamic> toJson() {
     return {

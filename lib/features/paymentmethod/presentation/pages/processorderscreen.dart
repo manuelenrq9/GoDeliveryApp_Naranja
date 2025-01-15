@@ -11,6 +11,7 @@ import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/
 import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/pages/ZellementScreen.dart';
 import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/widgets/PaymentMethodCard.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/domain/cart_item_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProcessOrderScreen extends StatefulWidget {
   final List<CartItemData> cartItems;
@@ -140,12 +141,24 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
     }
   }
 
+  Future<String?> _getApi() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('api_url'); // Obtén el token almacenado
+  }
+
   Future<void> _validateCoupon() async {
     if (_cupon == null) {
       try {
+        String endpoint = '';
+        if (await _getApi() !=
+            'https://orangeteam-deliverybackend-production.up.railway.app') {
+          endpoint = 'cupon/one/by/code?code=';
+        } else {
+          endpoint = 'cupon/one/by/';
+        }
         var coupon = await fetchEntityById<Coupon>(
           couponController.text,
-          'cupon/one/by',
+          endpoint,
           (data) => Coupon.fromJson(data),
         );
         if (coupon != null) {
@@ -153,7 +166,7 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
           setState(() {
             _codeCupon = coupon.name;
             _cupon =
-                "${converter.selectedCurrency} ${converter.convert(double.parse((((widget.totalDecimal - _distanceKm) / (1 + coupon.value)) - (widget.totalDecimal - _distanceKm)).toStringAsFixed(2))).toStringAsFixed(2)}";
+                "${(coupon.value*100).toStringAsFixed(0)}% ${converter.selectedCurrency} ${converter.convert(double.parse((((widget.totalDecimal - _distanceKm) / (1 + coupon.value)) - (widget.totalDecimal - _distanceKm)).toStringAsFixed(2))).toStringAsFixed(2)}";
           });
           widget.totalDecimal += double.parse(
               ((widget.totalDecimal / (1 + coupon.value)) - widget.totalDecimal)

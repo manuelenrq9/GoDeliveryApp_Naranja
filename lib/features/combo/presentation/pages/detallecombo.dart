@@ -90,7 +90,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
   Future<List<Product>> getProductsForCombo() async {
     return await getEntitiesByIds<Product>(
       widget.combo.products,
-      'product/one',
+      'product/one/',
       (json) => Product.fromJson(json),
     );
   }

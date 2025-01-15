@@ -11,7 +11,6 @@ class User {
   final String name;
   final String email;
   final String phone;
-  final String password;
   final String profileImageUrl;
 
   User({
@@ -19,7 +18,6 @@ class User {
     required this.name,
     required this.email,
     required this.phone,
-    required this.password,
     required this.profileImageUrl,
   });
 
@@ -29,9 +27,8 @@ class User {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      password: json['password'] ?? '',
-      profileImageUrl: json['profileImageUrl'] ??
-          'https://covalto-production-website.s3.amazonaws.com/Hero_Mobile_Cuenta_Personas_V1_1_8046e424ea.webp',
+      profileImageUrl: json['image'] ??
+          'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
     );
   }
 }
@@ -46,6 +43,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _imageController = TextEditingController();
 
   late User _user;
   bool _isPasswordVisible = false; // Estado para alternar visibilidad
@@ -72,7 +70,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       if (token == null) throw Exception('No hay token de autenticación');
 
       final response = await http.get(
-        Uri.parse('$apiUrl/user/$userID'),
+        Uri.parse('$apiUrl/user/one/$userID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -87,40 +85,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     } catch (e) {
       print('Error: $e');
       return null;
-    }
-  }
-
-  Future<void> _updateUserData() async {
-    final apiUrl = await _getApi();
-    try {
-      final token = await _getToken();
-      if (token == null) throw Exception('No hay token de autenticación');
-
-      final response = await http.put(
-        Uri.parse('$apiUrl/user/one/${_user.id}'),
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: json.encode({
-          'name': _nameController.text,
-          'email': _emailController.text,
-          'phone': _phoneController.text,
-          'password': _passwordController.text,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Perfil actualizado con éxito')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al actualizar perfil')),
-        );
-      }
-    } catch (e) {
-      print('Error: $e');
     }
   }
 
@@ -184,7 +148,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             _nameController.text = _user.name;
             _phoneController.text = _user.phone;
             _emailController.text = _user.email;
-            _passwordController.text = _user.password;
+            // _passwordController.text = _user.password;
 
             return SingleChildScrollView(
               child: Padding(
@@ -203,7 +167,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     const SizedBox(height: 16),
                     _buildTextField(_phoneController, 'Teléfono', Icons.phone),
                     const SizedBox(height: 16),
-                    _buildPasswordTextField(),
+                    // _buildPasswordTextField(),
                     const SizedBox(height: 16),
 
                     const SizedBox(

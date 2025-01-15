@@ -20,7 +20,7 @@ Future<void> fetchProducts(
   Product productObject;
   for (var product in products) {
     id = product.id;
-    productObject = await fetchEntityById<Product>(id, 'product/one',
+    productObject = await fetchEntityById<Product>(id, 'product/one/',
         (json) => Product.fromJson(json)); // Await the asynchronous call
     items.add(
         productObject.name); // Add the product name directly to the passed list

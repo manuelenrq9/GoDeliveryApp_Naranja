@@ -41,7 +41,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-   final TextEditingController _imageController = TextEditingController();
+  final TextEditingController _imageController = TextEditingController();
 
   late User _user;
   bool _isPasswordVisible = false;
@@ -58,20 +58,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('api_url'); // Obtén el token almacenado
   }
+
   // Obtener datos de usuario desde el backend
   Future<User?> _getUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userID = prefs.getString('user_id');
     print('UserID: $userID'); // Bandera para verificar el userID
     if (userID == null) return null;
-  final apiUrl = await _getApi();
+    final apiUrl = await _getApi();
     try {
       final token = await _getToken();
       if (token == null) throw Exception('No hay token de autenticación');
 
       final response = await http.get(
-        Uri.parse(
-            '$apiUrl/user/one/$userID'),
+        Uri.parse('$apiUrl/user/one/$userID'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
@@ -84,8 +84,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         print(
-            'Datos de usuario: $data'); // Bandera para ver los datos obtenidos
-        return User.fromJson(data['value']);
+            'Datos de usuario: $data'); 
+        return User.fromJson(data);
       } else {
         print('Error en la respuesta de la API: ${response.statusCode}');
         return null;
@@ -98,7 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // Actualizar datos del usuario
   Future<void> _updateUserData() async {
-      final apiUrl = await _getApi();
+    final apiUrl = await _getApi();
     try {
       final token = await _getToken();
       if (token == null) {
@@ -106,9 +106,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         throw Exception('No hay token de autenticación');
       }
 
-      final response = await http.put(
+      final response = await http.patch(
         Uri.parse(
-          '$apiUrl/user/one/${_user.id}',
+          '$apiUrl/user/update/${_user.id}',
         ),
         headers: {
           'Authorization': 'Bearer $token',
@@ -192,6 +192,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           _nameController.text = _user.name;
           _phoneController.text = _user.phone;
           _emailController.text = _user.email;
+          _imageController.text = _user.profileImageUrl;
 
           return SingleChildScrollView(
             child: Padding(

@@ -6,10 +6,11 @@ import 'package:http/http.dart' as http;
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-  Future<String?> _getApi() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('api_url'); // Obtén el token almacenado
-  }
+Future<String?> _getApi() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('api_url'); // Obtén el token almacenado
+}
+
 class DataService<T> {
   final String endpoint;
   final GenericRepository<T> repository;
@@ -39,7 +40,6 @@ class DataService<T> {
       if (token == null) {
         throw Exception('No hay token de autenticación');
       }
-      print('FINAL');
       print(apiUrl);
       final response = await http.get(
         Uri.parse(apiUrl),
@@ -49,8 +49,12 @@ class DataService<T> {
           'Content-Type': 'application/json',
         },
       );
-      if (response.statusCode == 200) {  
+      if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body);
+        if(endpoint=="/order/many?status=SHIPPED&status=BEING%20PROCESSED&status=CREATED&status=DELIVERED&status=CANCELLED&perpage=60&page=1"){
+          final List<dynamic> items = jsonData['orders'];
+          return items.map((item) => fromJson(item)).toList();
+          }
         final List<dynamic> items = jsonData;
         return items.map((item) => fromJson(item)).toList();
       } else {
