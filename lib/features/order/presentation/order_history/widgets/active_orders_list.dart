@@ -30,7 +30,6 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<Order>>(
-
         future: futureOrders,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -39,11 +38,10 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
 
             // Filter orders based on status within the builder
             final deliveredOrders = orders
-                .where((order) =>  
-                  order.status == 'CREATED' ||
-                  order.status == 'BEING PROCESSED' ||
-                  order.status == 'SHIPPED'
-                )
+                .where((order) =>
+                    order.status == 'CREATED' ||
+                    order.status == 'BEING PROCESSED' ||
+                    order.status == 'SHIPPED')
                 .toList();
             return ListView(
               padding: const EdgeInsets.all(16.0),
@@ -53,7 +51,8 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => OrderSummaryScreen(order: order),
+                              builder: (context) =>
+                                  OrderSummaryScreen(order: order),
                             ),
                           );
                         },

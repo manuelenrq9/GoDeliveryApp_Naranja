@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/data.services.dart';
+import 'package:godeliveryapp_naranja/core/dataID.services.dart';
+import 'package:godeliveryapp_naranja/features/combo/data/combo_fetchID.dart';
+import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartProduct.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/domain/entities/orderPayment.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/delivery_address.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/delivery_date.dart';
 import 'package:godeliveryapp_naranja/features/order/presentation/order_summary/widgets/delivery_time.dart';
@@ -94,6 +98,12 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
   @override
   Widget build(BuildContext context) {
     List<CartCombo> combos = widget.order.combos;
+    List<OrderPayment> payment = widget.order.paymentMethod;
+
+    String paymentMethod = '';
+    payment.forEach((payment) {
+      paymentMethod = payment.paymentMethod;
+    });
     String formatedId = widget.order.id.length > 8
         ? widget.order.id.substring(0, 8)
         : widget.order.id;
@@ -120,7 +130,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
             const Divider(thickness: 1, height: 32),
             _buildSection(
               icon: Icons.credit_card,
-              text: 'Método de pago: ${widget.order.status}',
+              text: 'Método de pago: ${paymentMethod}',
             ),
             const Divider(thickness: 1, height: 32),
             const Text(
@@ -149,11 +159,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            OrderSummary(),
+            OrderSummary(order: widget.order),
             const SizedBox(height: 16),
-            DeliveryDate(),
+            DeliveryDate(order: widget.order),
             const SizedBox(height: 16),
-            DeliveryTime(),
+            DeliveryTime(order: widget.order),
             const Divider(thickness: 1, height: 32),
             DeliveryAddress(),
             const SizedBox(height: 32),
@@ -187,33 +197,98 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen> {
 
   Future<List<Widget>> _buildProductList() async {
     List<CartProduct> products = widget.order.products;
+// <<<<<<< HEAD
+
+//     List<Product> productList = [];
+//     try {
+//       for (var cartProduct in products) {
+//         Product product = await fetchProductById(cartProduct.id);
+//         productList.add(product);
+//       }
+//     } catch (e) {
+//       print('Error fetching products: \$e');
+//     }
+
+//     return List<Widget>.generate(productList.length, (index) {
+//       final product = productList[index];
+//       final quantity = products[index].quantity;
+//       return Card(
+//         margin: const EdgeInsets.symmetric(vertical: 8.0),
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(12),
+//         ),
+//         elevation: 2,
+//         child: ProductTile(
+//           name: product.name,
+//           presentation: '${product.weight}${product.measurement}',
+//           price: '${quantity}',
+//           imageUrl: product.image.isNotEmpty ? product.image.first : '',
+//         ),
+//       );
+// =======
+    List<CartCombo> combos = widget.order.combos;
 
     List<Product> productList = [];
     try {
-      for (var cartProduct in products) {
-        Product product = await fetchProductById(cartProduct.id);
-        productList.add(product);
+      for (var product in products) {
+        var id = product.id;
+        var productObject = await fetchEntityById<Product>(id, 'product/one',
+            (json) => Product.fromJson(json)); // Await the asynchronous call
+        productList
+            .add(productObject); //    Add the product object to the productList
       }
     } catch (e) {
-      print('Error fetching products: \$e');
+      print('Error fetching productos: \$e');
     }
 
-    return List<Widget>.generate(productList.length, (index) {
-      final product = productList[index];
-      final quantity = products[index].quantity;
-      return Card(
-        margin: const EdgeInsets.symmetric(vertical: 8.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        elevation: 2,
-        child: ProductTile(
-          name: product.name,
-          presentation: '${product.weight}${product.measurement}',
-          price: '${quantity}',
-          imageUrl: product.image.isNotEmpty ? product.image.first : '',
-        ),
-      );
+    List<Combo> comboList = [];
+    try {
+      for (var cartCombo in combos) {
+        Combo combo = await fetchComboById(cartCombo.id);
+        comboList.add(combo);
+      }
+    } catch (e) {
+      print('Error fetching combos: \$e');
+    }
+
+    return List<Widget>.generate(productList.length + comboList.length,
+        (index) {
+      if (index < productList.length) {
+        final product = productList[index];
+        final quantity = products[index].quantity;
+
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
+          child: ProductTile(
+            name: product.name,
+            presentation: '${product.weight}${product.measurement}',
+            price: '$quantity',
+            imageUrl: product.image.isNotEmpty ? product.image.first : '',
+          ),
+        );
+      } else {
+        final comboIndex = index - productList.length;
+        final combo = comboList[comboIndex];
+        final quantityCombo = combos[comboIndex].quantity;
+
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 2,
+          child: ProductTile(
+            name: combo.name,
+            presentation: '${combo.weight}${combo.measurement}',
+            price: '$quantityCombo',
+            imageUrl: combo.comboImage.isNotEmpty ? combo.comboImage.first : '',
+          ),
+        );
+      }
     });
   }
 
