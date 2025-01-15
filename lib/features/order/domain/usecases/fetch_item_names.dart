@@ -17,21 +17,24 @@ Future<List<String>> fetchItemNames(
 Future<void> fetchProducts(List<String> items, List<CartProduct> products) async {
   String id;
   Product productObject;
+  String myText;
   for (var product in products) {
     id = product.id;
     productObject = await fetchEntityById<Product>(id, 'product/one',
-        (json) => Product.fromJson(json)); // Await the asynchronous call
-    items.add(productObject.name); // Add the product name directly to the passed list
+        (json) => Product.fromJson(json));
+    myText = '${productObject.name}(${product.quantity.toString()})'; // Await the asynchronous call
+    items.add(myText); // Add the product name directly to the passed list
   }
 }
 
 Future<void> fetchCombos(List<String> items, List<CartCombo> combos) async {
   String id;
   Combo comboObject;
-
+  String myText;
   for (var combo in combos) {
     id = combo.id;
     comboObject = await fetchComboById(id);
-    items.add(comboObject.name);
+    myText = '${comboObject.name}(${combo.quantity.toString()})';
+    items.add(myText);
   }
 }

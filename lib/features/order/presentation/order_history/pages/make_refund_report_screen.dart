@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/features/order/data/make_order_report.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/order.dart';
+import 'package:godeliveryapp_naranja/features/order/presentation/order_history/widgets/report_dialog.dart';
 
-class MakeOrderReportScreen extends StatefulWidget {
+class MakeRefundReportScreen extends StatefulWidget {
   final Order order;
-  const MakeOrderReportScreen({super.key, required this.order});
+  const MakeRefundReportScreen({super.key, required this.order});
 
   @override
-  State<MakeOrderReportScreen> createState() => _MakeOrderReportScreenState();
+  State<MakeRefundReportScreen> createState() => _MakeRefundReportScreenState();
 }
 
-class _MakeOrderReportScreenState extends State<MakeOrderReportScreen> {
+class _MakeRefundReportScreenState extends State<MakeRefundReportScreen> {
    final TextEditingController _reportController 
    = TextEditingController(); // Controlador para el TextField
   @override
@@ -42,7 +43,7 @@ class _MakeOrderReportScreenState extends State<MakeOrderReportScreen> {
             Padding(
               padding: const EdgeInsets.only(right:13, left:13),
               child: Text(
-                'Por favor indica tu reporte a continuación',
+                'Por favor escriba un justificativo para su solicitud de reembolso ',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.black,
@@ -67,24 +68,32 @@ class _MakeOrderReportScreenState extends State<MakeOrderReportScreen> {
             Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF7000),
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        onPressed: () {
-                          makeOrderReport(widget.order.id,_reportController.text);},
-                        child: const Text(
-                          'Enviar reporte',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color(0xFFFF7000),
+    minimumSize: const Size(double.infinity, 50),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+  ),
+  onPressed: () async {
+    await makeOrderReport(widget.order.id, _reportController.text);
+    showDialog(
+      context: context, // Use the context from the build method
+      builder: (BuildContext context) {
+        return ReportDialog();
+      },
+    );
+  },
+  child: const Text(
+    'Enviar reporte',
+    style: TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+      fontSize: 16,
+    ),
+  ),
+),
+
                     ),
           ],
         ) ,

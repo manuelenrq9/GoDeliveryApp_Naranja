@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,7 +8,7 @@ Future<String?> _getToken() async {
   return prefs.getString('auth_token'); // Obtén el token almacenado
 }
 
-Future<void> cancelOrder(String orderId) async {
+Future<void> cancelOrder(BuildContext context, String orderId) async {
   // Data to patch
   final patchData = {
     'status': 'CANCELLED',
@@ -33,6 +34,10 @@ Future<void> cancelOrder(String orderId) async {
 
     if (response.statusCode == 200) {
       print('Order status updated successfully');
+      // Display Snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Orden cancelada exitosamente',),backgroundColor: Colors.green,),
+      );
     } else {
       print('Failed to update order status');
       print('Status code: ${response.statusCode}');
