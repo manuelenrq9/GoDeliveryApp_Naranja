@@ -27,6 +27,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
   num price = 0;
   late Future<List<Product>> _productsFuture;
   bool isAddedToCart = false;
+  bool _isAutoPlay = true;
 
   @override
   void initState() {
@@ -111,7 +112,7 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Color(0xFFFF9027),
+                    color: Color.fromARGB(237, 238, 237, 236),
                     width: 4,
                   ),
                   borderRadius: BorderRadius.circular(20),
@@ -147,7 +148,6 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
     );
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -200,38 +200,77 @@ class ComboDetailScreenState extends State<ComboDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Carrusel de imágenes
-                    CarouselSlider(
-                      items: widget.combo.comboImage.map((imageUrl) {
-                        return GestureDetector(
-                          onTap: () {
-                            _showLargeImage(context, imageUrl);
+                    Stack(
+                      children: [
+                        CarouselSlider.builder(
+                          itemCount: widget.combo.comboImage.length,
+                          itemBuilder: (context, index, realIndex) {
+                            final imageUrl = widget.combo.comboImage[index];
+                            return GestureDetector(
+                              onTap: () {
+                                _showLargeImage(context, imageUrl);
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    CachedNetworkImage(
+                                      imageUrl: imageUrl,
+                                      height: 180,
+                                      fit: BoxFit.cover,
+                                      placeholder: (context, url) =>
+                                          const Center(
+                                              child: CircularProgressIndicator(
+                                                  color: Colors.orange)),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(Icons.error),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
                           },
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: CachedNetworkImage(
-                              imageUrl: imageUrl,
-                              height: 168,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => const Center(
-                                  child: CircularProgressIndicator(
-                                      color: Colors.orange)),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                            ),
+                          options: CarouselOptions(
+                            height: 200,
+                            autoPlay: _isAutoPlay,
+                            enlargeCenterPage: true,
+                            aspectRatio: 16 / 9,
+                            enableInfiniteScroll: true,
+                            initialPage: 0,
+                            viewportFraction: 0.8,
+                            autoPlayInterval: const Duration(seconds: 3),
+                            onPageChanged: (index, reason) {
+                              setState(() {
+                                _currentIndex = index;
+                              });
+                            },
+                            pauseAutoPlayOnTouch: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+
+                    // Indicadores de página
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: widget.combo.comboImage.map((url) {
+                        int index = widget.combo.comboImage.indexOf(url);
+                        return Container(
+                          width: 12.0,
+                          height: 12.0,
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 4.0),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _currentIndex == index
+                                ? Color(0xFFFF9027)
+                                : Colors.grey,
                           ),
                         );
                       }).toList(),
-                      options: CarouselOptions(
-                        height: 200,
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        aspectRatio: 16 / 9,
-                        enableInfiniteScroll: true,
-                        initialPage: 0,
-                      ),
                     ),
-                    const SizedBox(height: 18),
                     Center(
                       child: Text(
                         widget.combo.name,

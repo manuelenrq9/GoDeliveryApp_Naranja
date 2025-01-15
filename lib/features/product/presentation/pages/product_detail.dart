@@ -22,6 +22,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   num price = 0; // Divisa del precio
 
   int _currentIndex = 0; // Variable para el índice de la barra de navegación
+  bool _isAutoPlay = true; // Variable para controlar el auto play del carrusel
 
   // Función para manejar el cambio de índice en el navbar
   void _onTap(int index) {
@@ -75,8 +76,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: Color(0xFFFF9027),
-                    width: 4,
+                    color: Color.fromARGB(185, 204, 204, 204),
+                    width: 2,
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: const [
@@ -87,21 +88,35 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ],
                 ),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: PhotoView(
-                    imageProvider: NetworkImage(imageUrl),
-                    loadingBuilder: (context, event) => Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xFFFF9027),
+                child: Stack(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 1,
+                      child: PhotoView(
+                        imageProvider: NetworkImage(imageUrl),
+                        loadingBuilder: (context, event) => Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0xFFFF9027),
+                          ),
+                        ),
+                        minScale: PhotoViewComputedScale.contained,
+                        maxScale: PhotoViewComputedScale.covered * 2,
+                        backgroundDecoration: const BoxDecoration(
+                          color: Colors.transparent,
+                        ),
                       ),
                     ),
-                    minScale: PhotoViewComputedScale.contained,
-                    maxScale: PhotoViewComputedScale.covered * 2,
-                    backgroundDecoration: const BoxDecoration(
-                      color: Colors.transparent,
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: IconButton(
+                        icon: Icon(Icons.close, color: Colors.white, size: 30),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -163,35 +178,85 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Carrusel de imágenes
-                  CarouselSlider(
-                    items: widget.product.image.map((imageUrl) {
-                      return GestureDetector(
-                        onTap: () {
-                          _showLargeImage(context, imageUrl);
-                        },
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            height: 180,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
-                                child: CircularProgressIndicator(
-                                    color: Colors.orange)),
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
+                  Stack(
+                    children: [
+                      CarouselSlider(
+                        items: widget.product.image.map((imageUrl) {
+                          return GestureDetector(
+                            onTap: () {
+                              _showLargeImage(context, imageUrl);
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: CachedNetworkImage(
+                                imageUrl: imageUrl,
+                                height: 180,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(
+                                        color: Colors.orange)),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        options: CarouselOptions(
+                          height: 200,
+                          autoPlay: _isAutoPlay,
+                          enlargeCenterPage: true,
+                          aspectRatio: 16 / 9,
+                          enableInfiniteScroll: true,
+                          initialPage: 0,
+                          viewportFraction:
+                              0.8, // Aumenta la proporción de la imagen visible
+                          autoPlayInterval: Duration(
+                              seconds:
+                                  3), // Ajusta el intervalo de reproducción automática
+                          onPageChanged: (index, reason) {
+                            setState(() {
+                              _currentIndex = index;
+                            });
+                          },
+                          pauseAutoPlayOnTouch: true,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 10,
+                        right: 10,
+                        child: IconButton(
+                          icon: Icon(
+                            _isAutoPlay ? Icons.pause : Icons.play_arrow,
+                            color: Colors.white,
                           ),
+                          onPressed: () {
+                            setState(() {
+                              _isAutoPlay = !_isAutoPlay;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  // Indicadores de página
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: widget.product.image.map((url) {
+                      int index = widget.product.image.indexOf(url);
+                      return Container(
+                        width: 12.0,
+                        height: 12.0,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 4.0),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentIndex == index
+                              ? Color(0xFFFF9027)
+                              : Colors.grey,
                         ),
                       );
                     }).toList(),
-                    options: CarouselOptions(
-                      height: 200,
-                      autoPlay: true,
-                      enlargeCenterPage: true,
-                      aspectRatio: 16 / 9,
-                      enableInfiniteScroll: true,
-                      initialPage: 0,
-                    ),
                   ),
                   const SizedBox(height: 18),
                   // Nombre del producto más destacado
