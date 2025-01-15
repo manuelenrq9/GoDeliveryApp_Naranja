@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/core/widgets/button_add_cart_detail.dart';
+import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/discount/discount_price_display.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
@@ -17,7 +18,9 @@ class ProductDetailScreen extends StatefulWidget {
   _ProductDetailScreenState createState() => _ProductDetailScreenState();
 }
 
-class _ProductDetailScreenState extends State<ProductDetailScreen> {
+class _ProductDetailScreenState extends State<ProductDetailScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _controller;
   int quantity = 1;
   num price = 0; // Divisa del precio
 
@@ -35,6 +38,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void initState() {
     super.initState();
     price = widget.product.price;
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
   }
 
   void incrementQuantity() {
@@ -126,6 +133,62 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
+  Widget _buildCartIcon() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Icon(
+            Icons.shopping_cart,
+            color: Color.fromARGB(255, 175, 91, 7),
+            size: 28,
+          ),
+        ),
+        Positioned(
+          right: 0,
+          top: 0,
+          child: ScaleTransition(
+            scale: Tween(begin: 1.0, end: 1.2).animate(
+              CurvedAnimation(
+                parent: _controller,
+                curve: Curves.elasticOut,
+              ),
+            ),
+            child: ValueListenableBuilder<int>(
+              valueListenable: CounterManager().counterNotifier,
+              builder: (context, counter, child) {
+                return Visibility(
+                  visible: counter > 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      '$counter',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,8 +211,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.shopping_cart,
-                color: Color.fromARGB(255, 175, 91, 7)),
+            icon: _buildCartIcon(),
             onPressed: () {
               showLoadingScreen(context, destination: const CartScreen());
             },
