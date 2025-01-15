@@ -6,12 +6,12 @@ import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/registe
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/pages/cart_screen.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:local_auth/local_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
@@ -42,9 +42,46 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // Método para realizar la validación y el login
+
+  final LocalAuthentication _localAuth = LocalAuthentication();
+
+  Future<String?> _getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
+
+  Future<void> _loginWithBiometrics() async {
+    try {
+      bool canAuthenticate = await _localAuth.canCheckBiometrics ||
+          await _localAuth.isDeviceSupported();
+
+      if (!canAuthenticate) {
+        _showErrorDialog('El dispositivo no admite autenticación biométrica.');
+        return;
+      }
+
+      bool authenticated = await _localAuth.authenticate(
+        localizedReason: 'Usa tu huella digital para iniciar sesión',
+        options: const AuthenticationOptions(biometricOnly: true),
+      );
+
+      if (authenticated) {
+        final token = await _getToken();
+
+        if (token != null) {
+          showLoadingScreen(context, destination: const MainMenu());
+        } else {
+          _showErrorDialog('No se encontró un token de autenticación válido.');
+        }
+      } else {
+        _showErrorDialog('Autenticación biométrica fallida.');
+      }
+    } catch (e) {
+      _showErrorDialog('Error durante la autenticación biométrica: $e');
+    }
+  }
   void _login() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Si la validación es correcta, enviar los datos
       final loginData = {
         'email': _emailController.text,
         'password': _passwordController.text,
@@ -58,12 +95,10 @@ class _LoginScreenState extends State<LoginScreen> {
         );
 
         if (response.statusCode == 201) {
-          // Si la respuesta es exitosa, guardar el token
           final responseBody = json.decode(response.body);
           final token = responseBody['token'];
           final userId = responseBody['user']['id'];
 
-          // Almacenar el token en shared preferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString('auth_token', token);
 
@@ -76,12 +111,11 @@ class _LoginScreenState extends State<LoginScreen> {
           _showErrorDialog('Error al iniciar sesión. Revisa tus credenciales.');
         }
       } catch (e) {
-        _showErrorDialog('Contraseña invalida\n');
+        _showErrorDialog('Contraseña inválida\n');
       }
     }
   }
 
-  // Mostrar un diálogo de error
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -121,6 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
+
       body: Stack(
         children: [
           Center(
@@ -160,7 +195,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-
                         // Campo Contraseña
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -196,28 +230,47 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Botón de Iniciar sesión
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFFF7000),
-                              minimumSize: const Size(double.infinity, 50),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFFF7000),
+                                minimumSize: const Size(double.infinity, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
-                            ),
-                            onPressed: _login,
-                            child: const Text(
-                              'Iniciar sesión',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                              onPressed: _login,
+                              child: const Text(
+                                'Iniciar sesión',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           ),
-                        ),
+                          const SizedBox(width: 10),
+                          GestureDetector(
+                            onTap: _loginWithBiometrics,
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFF7000),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.fingerprint,
+                                  color: Colors.white, size: 30),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                         const SizedBox(height: 5),
 
                         // Otros botones
