@@ -128,9 +128,7 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
       context,
       MaterialPageRoute(builder: (context) => const LocationPickerScreen()),
     );
-print('ANTES DEL IF PROCESSORDER ${result}');
     if (result != null) {
-      print('dentro DEL IF PROCESSORDER');
       setState(() {
         widget.totalDecimal -= _distanceKm;
         _selectedAddress = result['direccion'];
@@ -142,7 +140,6 @@ print('ANTES DEL IF PROCESSORDER ${result}');
         widget.totalDecimal += _distanceKm;
       });
     }
-    print('dpz DEL IF PROCESSORDER');
   }
 
   Future<String?> _getApi() async {

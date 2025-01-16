@@ -8,8 +8,13 @@ import 'package:latlong2/latlong.dart' as latlong;
 
 class DeliveryTrackingScreen extends StatefulWidget {
   final LatLng deliveryDestination;
+  final String orderStatus; // Nuevo parámetro para el estado
 
-  const DeliveryTrackingScreen({super.key, required this.deliveryDestination});
+  const DeliveryTrackingScreen({
+    super.key,
+    required this.deliveryDestination,
+    required this.orderStatus, // Requerido
+  });
 
   @override
   State<DeliveryTrackingScreen> createState() => _DeliveryTrackingScreenState();
@@ -17,7 +22,7 @@ class DeliveryTrackingScreen extends StatefulWidget {
 
 class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   GoogleMapController? mapController;
-  LatLng _deliveryLocation = const LatLng(10.3878430, -66.9599546); // Punto de inicio
+  LatLng _deliveryLocation = const LatLng(10.481532, -66.863524); // Punto de inicio
   Location _locationService = Location();
   Set<Marker> _markers = {};
   Set<Polyline> _polylines = {};
@@ -29,11 +34,31 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   double _speedKmH = 40; // ✅ Velocidad Promedio del Motorizado (40 km/h)
   String googleApiKey = "AIzaSyDN2oEm1jKZK8nxkS7u1YmRE_bWYvuKl6o"; // ✅ Reemplazar con tu clave API válida
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchRouteFromGoogleMaps();
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _fetchRouteFromGoogleMaps();
+  // }
+
+@override
+void initState() {
+  super.initState();
+
+  if (widget.orderStatus == 'SHIPPED') {
+    _fetchRouteFromGoogleMaps(); // Mostrar la ruta
+  } else {
+    // Configurar marcador del destino
+    setState(() {
+      _markers.add(
+        Marker(
+          markerId: const MarkerId('destination'),
+          position: widget.deliveryDestination,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+        ),
+      );
+    });
   }
+}
 
   /// ✅ 1. Obtener la Ruta y Calcular ETA con Google Directions API
   Future<void> _fetchRouteFromGoogleMaps() async {
@@ -159,30 +184,66 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
     mapController = controller;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Seguimiento del Motorizado')),
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: CameraPosition(target: _deliveryLocation, zoom: 12),
-        markers: _markers,
-        polylines: _polylines,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _fetchRouteFromGoogleMaps,
-        child: const Icon(Icons.directions_car),
-      ),
-      // ✅ Mostrar ETA Actualizado en Tiempo Real
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        child: Text(
-          "Tiempo Estimado de Llegada: ${_eta.toStringAsFixed(0)} min",
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Stack(
+      children: [
+        GoogleMap(
+          onMapCreated: (controller) {
+            mapController = controller;
+          },
+          initialCameraPosition: CameraPosition(
+            target: widget.orderStatus == 'SHIPPED'
+                ? _deliveryLocation
+                : widget.deliveryDestination,
+            zoom: 14,
+          ),
+          markers: _markers,
+          polylines: widget.orderStatus == 'SHIPPED' ? _polylines : {},
+          myLocationEnabled: true,
+          myLocationButtonEnabled: false, // Deshabilitar botón predeterminado
+          zoomGesturesEnabled: true,
+          scrollGesturesEnabled: true,
+          rotateGesturesEnabled: true,
+          tiltGesturesEnabled: true,
         ),
-      ),
-    );
-  }
+        Positioned(
+          top: 16,
+          right: 16,
+          child: FloatingActionButton(
+            heroTag: "destinationButton", // Tag único
+            onPressed: () {
+              if (mapController != null) {
+                mapController!.animateCamera(
+                  CameraUpdate.newLatLngZoom(widget.deliveryDestination, 14),
+                );
+              }
+            },
+            child: const Icon(Icons.location_pin),
+            backgroundColor: Colors.orange,
+          ),
+        ),
+      ],
+    ),
+    floatingActionButton: widget.orderStatus == 'SHIPPED'
+        ? FloatingActionButton(
+            heroTag: "routeButton", // Tag único
+            onPressed: _fetchRouteFromGoogleMaps,
+            child: const Icon(Icons.directions_car),
+          )
+        : null,
+    bottomNavigationBar: widget.orderStatus == 'SHIPPED'
+        ? Container(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              "Tiempo Estimado de Llegada: ${_eta.toStringAsFixed(0)} min",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          )
+        : null,
+  );
+}
 
   @override
   void dispose() {

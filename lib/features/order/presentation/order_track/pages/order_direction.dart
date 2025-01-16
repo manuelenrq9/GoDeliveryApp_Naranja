@@ -167,12 +167,6 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Seleccionar Ubicación'),
-        leading: IconButton(
-          icon: const Icon(Icons.abc),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: Column(
         children: [

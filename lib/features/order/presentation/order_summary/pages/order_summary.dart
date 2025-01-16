@@ -23,11 +23,11 @@ class OrderSummary extends StatelessWidget {
     return Column(
       children: [
         SummaryRow(
-            label: 'Subtotal', value: '$currency ${total.toStringAsFixed(2)}'),
-        SummaryRow(label: 'Tarifa de entrega', value: '\$60'),
-        SummaryRow(label: 'Descuento', value: '-\$67'),
-        const Divider(thickness: 1),
-        SummaryRow(label: 'Total', value: '\$78'),
+            label: 'Total', value: '$currency ${total.toStringAsFixed(2)}'),
+        // SummaryRow(label: 'Tarifa de entrega', value: '\$60'),
+        // SummaryRow(label: 'Descuento', value: '-\$67'),
+        // const Divider(thickness: 1),
+        // SummaryRow(label: 'Total', value: '\$78'),
       ],
     );
   }
