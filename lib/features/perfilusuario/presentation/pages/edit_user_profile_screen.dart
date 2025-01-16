@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
+import 'package:godeliveryapp_naranja/features/sidebar/presentation/custom_drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -45,6 +47,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   late User _user;
   bool _isPasswordVisible = false;
+  int _currentIndex = 0;
+
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   // Token y datos de usuario
   Future<String?> _getToken() async {
@@ -83,8 +92,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
-        print(
-            'Datos de usuario: $data'); 
+        print('Datos de usuario: $data');
         return User.fromJson(data);
       } else {
         print('Error en la respuesta de la API: ${response.statusCode}');
@@ -232,6 +240,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           );
         },
       ),
+      bottomNavigationBar: CustomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onTap,
+      ),
+      drawer: CustomDrawer(),
     );
   }
 
@@ -241,7 +254,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return TextField(
       controller: controller,
       obscureText: obscureText,
-      style: const TextStyle(color: Colors.black),
+      style: TextStyle(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white
+            : Colors.black,
+      ),
       decoration: InputDecoration(
         labelText: labelText,
         prefixIcon: Icon(icon, color: Color(0xFFFF7000)),

@@ -112,6 +112,9 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode =
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -125,7 +128,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 175, 91, 7),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
         elevation: 1,
       ),
       body: SingleChildScrollView(
@@ -184,52 +187,6 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
               const SizedBox(height: 20),
               Row(
                 children: [
-                  // Expanded(
-                  //   flex: 2,
-                  //   child: DropdownButtonFormField<String>(
-                  //     decoration: InputDecoration(
-                  //       labelText: 'Prefijo',
-                  //       labelStyle: const TextStyle(
-                  //           color: Color.fromARGB(255, 0, 0, 0)),
-                  //       filled: true,
-                  //       fillColor: Colors.white,
-                  //       border: OutlineInputBorder(
-                  //         borderRadius: BorderRadius.circular(10),
-                  //       ),
-                  //       focusedBorder: OutlineInputBorder(
-                  //         borderSide:
-                  //             const BorderSide(color: Color(0xFFFF7000)),
-                  //         borderRadius: BorderRadius.circular(10),
-                  //       ),
-                  //     ),
-                  //     dropdownColor: Colors.white,
-                  //     items: [
-                  //       '+58',
-                  //       '+1',
-                  //       '+44',
-                  //       '+49',
-                  //       '+34',
-                  //       '+39',
-                  //       '+81',
-                  //       '+86',
-                  //       '+91'
-                  //     ].map((String prefix) {
-                  //       return DropdownMenuItem<String>(
-                  //         value: prefix,
-                  //         child: Text(prefix),
-                  //       );
-                  //     }).toList(),
-                  //     onChanged: (value) {
-                  //       // Handle prefix change if needed
-                  //     },
-                  //     validator: (value) {
-                  //       if (value == null || value.isEmpty) {
-                  //         return 'Seleccione';
-                  //       }
-                  //       return null;
-                  //     },
-                  //   ),
-                  // ),
                   const SizedBox(width: 10),
                   Expanded(
                     flex: 5,

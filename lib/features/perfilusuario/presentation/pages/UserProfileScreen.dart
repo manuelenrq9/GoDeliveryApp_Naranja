@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/currencyConfiguracion.dart';
+import 'package:godeliveryapp_naranja/core/navbar.dart';
 import 'package:godeliveryapp_naranja/features/log_In/presentation/pages/login.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/perfilusuario/presentation/pages/edit_user_profile_screen.dart';
+import 'package:godeliveryapp_naranja/features/sidebar/presentation/custom_drawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -40,14 +42,14 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _imageController = TextEditingController();
-
   late User _user;
-  bool _isPasswordVisible = false; // Estado para alternar visibilidad
+  int _currentIndex = 0;
+
+  void _onTap(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
 
   Future<String?> _getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -56,7 +58,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
   Future<String?> _getApi() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('api_url'); // Obtén el token almacenado
+    return prefs.getString('api_url');
   }
 
   Future<User?> _getUserData() async {
@@ -110,7 +112,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             borderRadius: BorderRadius.circular(8.0),
           ),
           labelStyle: const TextStyle(
-            color: Colors.black, // Etiqueta negra cuando se enfoca
+            color: Colors.black,
           ),
         ),
       ),
@@ -164,10 +166,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             }
 
             _user = snapshot.data!;
-            _nameController.text = _user.name;
-            _phoneController.text = _user.phone;
-            _emailController.text = _user.email;
-            // _passwordController.text = _user.password;
 
             return SingleChildScrollView(
               child: Padding(
@@ -179,18 +177,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       backgroundImage: NetworkImage(_user.profileImageUrl),
                     ),
                     const SizedBox(height: 16),
-                    _buildTextField(_nameController, 'Nombre', Icons.person),
+                    _buildStaticField('Nombre', _user.name, Icons.person),
                     const SizedBox(height: 16),
-                    _buildTextField(
-                        _emailController, 'Correo Electrónico', Icons.email),
+                    _buildStaticField(
+                        'Correo Electrónico', _user.email, Icons.email),
                     const SizedBox(height: 16),
-                    _buildTextField(_phoneController, 'Teléfono', Icons.phone),
+                    _buildStaticField('Teléfono', _user.phone, Icons.phone),
                     const SizedBox(height: 16),
-                    // _buildPasswordTextField(),
-                    const SizedBox(height: 16),
-
-                    const SizedBox(
-                        height: 20), // Espacio entre botones y formulario
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -227,7 +221,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         ),
                         OutlinedButton.icon(
                           onPressed: () {
-                            // Acción para cerrar sesión
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -256,65 +249,37 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             );
           },
         ),
+        bottomNavigationBar: CustomNavBar(
+          currentIndex: _currentIndex,
+          onTap: _onTap,
+        ),
+        drawer: CustomDrawer(),
       ),
     );
   }
 
-  Widget _buildTextField(
-      TextEditingController controller, String labelText, IconData icon,
-      {bool obscureText = false}) {
+  Widget _buildStaticField(String labelText, String value, IconData icon) {
     return Material(
       elevation: 5.0,
       shadowColor: Colors.black54,
       borderRadius: BorderRadius.circular(8.0),
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        style: const TextStyle(color: Colors.black), // Texto negro
-        decoration: InputDecoration(
-          labelText: labelText,
-          prefixIcon: Icon(icon, color: Color(0xFFFF7000)),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFFFF7000)),
-            borderRadius: BorderRadius.circular(8.0),
+      child: ListTile(
+        leading: Icon(icon, color: Color(0xFFFF7000)),
+        title: Text(
+          labelText,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black,
+            fontWeight: FontWeight.bold,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildPasswordTextField() {
-    return Material(
-      elevation: 5.0,
-      shadowColor: Colors.black54,
-      borderRadius: BorderRadius.circular(8.0),
-      child: TextField(
-        controller: _passwordController,
-        obscureText: !_isPasswordVisible,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          labelText: 'Contraseña',
-          prefixIcon: const Icon(Icons.lock, color: Color(0xFFFF7000)),
-          suffixIcon: IconButton(
-            icon: Icon(
-              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-              color: Color(0xFFFF7000),
-            ),
-            onPressed: () {
-              setState(() {
-                _isPasswordVisible = !_isPasswordVisible;
-              });
-            },
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: Color(0xFFFF7000)),
-            borderRadius: BorderRadius.circular(8.0),
+        subtitle: Text(
+          value,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white70
+                : Colors.black87,
           ),
         ),
       ),
