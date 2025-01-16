@@ -11,7 +11,7 @@ class CreditDebitScreen extends StatefulWidget {
 class _CreditDebitScreenState extends State<CreditDebitScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedBank;
-  String? _selectedCardType; // Variable para almacenar el tipo de tarjeta
+  String? _selectedCardType;
   String? _expirationDate;
   bool _saveCard = false;
   final List<String> _banks = [
@@ -26,7 +26,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
     'Banco De Venezuela'
   ];
 
-  // Imágenes para los tipos de tarjeta
   final Map<String, String> _cardImages = {
     'Crédito':
         'https://static.wixstatic.com/media/85e2bf_7b77c4a0cde043f2a35bcf96f7ddfbd6~mv2.png/v1/fill/w_500,h_178,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/Metodos%20de%20Pago.png',
@@ -54,6 +53,9 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
     'Banco De Venezuela':
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWJUxYjB0jTxCPeLHVt0esGh9hUmUq-KW_AQ&s'
   };
+
+  final TextEditingController _expirationDateController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -91,18 +93,24 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-// Selección de banco
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: 'Selecciona tu Banco',
                   labelStyle: TextStyle(
                     color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color.fromARGB(255, 255, 255, 255)
+                        : const Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.account_balance,
+                    color: Theme.of(context).brightness == Brightness.dark
                         ? Colors.white
                         : const Color.fromARGB(255, 0, 0, 0),
                   ),
-                  prefixIcon: const Icon(Icons.account_balance),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? Color.fromARGB(255, 0, 0, 0)
+                      : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -111,14 +119,13 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   prefixIconColor: WidgetStateColor.resolveWith((states) =>
-                      states.contains(WidgetState.focused)
+                      states.contains(MaterialState.focused)
                           ? const Color(0xFFFF7000)
                           : const Color.fromARGB(255, 0, 0, 0)),
                 ),
-                dropdownColor: (Theme.of(context).brightness == Brightness.dark
-                    ? const Color.fromARGB(255, 255, 255, 255)
-                    : const Color.fromARGB(255, 0, 0,
-                        0)), // Fondo blanco para la lista desplegable
+                dropdownColor: Theme.of(context).brightness == Brightness.dark
+                    ? Color.fromARGB(255, 0, 0, 0)
+                    : Colors.white,
                 items: _banks.map((bank) {
                   return DropdownMenuItem<String>(
                     value: bank,
@@ -126,11 +133,19 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                       children: [
                         Image.network(
                           _bankImages[bank]!,
-                          width: 30, // Ancho de la imagen
-                          height: 30, // Alto de la imagen
+                          width: 30,
+                          height: 30,
                         ),
                         const SizedBox(width: 10),
-                        Text(bank),
+                        Text(
+                          bank,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
                       ],
                     ),
                   );
@@ -161,7 +176,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
               const SizedBox(height: 15),
               Divider(height: 20, color: Colors.grey.shade400),
               const SizedBox(height: 15),
-              // Selección de tipo de tarjeta (Crédito o Débito) con Radio Buttons
               Text(
                 'Selecciona el tipo de tarjeta',
                 style: TextStyle(
@@ -171,7 +185,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              // Tarjeta de Crédito
               Row(
                 children: [
                   Radio<String>(
@@ -185,11 +198,9 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                     activeColor: _selectedCardType == 'Débito'
                         ? const Color.fromARGB(255, 51, 23, 2)
                         : const Color(0xFFFF7000),
-                    // Cambia el color del círculo cuando se selecciona
                   ),
                   const Text('Crédito'),
                   const Spacer(),
-                  // Imagen de tarjeta de crédito
                   if (_selectedCardType == 'Crédito')
                     Image.network(
                       _cardImages['Crédito']!,
@@ -199,7 +210,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                 ],
               ),
               const SizedBox(height: 10),
-              // Tarjeta de Débito
               Row(
                 children: [
                   Radio<String>(
@@ -216,7 +226,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                   ),
                   const Text('Débito'),
                   const Spacer(),
-                  // Imagen de tarjeta de débito
                   if (_selectedCardType == 'Débito')
                     Image.network(
                       _cardImages['Débito']!,
@@ -226,16 +235,25 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                 ],
               ),
               const SizedBox(height: 15),
-              // Campo de número de tarjeta
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Número de Tarjeta',
-                  labelStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : const Color.fromARGB(255, 0, 0, 0),
+                  ),
                   hintText: '1234 5678 9101 1121',
-                  prefixIcon: const Icon(Icons.credit_card),
+                  prefixIcon: Icon(
+                    Icons.credit_card,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : const Color.fromARGB(255, 0, 0, 0),
+                  ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? Color.fromARGB(255, 0, 0, 0)
+                      : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -243,8 +261,8 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                     borderSide: const BorderSide(color: Color(0xFFFF7000)),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  prefixIconColor: WidgetStateColor.resolveWith((states) =>
-                      states.contains(WidgetState.focused)
+                  prefixIconColor: MaterialStateColor.resolveWith((states) =>
+                      states.contains(MaterialState.focused)
                           ? const Color(0xFFFF7000)
                           : const Color.fromARGB(255, 0, 0, 0)),
                 ),
@@ -260,7 +278,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                 },
               ),
               const SizedBox(height: 15),
-              // Campo de fecha de expiración con selector de Mes/Año
               GestureDetector(
                 onTap: () async {
                   DateTime? selectedDate = await _selectMonthYear(context);
@@ -268,19 +285,31 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                     setState(() {
                       _expirationDate =
                           DateFormat('MM/yy').format(selectedDate);
+                      _expirationDateController.text = _expirationDate!;
                     });
                   }
                 },
                 child: AbsorbPointer(
                   child: TextFormField(
+                    controller: _expirationDateController,
                     decoration: InputDecoration(
                       labelText: 'Fecha de Expiración (MM/AA)',
-                      labelStyle:
-                          const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                      labelStyle: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : const Color.fromARGB(255, 0, 0, 0),
+                      ),
                       hintText: 'MM/AA',
-                      prefixIcon: const Icon(Icons.calendar_today),
+                      prefixIcon: Icon(
+                        Icons.calendar_today,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : const Color.fromARGB(255, 0, 0, 0),
+                      ),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Theme.of(context).brightness == Brightness.dark
+                          ? Color.fromARGB(255, 0, 0, 0)
+                          : Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -289,8 +318,8 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       suffixIcon: const Icon(Icons.arrow_drop_down),
-                      prefixIconColor: WidgetStateColor.resolveWith((states) =>
-                          states.contains(WidgetState.focused)
+                      prefixIconColor: MaterialStateColor.resolveWith(
+                          (states) => states.contains(MaterialState.focused)
                               ? const Color(0xFFFF7000)
                               : const Color.fromARGB(255, 0, 0, 0)),
                     ),
@@ -300,21 +329,34 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                       }
                       return null;
                     },
-                    controller: TextEditingController(text: _expirationDate),
                   ),
                 ),
               ),
               const SizedBox(height: 15),
-              // Campo de CVV
               TextFormField(
                 decoration: InputDecoration(
                   labelText: 'Código de Seguridad (CVV)',
-                  labelStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                  labelStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : const Color.fromARGB(255, 0, 0, 0),
+                  ),
                   hintText: 'Ejemplo: 123',
-                  prefixIcon: const Icon(Icons.lock),
+                  hintStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : const Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  prefixIcon: Icon(
+                    Icons.lock,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : const Color.fromARGB(255, 0, 0, 0),
+                  ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? Color.fromARGB(255, 0, 0, 0)
+                      : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -322,8 +364,8 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                     borderSide: const BorderSide(color: Color(0xFFFF7000)),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  prefixIconColor: WidgetStateColor.resolveWith((states) =>
-                      states.contains(WidgetState.focused)
+                  prefixIconColor: MaterialStateColor.resolveWith((states) =>
+                      states.contains(MaterialState.focused)
                           ? const Color(0xFFFF7000)
                           : const Color.fromARGB(255, 0, 0, 0)),
                 ),
@@ -340,7 +382,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                 },
               ),
               const SizedBox(height: 15),
-              // Guardar tarjeta
               Row(
                 children: [
                   Checkbox(
@@ -350,14 +391,12 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                         _saveCard = value!;
                       });
                     },
-                    activeColor: const Color(
-                        0xFFFF7000), // Color naranja cuando se selecciona
+                    activeColor: const Color(0xFFFF7000),
                   ),
                   const Text('Guardar tarjeta para futuros pagos'),
                 ],
               ),
               const SizedBox(height: 30),
-              // Botón de acción
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -368,13 +407,11 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  // Dentro del método onPressed del botón Pagar:
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       _confirmarPago(context);
                     }
                   },
-
                   child: const Text(
                     'Pagar',
                     style: TextStyle(fontSize: 18, color: Colors.white),
@@ -389,8 +426,8 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
   }
 
   void _confirmarPago(BuildContext context) {
-    final String amount = '100.00'; // Aquí puedes usar el monto real
-    final String email = 'user@example.com'; // Aquí puedes usar el email real
+    final String amount = '100.00';
+    final String email = 'user@example.com';
 
     showDialog(
       context: context,
@@ -446,8 +483,8 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
           Center(
             child: TextButton(
               onPressed: () {
-                Navigator.pop(context); // Cierra el diálogo
-                Navigator.pop(context); // Regresa a ProcessOrderScreen
+                Navigator.pop(context);
+                Navigator.pop(context);
               },
               child: const Text(
                 'Aceptar',
@@ -464,7 +501,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
     );
   }
 
-  /// Método para seleccionar mes/año
   Future<DateTime?> _selectMonthYear(BuildContext context) async {
     DateTime now = DateTime.now();
     DateTime? picked = await showDatePicker(
