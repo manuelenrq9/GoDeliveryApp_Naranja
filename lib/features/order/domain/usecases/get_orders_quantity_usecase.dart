@@ -13,7 +13,7 @@ class GetOrdersQuantityUsecase{
   Future<num> getActiveOrdersQuantity() async{
     await fetchOrders();
     List<Order> activeOrders = orders.where((order){
-      return order.status == 'BEING PROCESSED' || order.status == 'SHIPPED';
+      return order.status == 'BEING PROCESSED' || order.status == 'SHIPPED' || order.status == 'CREATED';
     }).toList();
     num activeOrdersQuantity = activeOrders.length;
     print("CANTIDAD DE ORDENES ACTIVAS");

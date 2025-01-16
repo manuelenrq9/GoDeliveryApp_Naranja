@@ -21,12 +21,22 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  String _selectedApi = 'https://orangeteam-deliverybackend-production.up.railway.app';
+  String _selectedApi =
+      'https://orangeteam-deliverybackend-production.up.railway.app';
+  bool isBiometricEnabled = false;
 
   @override
   void initState() {
     super.initState();
+    _checkBiometricToken();
     _loadApiUrl();
+  }
+
+    Future<void> _checkBiometricToken() async {
+    final token = await _getTokenBiometric();
+    setState(() {
+      isBiometricEnabled = token != null; // Habilitar si el token existe
+    });
   }
 
   void _loadApiUrl() async {
@@ -51,6 +61,22 @@ class _LoginScreenState extends State<LoginScreen> {
     return prefs.getString('auth_token');
   }
 
+  Future<void> clearTokenBiometric() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('tokenBiometric');
+    _checkBiometricToken();
+  }
+
+  Future<String?> _getTokenBiometric() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('tokenBiometric');
+  }
+
+  Future<String?> _getUserIdBiometric() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id_biometric');
+  }
+
   Future<void> _loginWithBiometrics() async {
     try {
       bool canAuthenticate = await _localAuth.canCheckBiometrics ||
@@ -67,12 +93,18 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (authenticated) {
-        final token = await _getToken();
+        final token = await _getTokenBiometric();
+        final userId = await _getUserIdBiometric();
 
-        if (token != null) {
+        if (token != null && userId != null)  {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('auth_token', token);
+          SharedPreferences pref = await SharedPreferences.getInstance();
+          await pref.setString('user_id', userId);
+          
           showLoadingScreen(context, destination: const MainMenu());
         } else {
-          _showErrorDialog('No se encontró un token de autenticación válido.');
+          _showErrorDialog('Autenticación inválida.');
         }
       } else {
         _showErrorDialog('Autenticación biométrica fallida.');
@@ -81,6 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _showErrorDialog('Error durante la autenticación biométrica: $e');
     }
   }
+
   void _login() async {
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
@@ -156,11 +189,20 @@ class _LoginScreenState extends State<LoginScreen> {
     await CartScreen.clearCartStatic(context);
   }
 
+    void _showDisabledMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Huella dactilar no habilitada.'),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-
       body: Stack(
         children: [
           Center(
@@ -235,47 +277,56 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         const SizedBox(height: 10),
 
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFFF7000),
-                                minimumSize: const Size(double.infinity, 50),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFFF7000),
+                                    minimumSize:
+                                        const Size(double.infinity, 50),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                  onPressed: _login,
+                                  child: const Text(
+                                    'Iniciar sesión',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              onPressed: _login,
-                              child: const Text(
-                                'Iniciar sesión',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
+                              const SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  if (isBiometricEnabled) {
+                                    _loginWithBiometrics();
+                                  } else {
+                                    _showDisabledMessage();
+                                  }
+                                },
+                                child: Container(
+                                  width: 50,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: isBiometricEnabled
+                                        ? const Color(0xFFFF7000)
+                                        : Colors.grey[400],
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(Icons.fingerprint,
+                                      color: Colors.white, size: 30),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                          const SizedBox(width: 10),
-                          GestureDetector(
-                            onTap: _loginWithBiometrics,
-                            child: Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFF7000),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.fingerprint,
-                                  color: Colors.white, size: 30),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                        ),
                         const SizedBox(height: 5),
                         // Otros botones
                         TextButton(
@@ -301,33 +352,41 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (BuildContext context) {
+                  builder: (BuildContext dialogContext) {
+                    // Usamos un nuevo `dialogContext`
                     return AlertDialog(
-                      title: const Text('Selecciona la API',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.orange)),
+                      title: const Text(
+                        'Selecciona la API',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
+                      ),
                       backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0)),
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           _apiOption(
+                              dialogContext, // Pasamos el contexto del diálogo
                               'Naranja',
                               'https://orangeteam-deliverybackend-production.up.railway.app',
                               Colors.orange,
                               'orangeteam'),
                           _apiOption(
+                              dialogContext, // Pasamos el contexto del diálogo
                               'Amarillo',
                               'https://amarillo-backend-production.up.railway.app',
-                              Color(0xFFFFD700),
+                              const Color(0xFFFFD700),
                               'amarillo'),
                           _apiOption(
+                              dialogContext, // Pasamos el contexto del diálogo
                               'Verde',
-                              'https://verde-backend-production.up.railway.app',
+                              'https://godelybackgreen.up.railway.app/api',
                               Colors.green,
-                              'verde'),
+                              'green'),
                         ],
                       ),
                     );
@@ -341,7 +400,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _apiOption(String title, String url, Color color, String key) {
+  Widget _apiOption(
+      BuildContext context, String title, String url, Color color, String key) {
     return ListTile(
       leading: Icon(Icons.circle, color: color),
       title: Text('${title}'),
@@ -357,6 +417,7 @@ class _LoginScreenState extends State<LoginScreen> {
           : null,
       onTap: () {
         _setApiUrl(url);
+        clearTokenBiometric();
         Navigator.pop(context);
       },
     );

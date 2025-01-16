@@ -6,8 +6,9 @@ import 'package:godeliveryapp_naranja/features/product/domain/entities/product.d
 
 class ProductCategoryScreen extends StatefulWidget {
   final String categoryId;
+  final String titulo;
   const ProductCategoryScreen(
-      {super.key, required this.categoryId}); // Nombre actualizado
+      {super.key, required this.categoryId, required this.titulo}); // Nombre actualizado
 
   @override
   State<ProductCategoryScreen> createState() =>
@@ -44,9 +45,9 @@ class _ProductCatalogScreenState extends State<ProductCategoryScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Center(
+        title: Center(
           child: Text(
-            'Productos',
+            '${widget.titulo}',
             style: TextStyle(
               color: Color.fromARGB(255, 175, 91, 7),
               fontSize: 24,
@@ -61,6 +62,15 @@ class _ProductCatalogScreenState extends State<ProductCategoryScreen> {
             Navigator.pop(context);
           },
         ),
+        
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search, color: Colors.transparent,),
+            onPressed: () {
+              // Acción para abrir la búsqueda
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<Product>>(
         future: futureProducts,

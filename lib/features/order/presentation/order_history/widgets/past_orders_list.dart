@@ -43,7 +43,8 @@ class _PastOrdersScreenState extends State<PastOrdersScreen> {
                   order.status == 'CANCELLED'
                 )
                 .toList();
-            // print("AQUI SON LAS ORDENES ORDER ${deliveredOrders}");
+            deliveredOrders.sort((a, b) =>
+            b.createdDate.compareTo(a.createdDate));
             return ListView(
               padding: const EdgeInsets.all(16.0),
               children: deliveredOrders

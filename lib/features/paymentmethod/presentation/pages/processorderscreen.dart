@@ -13,6 +13,8 @@ import 'package:godeliveryapp_naranja/features/paymentmethod/presentation/widget
 import 'package:godeliveryapp_naranja/features/shopping_cart/domain/cart_item_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../discount/discount_price_menu.dart';
+
 class ProcessOrderScreen extends StatefulWidget {
   final List<CartItemData> cartItems;
   final List<CartProduct> products; // Lista de productos
@@ -126,8 +128,9 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
       context,
       MaterialPageRoute(builder: (context) => const LocationPickerScreen()),
     );
-
+print('ANTES DEL IF PROCESSORDER ${result}');
     if (result != null) {
+      print('dentro DEL IF PROCESSORDER');
       setState(() {
         widget.totalDecimal -= _distanceKm;
         _selectedAddress = result['direccion'];
@@ -139,6 +142,7 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
         widget.totalDecimal += _distanceKm;
       });
     }
+    print('dpz DEL IF PROCESSORDER');
   }
 
   Future<String?> _getApi() async {
@@ -273,12 +277,10 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                                   ),
                                 ),
                                 // Precio
-                                Text(
-                                  '${converter.selectedCurrency} ${converter.convert(item.price.toDouble()).toStringAsFixed(2)}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
+                                DiscountPriceMenu(
+                                  specialPrice: item.price,
+                                  discountId: item.discount,
+                                  currency: item.currency
                                 ),
                               ],
                             ),
@@ -422,7 +424,7 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                       setState(() {
                         _selectPaymentMethod(
                           'Pago Movil',
-                          MobilePaymentScreen(),
+                          MobilePaymentScreen(currency: converter.selectedCurrency,monto: converter.convert(widget.totalDecimal.toDouble()).toStringAsFixed(2),),
                         );
                       });
                     },

@@ -3,6 +3,8 @@ import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
 import 'package:godeliveryapp_naranja/core/loading_screen.dart';
 import 'package:godeliveryapp_naranja/core/widgets/counterManager.dart';
 import 'package:godeliveryapp_naranja/features/combo/domain/combo.dart';
+import 'package:godeliveryapp_naranja/features/discount/discount_logic.dart';
+import 'package:godeliveryapp_naranja/features/discount/domain/discount.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
 import 'package:godeliveryapp_naranja/features/order/domain/entities/cartCombo.dart';
 
@@ -12,6 +14,7 @@ import 'package:godeliveryapp_naranja/features/product/domain/entities/product.d
 import 'package:godeliveryapp_naranja/features/shopping_cart/card_repository.dart';
 import 'package:godeliveryapp_naranja/features/shopping_cart/presentation/widgets/summary_row.dart';
 import 'package:godeliveryapp_naranja/core/navbar.dart';
+import '../../../../core/dataID.services.dart';
 import '../../domain/cart_item_data.dart';
 import '../widgets/cart_items_list.dart';
 import '../widgets/summary_product.dart';
@@ -57,9 +60,41 @@ class _CartScreenState extends State<CartScreen> {
     await _cartRepository.saveData(cartItems);
   }
 
-  double get totalAmount {
-    return cartItems.fold(0, (sum, item) => sum + item.price * item.quantity);
+  Future<Discount?> fetchDiscount(String discountId) async {
+    try {
+      // Llama a fetchEntityById con los parámetros necesarios
+      final discount = await fetchEntityById<Discount>(
+        discountId, // ID del descuento
+        'discount/one/', // Endpoint para obtener el descuento
+        (json) =>
+            Discount.fromJson(json), // Función para convertir JSON en Discount
+      );
+      return discount;
+    } catch (e) {
+      // Manejo de errores: puedes registrar o retornar null
+      debugPrint('Error fetching discount: $e');
+      return null;
+    }
   }
+
+  Future<double> getTotalAmount() async {
+    double total = 0;
+
+    for (var item in cartItems) {
+      // Espera a que se obtenga el descuento para cada artículo
+      final discount = await fetchDiscount(item.discount ?? '');
+      // Calcula el precio con descuento
+      final discountedPrice = getDiscountedPrice(item.price, discount);
+      // Acumula el total
+      total += discountedPrice * item.quantity;
+    }
+
+    return total;
+  }
+
+  // double get totalAmount {
+  //   return cartItems.fold(0, (sum, item) => sum + getDiscountedPrice(item.price, fetchDiscount(item.discount)) * item.quantity);
+  // }
 
   int get totalCartItems {
     return cartItems.fold(0, (sum, item) => sum + item.quantity);
@@ -287,14 +322,61 @@ class _CartScreenState extends State<CartScreen> {
               child: Column(
                 children: [
                   const Divider(),
-                  ProductSummary(totalAmount: totalAmount),
-                  ProductSummary(totalAmount: 0),
-                  SummaryRow(
-                    label: 'Total',
-                    amount:
-                        '${converter.selectedCurrency} ${converter.convert(totalAmount).toStringAsFixed(2)}',
-                    isTotal: true,
+                  FutureBuilder<double>(
+                    future: getTotalAmount(), // Calcula el total asincrónicamente
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(color: Colors.orange),
+                        );
+                      }
+
+                      if (snapshot.hasError) {
+                        return const Center(
+                          child: Text('Error al calcular el total'),
+                        );
+                      }
+
+                      final totalAmount = snapshot.data ?? 0.0;
+
+                      return ProductSummary(totalAmount: totalAmount);
+                    },
                   ),
+                      ProductSummary(totalAmount: 0),
+                  FutureBuilder<double>(
+                    future: getTotalAmount(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child:
+                              CircularProgressIndicator(color: Colors.orange),
+                        );
+                      }
+
+                      if (snapshot.hasError) {
+                        return Text(
+                          'Error al calcular el total',
+                          style: TextStyle(color: Colors.red),
+                        );
+                      }
+
+                      final totalAmount = snapshot.data ?? 0.0;
+                      return SummaryRow(
+                        label: 'Total',
+                        amount:
+                            '${converter.selectedCurrency} ${converter.convert(totalAmount).toStringAsFixed(2)}',
+                        isTotal: true,
+                      );
+                    },
+                  ),
+                  // ProductSummary(totalAmount: totalAmount),
+                  // ProductSummary(totalAmount: 0),
+                  // SummaryRow(
+                  //   label: 'Total',
+                  //   amount:
+                  //       '${converter.selectedCurrency} ${converter.convert(totalAmount).toStringAsFixed(2)}',
+                  //   isTotal: true,
+                  // ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: cartItems.isEmpty
@@ -302,13 +384,14 @@ class _CartScreenState extends State<CartScreen> {
                         : () async {
                             getProducts();
                             getCombos();
+                            final total = await getTotalAmount();
                             showLoadingScreen(context,
                                 destination: ProcessOrderScreen(
                                   cartItems: cartItems,
                                   products: getProducts(),
                                   combos: getCombos(),
                                   currency: 'USD', // La moneda
-                                  totalDecimal: totalAmount,
+                                  totalDecimal: total,
                                   context: context,
                                 ));
                           },

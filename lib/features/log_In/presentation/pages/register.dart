@@ -92,7 +92,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
             'phone': _phoneController.text,
             'type': 'CLIENT',
           };
-        } else {
+        }
+        if (apiUrl ==
+            'https://godelybackgreen.up.railway.app/api') {
+          newUser = {
+            'name': _nameController.text,
+            'email': email,
+            'password': _passwordController.text,
+            'phone': _phoneController.text,
+            'role': 'CLIENT',
+          };
+        }
+         if (apiUrl == 'https://amarillo-backend-production.up.railway.app'){
           newUser = {
             'name': _nameController.text,
             'email': email,

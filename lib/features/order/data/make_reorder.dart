@@ -18,7 +18,7 @@ class MakeReorder{
     Combo comboObject;
     for (var product in order.products){
       id = product.id;
-      productObject = await fetchEntityById<Product>(id, 'product/one',
+      productObject = await fetchEntityById<Product>(id, 'product/one/',
       (json) => Product.fromJson(json)); // Await the asynchronous call
       logic.addToCartWithNoSnackBar(product: productObject, quantity: product.quantity, 
       price: productObject.price);

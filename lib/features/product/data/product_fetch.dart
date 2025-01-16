@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:godeliveryapp_naranja/core/data.services.dart';
 import 'package:godeliveryapp_naranja/features/localStorage/data/local_storage.repository.dart';
 import 'package:godeliveryapp_naranja/features/product/domain/entities/product.dart';
@@ -17,7 +18,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   late Future<List<Product>> futureProducts;
   
   late final DataService<Product> _productService = DataService<Product>(
-      endpoint: '/product/many',
+      endpoint: '/product/many?page=$_randomNumber',
       repository: GenericRepository<Product>(
         storageKey: 'products',
         fromJson: (json) => Product.fromJson(json),
@@ -26,6 +27,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
       fromJson: (json) => Product.fromJson(json),
     );
 
+  int _randomNumber = 1;
+
   @override
   void initState() {
     super.initState();
@@ -33,7 +36,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   void loadProducts() async {
+    
+    generateRandomNumber();
     futureProducts = _productService.loadData();
+    setState(() {});
+  }
+
+    void generateRandomNumber() {
+    final random = Random();
+    _randomNumber = random.nextInt(4) + 1; // Genera un número entre 1 y 5
     setState(() {});
   }
 

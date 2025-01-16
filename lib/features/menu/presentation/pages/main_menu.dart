@@ -11,6 +11,7 @@ import 'package:godeliveryapp_naranja/features/interfazmensaje/presentation/page
 import 'package:godeliveryapp_naranja/features/product/presentation/widgets/product_list.dart';
 import 'package:godeliveryapp_naranja/features/sidebar/presentation/custom_drawer.dart';
 import 'package:godeliveryapp_naranja/features/category/data/categoryListScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../product/data/product_fetch.dart';
 
@@ -40,6 +41,7 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _initializeCurrency();
+    _loadThemeMode();
     CounterManager().loadCounterFromStorage();
 
     // Inicializar controladores de animación
@@ -97,10 +99,32 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
         MaterialPageRoute(builder: (BuildContext context) => const MainMenu()));
   }
 
+  /// Almacena el modo de tema
+  Future<void> _saveThemeMode(ThemeMode themeMode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('themeMode', themeMode.toString());
+  }
+
+  /// Carga el modo de tema
+  Future<void> _loadThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final themeModeString = prefs.getString('themeMode');
+
+    if (themeModeString != null) {
+      setState(() {
+        _themeMode = ThemeMode.values.firstWhere(
+          (mode) => mode.toString() == themeModeString,
+          orElse: () => ThemeMode.light,
+        );
+      });
+    }
+  }
+
   void _changeTheme(ThemeMode themeMode) {
     setState(() {
       _themeMode = themeMode;
     });
+    _saveThemeMode(themeMode);
   }
 
   // Fondo degradado solo para el Modo Degradado
@@ -175,13 +199,6 @@ class _MainMenuState extends State<MainMenu> with TickerProviderStateMixin {
             ),
           ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.transparent,),
-              onPressed: () {
-                // showLoadingScreen(context,
-                //     destination: RecoverySearchmessagueScreen());
-              },
-            ),
             PopupMenuButton<ThemeMode>(
               icon: const Icon(Icons.brightness_6),
               onSelected: _changeTheme,

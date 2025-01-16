@@ -14,7 +14,6 @@ class ProductItemCatalogo extends StatefulWidget {
 }
 
 class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
-  bool isFavorite = false; // Estado inicial del favorito
 
   @override
   Widget build(BuildContext context) {
@@ -81,22 +80,6 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isFavorite = !isFavorite; // Cambia el estado
-                          });
-                        },
-                        child: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorite
-                              ? Theme.of(context).brightness == Brightness.dark
-                                  ? const Color.fromARGB(255, 168, 62, 0)
-                                  : const Color(0xFFFF9027)
-                              : const Color.fromARGB(255, 194, 192, 192),
-                          size: 24,
-                        ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -104,7 +87,7 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                   Text(
                     '${widget.product.weight} gr',
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 12,
                       color: Color.fromARGB(255, 175, 91, 7),
                     ),
                   ),

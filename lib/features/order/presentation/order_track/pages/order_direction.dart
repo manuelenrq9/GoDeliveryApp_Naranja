@@ -165,7 +165,15 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Seleccionar Ubicación')),
+      appBar: AppBar(
+        title: const Text('Seleccionar Ubicación'),
+        leading: IconButton(
+          icon: const Icon(Icons.abc),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Column(
         children: [
           Padding(
@@ -174,6 +182,14 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
               icon: const Icon(Icons.search),
               label: const Text('Buscar Dirección'),
               onPressed: _searchPlace,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange, // Color de fondo naranja
+                foregroundColor: Colors.white, // Color del texto y del icono
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0,
+                    vertical:
+                        12.0), // Opcional: Ajuste de los márgenes internos
+              ),
             ),
           ),
           Expanded(
@@ -200,40 +216,33 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             onPressed: _getCurrentLocation,
             icon: const Icon(Icons.my_location),
             label: const Text('Usar mi ubicación actual'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange, // Color de fondo naranja
+              foregroundColor: Colors.white, // Color del texto y del icono
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 12.0), // Opcional: Ajuste de los márgenes internos
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               if (_selectedLocation != null) {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Confirmar Ubicación'),
-                    content: Text(
-                        'Latitud: ${_selectedLocation!.latitude}\nLongitud: ${_selectedLocation!.longitude}\nDirección: $_selectedAddress\nKm: ${double.parse(_distanceText).round()}'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Cancelar'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
                           Navigator.pop(context, {
                             'latitud': _selectedLocation!.latitude,
                             'longitud': _selectedLocation!.longitude,
                             'direccion': _selectedAddress,
                             'km': double.parse(_distanceText),
                           });
-                        },
-                        child: const Text('Confirmar'),
-                      ),
-                    ],
-                  ),
-                );
               }
             },
             child: const Text('Confirmar Ubicación'),
-          ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange, // Fondo naranja
+              foregroundColor: Colors.white, // Texto blanco
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0, vertical: 12.0), // Espaciado
+            ),
+          )
         ],
       ),
     );

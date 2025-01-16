@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:godeliveryapp_naranja/core/currencyConverter.dart';
 import 'package:godeliveryapp_naranja/features/menu/presentation/pages/main_menu.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CurrencySettingsScreen extends StatefulWidget {
   @override
@@ -9,6 +11,7 @@ class CurrencySettingsScreen extends StatefulWidget {
 
 class _CurrencySettingsScreenState extends State<CurrencySettingsScreen> {
   final converter = CurrencyConverter();
+  final LocalAuthentication _localAuth = LocalAuthentication();
   final currencies = [
     {'code': 'USD', 'symbol': '\$', 'example': '10.00 USD'},
     {'code': 'VES', 'symbol': 'Bs.', 'example': '10.00 Bs.'},
@@ -16,6 +19,103 @@ class _CurrencySettingsScreenState extends State<CurrencySettingsScreen> {
   ];
 
   bool isBiometricEnabled = false; // Estado del interruptor
+  String? tokenBiometric; // Token biométrico almacenado
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBiometricSettings();
+  }
+
+  /// Cargar la configuración biométrica al iniciar la pantalla
+  Future<void> _loadBiometricSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('tokenBiometric');
+    final userId = await _getUserId();
+    final userIdBiometric = await _getUserIdBiometric();
+    setState(() {
+      tokenBiometric = token;
+      isBiometricEnabled = token != null && userId == userIdBiometric; // Habilitar si el token existe
+    });
+  }
+
+  /// Guardar el token biométrico en SharedPreferences
+  Future<void> _saveBiometricToken(String? token, String? userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final pref = await SharedPreferences.getInstance();
+    if (token != null && userId != null) {
+      await prefs.setString('tokenBiometric', token);
+      await pref.setString('user_id_biometric', userId);
+    } else {
+      await prefs.remove('tokenBiometric');
+    }
+  }
+
+  Future<String?> _getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id'); // Obtén el token almacenado
+  }
+
+  Future<String?> _getUserIdBiometric() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id_biometric'); // Obtén el token almacenado
+  }
+
+  Future<String?> _getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token'); // Obtén el token almacenado
+  }
+
+  /// Registrar huella dactilar
+  Future<void> _authenticateAndSaveToken() async {
+    try {
+      // Verificar si el dispositivo admite autenticación biométrica
+      bool canAuthenticate = await _localAuth.canCheckBiometrics ||
+          await _localAuth.isDeviceSupported();
+
+      if (!canAuthenticate) {
+        _showMessage('El dispositivo no admite autenticación biométrica.');
+        return;
+      }
+
+      // Solicitar autenticación biométrica
+      bool authenticated = await _localAuth.authenticate(
+        localizedReason:
+            'Por favor, verifica tu identidad con tu huella dactilar.',
+        options: const AuthenticationOptions(biometricOnly: true),
+      );
+
+      if (authenticated) {
+        final token = await _getToken();
+        final userId = await _getUserId();
+        if (token != null) {
+          setState(() {
+            tokenBiometric = token;
+            isBiometricEnabled = true; // Habilitar la funcionalidad
+          });
+          await _saveBiometricToken(token, userId);
+          _showMessage('Autenticación exitosa.');
+        } else {
+          _showMessage('No se encontró un token válido.');
+        }
+      } else {
+        _showMessage('Autenticación fallida.');
+      }
+    } catch (e) {
+      _showMessage('Error durante la autenticación: $e');
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.orange,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -204,64 +304,70 @@ class _CurrencySettingsScreenState extends State<CurrencySettingsScreen> {
                   Switch(
                     value: isBiometricEnabled,
                     activeColor: Colors.orange,
-                    onChanged: (value) {
-                      setState(() {
-                        isBiometricEnabled = value;
-                      });
+                    onChanged: (value) async {
+                      if (value) {
+                        await _authenticateAndSaveToken();
+                      } else {
+                        setState(() {
+                          tokenBiometric = null;
+                          isBiometricEnabled = false;
+                        });
+                        await _saveBiometricToken(null, null);
+                        _showMessage('Autenticación biométrica deshabilitada.');
+                      }
                     },
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
 
-              // Botón de registrar huella
-              Center(
-                child: ElevatedButton.icon(
-                  onPressed: isBiometricEnabled
-                      ? () {
-                          // Acción para registrar huella
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.check_circle,
-                                    color: Colors.white,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      'Tu huella dactilar se ha registrado exitosamente. Ahora puedes iniciar sesión con huella dactilar.',
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              backgroundColor: Colors.green,
-                              behavior: SnackBarBehavior.floating,
-                              margin: const EdgeInsets.all(16),
-                              duration: const Duration(seconds: 4),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
-                        }
-                      : null, // Botón deshabilitado si el switch está apagado
-                  icon: const Icon(Icons.fingerprint),
-                  label: const Text('Registrar huella'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24.0, vertical: 12.0),
-                    backgroundColor: isBiometricEnabled
-                        ? Colors.orange
-                        : Colors.grey, // Cambia color según estado
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                  ),
-                ),
-              ),
+              // // Botón de registrar huella
+              // Center(
+              //   child: ElevatedButton.icon(
+              //     onPressed: isBiometricEnabled
+              //         ? () {
+              //             // Acción para registrar huella
+              //             ScaffoldMessenger.of(context).showSnackBar(
+              //               SnackBar(
+              //                 content: Row(
+              //                   children: [
+              //                     const Icon(
+              //                       Icons.check_circle,
+              //                       color: Colors.white,
+              //                     ),
+              //                     const SizedBox(width: 8),
+              //                     Expanded(
+              //                       child: Text(
+              //                         'Tu huella dactilar se ha registrado exitosamente. Ahora puedes iniciar sesión con huella dactilar.',
+              //                         style: TextStyle(color: Colors.white),
+              //                       ),
+              //                     ),
+              //                   ],
+              //                 ),
+              //                 backgroundColor: Colors.green,
+              //                 behavior: SnackBarBehavior.floating,
+              //                 margin: const EdgeInsets.all(16),
+              //                 duration: const Duration(seconds: 4),
+              //                 shape: RoundedRectangleBorder(
+              //                   borderRadius: BorderRadius.circular(8),
+              //                 ),
+              //               ),
+              //             );
+              //           }
+              //         : null, // Botón deshabilitado si el switch está apagado
+              //     icon: const Icon(Icons.fingerprint),
+              //     label: const Text('Registrar huella'),
+              //     style: ElevatedButton.styleFrom(
+              //       padding: const EdgeInsets.symmetric(
+              //           horizontal: 24.0, vertical: 12.0),
+              //       backgroundColor: isBiometricEnabled
+              //           ? Colors.orange
+              //           : Colors.grey, // Cambia color según estado
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(8.0),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

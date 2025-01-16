@@ -65,7 +65,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: Colors.transparent,),
             onPressed: () {
               // Acción para abrir la búsqueda
             },

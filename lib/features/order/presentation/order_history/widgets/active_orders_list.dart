@@ -43,6 +43,9 @@ class _ActiveOrdersScreenState extends State<ActiveOrdersScreen> {
                     order.status == 'BEING PROCESSED' ||
                     order.status == 'SHIPPED')
                 .toList();
+
+            deliveredOrders.sort((a, b) =>
+            b.createdDate.compareTo(a.createdDate));
             return ListView(
               padding: const EdgeInsets.all(16.0),
               children: deliveredOrders.map((order) => OrderCard(order: order))

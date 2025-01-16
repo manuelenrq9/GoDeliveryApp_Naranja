@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class MobilePaymentScreen extends StatefulWidget {
+  final String monto;
+  final String currency;
+
+  MobilePaymentScreen({
+    Key? key,
+    required this.monto,
+    required this.currency,
+  }) : super(key: key);
+
   @override
   _MobilePaymentScreenState createState() => _MobilePaymentScreenState();
 }
@@ -159,7 +168,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                     const SizedBox(height: 10),
                     _buildInfoCardWithCopy('0414-2374667', Icons.copy),
                     const SizedBox(height: 10),
-                    _buildInfoCardWithCopy('\$35', Icons.copy),
+                    _buildInfoCardWithCopy('${widget.currency} ${widget.monto}', Icons.copy),
                   ],
                 ),
               ),

@@ -15,7 +15,7 @@ class ComboItemCatalogo extends StatefulWidget {
 }
 
 class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
-  bool isFavorite = false;
+  // bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -81,26 +81,11 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
                           widget.combo.name,
                           style: const TextStyle(
                             fontWeight: FontWeight.w500,
-                            fontSize: 10,
+                            fontSize: 14,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorite
-                              ? Theme.of(context).brightness == Brightness.dark
-                                  ? const Color.fromARGB(255, 168, 62, 0)
-                                  : const Color.fromARGB(255, 245, 121, 20)
-                              : Colors.grey,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            isFavorite = !isFavorite;
-                          });
-                        },
                       ),
                     ],
                   ),

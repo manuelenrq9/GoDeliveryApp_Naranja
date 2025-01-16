@@ -69,9 +69,15 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     try {
       final token = await _getToken();
       if (token == null) throw Exception('No hay token de autenticación');
-
+      String url;
+      if (apiUrl ==
+          "https://orangeteam-deliverybackend-production.up.railway.app") {
+        url = '$apiUrl/user/one/$userID';
+      } else {
+        url = '$apiUrl/user/$userID';
+      }
       final response = await http.get(
-        Uri.parse('$apiUrl/user/one/$userID'),
+        Uri.parse('$url'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',

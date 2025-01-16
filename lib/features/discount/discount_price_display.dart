@@ -51,27 +51,6 @@ class DiscountPriceDisplay extends StatelessWidget {
           converter.selectedCurrency,
         );
       },
-      // builder: (context, snapshot) {
-      //   // Si está esperando la respuesta del Future
-      //   if (snapshot.connectionState == ConnectionState.waiting) {
-      //     return const Center(
-      //         child: CircularProgressIndicator(color: Colors.orange));
-      //   }
-
-      //   // Si hubo un error o no se obtuvo un descuento válido
-      //   if (snapshot.hasError || !snapshot.hasData) {
-      //     return _buildPriceDisplay(specialPrice, null);
-      //   }
-
-      //   // Si hay datos, verificamos el descuento y calculamos el precio
-      //   Discount discount = snapshot.data!;
-
-      //   // Validamos si el descuento es válido
-      //   num discountedPrice = getDiscountedPrice(specialPrice, discount);
-
-      //   // Mostrar el precio original y el precio con descuento
-      //   return _buildPriceDisplay(specialPrice, discountedPrice);
-      // },
     );
   }
 
