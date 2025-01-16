@@ -100,11 +100,23 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          'Copiado al portapapeles: $text',
-          style: TextStyle(color: Colors.black),
+        content: Row(
+          children: [
+            Icon(Icons.check, color: Colors.green),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'Copiado al portapapeles: $text',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ],
         ),
         backgroundColor: Color.fromARGB(255, 212, 212, 212),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         duration: Duration(seconds: 2),
       ),
     );
@@ -112,7 +124,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode =
+    bool isDarkMode =
         MediaQuery.of(context).platformBrightness == Brightness.dark;
 
     return Scaffold(
@@ -128,7 +140,6 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
         iconTheme: const IconThemeData(
           color: Color.fromARGB(255, 175, 91, 7),
         ),
-        backgroundColor: isDarkMode ? Colors.black : Colors.white,
         elevation: 1,
       ),
       body: SingleChildScrollView(
@@ -142,11 +153,15 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255),
+                  color: isDarkMode
+                      ? Color.fromARGB(255, 0, 0, 0) // Naranja claro
+                      : const Color.fromARGB(255, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.shade300,
+                      color: isDarkMode
+                          ? Colors.transparent
+                          : Colors.grey.shade300,
                       spreadRadius: 2,
                       blurRadius: 6,
                       offset: const Offset(0, 3),
@@ -165,13 +180,17 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    _buildInfoCardWithCopy('0105 - Mercantil', Icons.copy),
+                    _buildInfoCardWithCopy(
+                        '0105 - Mercantil', Icons.copy, isDarkMode),
                     const SizedBox(height: 10),
-                    _buildInfoCardWithCopy('J-000667616', Icons.copy),
+                    _buildInfoCardWithCopy(
+                        'J-000667616', Icons.copy, isDarkMode),
                     const SizedBox(height: 10),
-                    _buildInfoCardWithCopy('0414-2374667', Icons.copy),
+                    _buildInfoCardWithCopy(
+                        '0414-2374667', Icons.copy, isDarkMode),
                     const SizedBox(height: 10),
-                    _buildInfoCardWithCopy('${widget.currency} ${widget.monto}', Icons.copy),
+                    _buildInfoCardWithCopy('${widget.currency} ${widget.monto}',
+                        Icons.copy, isDarkMode),
                   ],
                 ),
               ),
@@ -189,16 +208,69 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                 children: [
                   const SizedBox(width: 10),
                   Expanded(
+                    flex: 2,
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: 'Prefijo',
+                        labelStyle: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black),
+                        filled: true,
+                        fillColor: isDarkMode ? Colors.black : Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(color: Color(0xFFFF7000)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      dropdownColor: isDarkMode ? Colors.black : Colors.white,
+                      items: [
+                        '+58',
+                        '+1',
+                        '+44',
+                        '+49',
+                        '+34',
+                        '+39',
+                        '+81',
+                        '+86',
+                        '+91'
+                      ].map((String prefix) {
+                        return DropdownMenuItem<String>(
+                          value: prefix,
+                          child: Text(prefix),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        // Handle prefix change if needed
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Seleccione un prefijo';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
                     flex: 5,
                     child: TextFormField(
                       focusNode: _phoneFocusNode,
                       decoration: InputDecoration(
                         labelText: 'Número de Referencia',
-                        labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0)),
+                        labelStyle: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black),
                         hintText: '4265634985',
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: isDarkMode ? Colors.black : Colors.white,
+                        prefixIcon: Icon(
+                          Icons.phone,
+                          color: _idFocusNode.hasFocus
+                              ? Color(0xFFFF7000)
+                              : (isDarkMode ? Colors.white : Colors.black),
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -232,11 +304,12 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   labelText: 'Selecciona tu Banco',
-                  labelStyle:
-                      const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-                  prefixIcon: const Icon(Icons.account_balance),
+                  labelStyle: TextStyle(
+                      color: isDarkMode ? Colors.white : Colors.black),
+                  prefixIcon: Icon(Icons.account_balance,
+                      color: isDarkMode ? Colors.white : Colors.black),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: isDarkMode ? Colors.black : Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -244,13 +317,8 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                     borderSide: const BorderSide(color: Color(0xFFFF7000)),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  prefixIconColor: WidgetStateColor.resolveWith((states) =>
-                      states.contains(WidgetState.focused)
-                          ? const Color(0xFFFF7000)
-                          : const Color.fromARGB(255, 0, 0, 0)),
                 ),
-                dropdownColor:
-                    Colors.white, // Fondo blanco para la lista desplegable
+                dropdownColor: isDarkMode ? Colors.black : Colors.white,
                 items: _banks.map((bank) {
                   return DropdownMenuItem<String>(
                     value: bank,
@@ -300,10 +368,10 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                     child: DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: 'Prefijo',
-                        labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0)),
+                        labelStyle: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: isDarkMode ? Colors.black : Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -313,7 +381,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      dropdownColor: Colors.white,
+                      dropdownColor: isDarkMode ? Colors.black : Colors.white,
                       items: [
                         '+58',
                         '+1',
@@ -348,17 +416,17 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                       focusNode: _idFocusNode,
                       decoration: InputDecoration(
                         labelText: 'Número de telefono',
-                        labelStyle: const TextStyle(
-                            color: Color.fromARGB(255, 0, 0, 0)),
+                        labelStyle: TextStyle(
+                            color: isDarkMode ? Colors.white : Colors.black),
                         hintText: '4265634985',
                         prefixIcon: Icon(
                           Icons.phone,
                           color: _idFocusNode.hasFocus
                               ? Color(0xFFFF7000)
-                              : const Color.fromARGB(255, 0, 0, 0),
+                              : (isDarkMode ? Colors.white : Colors.black),
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: isDarkMode ? Colors.black : Colors.white,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -432,24 +500,28 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
     );
   }
 
-  Widget _buildInfoCardWithCopy(String title, IconData icon) {
+  Widget _buildInfoCardWithCopy(String title, IconData icon, bool isDarkMode) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDarkMode ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade300,
-            spreadRadius: 2,
-            blurRadius: 6,
-            offset: const Offset(0, 3),
-          ),
+          if (!isDarkMode)
+            BoxShadow(
+              color: Colors.grey.shade300,
+              spreadRadius: 2,
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
         ],
       ),
       child: ListTile(
         title: Text(
           title,
-          style: const TextStyle(fontSize: 16),
+          style: TextStyle(
+            fontSize: 16,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
         ),
         leading: IconButton(
           icon: Icon(icon, color: const Color(0xFFFF7000)),
