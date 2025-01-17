@@ -1,3 +1,4 @@
+import 'package:credit_card_scanner/credit_card_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -20,6 +21,8 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
   String? _selectedBank;
   String? _selectedCardType;
   String? _expirationDate;
+  String? _cardNumber;
+  String? _cvv;
   bool _saveCard = false;
   final List<String> _banks = [
     'Santander',
@@ -63,6 +66,28 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
 
   final TextEditingController _expirationDateController =
       TextEditingController();
+  final TextEditingController _cardNumberController = TextEditingController();
+
+  void _scanCard() async {
+    try {
+      final result = await CardScanner.scanCard(
+        scanOptions: CardScanOptions(
+          scanCardHolderName: false,
+          scanExpiryDate: true,
+        ),
+      );
+      if (result != null) {
+        setState(() {
+          _cardNumber = result.cardNumber;
+          _expirationDate = result.expiryDate; // MM/YY format
+          _cardNumberController.text = _cardNumber ?? '';
+          _expirationDateController.text = _expirationDate ?? '';
+        });
+      }
+    } catch (e) {
+      print('Error escaneando tarjeta: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,9 +205,7 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                     color: Color.fromARGB(255, 175, 91, 7),
                   ),
                 ),
-              const SizedBox(height: 15),
               Divider(height: 20, color: Colors.grey.shade400),
-              const SizedBox(height: 15),
               Text(
                 'Selecciona el tipo de tarjeta',
                 style: TextStyle(
@@ -216,7 +239,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                     ),
                 ],
               ),
-              const SizedBox(height: 10),
               Row(
                 children: [
                   Radio<String>(
@@ -243,6 +265,7 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
               ),
               const SizedBox(height: 15),
               TextFormField(
+                controller: _cardNumberController,
                 decoration: InputDecoration(
                   labelText: 'Número de Tarjeta',
                   labelStyle: TextStyle(
@@ -388,7 +411,7 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 3),
               Row(
                 children: [
                   Checkbox(
@@ -403,6 +426,24 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                   const Text('Guardar tarjeta para futuros pagos'),
                 ],
               ),
+              ElevatedButton.icon(
+                icon: const Icon(
+                  Icons.camera_alt,
+                  color: Colors.white, // Color del icono
+                ),
+                label: const Text(
+                  'Escanear Tarjeta',
+                  style: TextStyle(color: Colors.white), // Color del texto
+                ),
+                onPressed: _scanCard,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFFF7000), // Fondo del botón
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10), // Forma del botón
+                  ),
+                ),
+              ),
               const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
@@ -416,7 +457,9 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      _confirmarPago(context, widget.currency, widget.monto);
+                      // Navigator.pop(context);
+                      _confirmarPago(widget.currency, widget.monto);
+                      Navigator.pop(context);
                     }
                   },
                   child: const Text(
@@ -432,11 +475,11 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
     );
   }
 
-  void _confirmarPago(BuildContext context2, String currency, String monto) {
-    final bool isDarkMode = Theme.of(context2).brightness == Brightness.dark;
+  void _confirmarPago(String currency, String monto) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
-      context: context2,
+      context: context,
       builder: (context) => AlertDialog(
         backgroundColor: isDarkMode
             ? Colors.black
@@ -484,7 +527,6 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
             child: TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                Navigator.pop(context, true); 
               },
               child: Text(
                 'Aceptar',

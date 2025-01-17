@@ -113,7 +113,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         print('No hay token de autenticación');
         throw Exception('No hay token de autenticación');
       }
-
       final response = await http.patch(
         Uri.parse(
           '$apiUrl/user/update/${_user.id}',
@@ -126,7 +125,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'name': _nameController.text,
           'email': _emailController.text,
           'phone': _phoneController.text,
-          'image': _imageController.text
+          'image': _imageController.text,
+          if(_passwordController.text != '')...{'password': _passwordController.text}
         }),
       );
 

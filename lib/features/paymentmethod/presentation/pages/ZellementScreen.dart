@@ -192,6 +192,7 @@ class _PagoConZelleScreenState extends State<PagoConZelleScreen> {
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
                       _confirmarPago(context);
+                      Navigator.pop(context);
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -353,7 +354,9 @@ class _PagoConZelleScreenState extends State<PagoConZelleScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed:(){
+                Navigator.pop(context);
+              },
             child: const Text(
               'Aceptar',
               style: TextStyle(

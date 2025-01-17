@@ -49,8 +49,8 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
                         widget.product.image[0],
-                        width: 75,
-                        height: 75,
+                        width: 70,
+                        height: 70,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Container(
                           color: Colors.grey[300],
@@ -60,7 +60,7 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   // Nombre del producto y botón de favoritos
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,12 +82,12 @@ class _ProductItemCatalogoState extends State<ProductItemCatalogo> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 3),
                   // Peso del producto
                   Text(
                     '${widget.product.weight} gr',
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 10,
                       color: Color.fromARGB(255, 175, 91, 7),
                     ),
                   ),

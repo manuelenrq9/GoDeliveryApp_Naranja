@@ -70,7 +70,7 @@ class DiscountPriceMenu extends StatelessWidget {
                 '$currency ${originalPrice.toStringAsFixed(2)}', // Mostramos el precio original con la moneda
                 style: const TextStyle(
                     fontSize:
-                        12, // Un tamaño de fuente más pequeño para el precio original
+                        11, // Un tamaño de fuente más pequeño para el precio original
                     color: Colors.grey,
                     decoration: TextDecoration.lineThrough), // Precio tachado
               ),
@@ -79,7 +79,7 @@ class DiscountPriceMenu extends StatelessWidget {
               '$currency ${(discountedPrice ?? originalPrice).toStringAsFixed(2)}', // Mostramos el precio con la moneda
               style: const TextStyle(
                   fontSize:
-                      16, // Tamaño de fuente reducido para el precio con descuento
+                      15, // Tamaño de fuente reducido para el precio con descuento
                   color: Color(0xFFFF9027), // Color del precio con descuento
                   fontWeight: FontWeight.bold),
             ),

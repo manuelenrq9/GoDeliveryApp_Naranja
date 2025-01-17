@@ -59,7 +59,7 @@ class OrdersRepository {
       futureOrders = _orderService.loadData();
     } else {
       final DataService<Order> _orderService2 = DataService<Order>(
-        endpoint: '/order/many',
+        endpoint: '/order/many?take=60',
         repository: GenericRepository<Order>(
           storageKey: 'orders',
           fromJson: (json) => Order.fromJson(json),

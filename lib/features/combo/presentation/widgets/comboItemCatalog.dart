@@ -72,7 +72,7 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -81,7 +81,7 @@ class _ComboItemCatalogoState extends State<ComboItemCatalogo> {
                           widget.combo.name,
                           style: const TextStyle(
                             fontWeight: FontWeight.w500,
-                            fontSize: 14,
+                            fontSize: 13,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,

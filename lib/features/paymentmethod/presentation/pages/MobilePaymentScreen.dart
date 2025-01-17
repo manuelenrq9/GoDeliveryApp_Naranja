@@ -89,9 +89,9 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
         );
       },
     );
+      Navigator.pop(context);
 
     Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pop(context);
       _showSuccessDialog(context, widget.currency, widget.monto);
     });
   }
@@ -413,13 +413,8 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        _showProcessingDialog(context);
-                        Future.delayed(const Duration(seconds: 3), () {
-                          Navigator.pop(
-                              context); // Cierra el diálogo de procesamiento
-                          _showSuccessDialog(context, widget.currency,
-                              widget.monto); // Muestra el mensaje de éxito
-                        });
+                        _showSuccessDialog(context, widget.currency, widget.monto);
+                        Navigator.pop(context);
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -484,7 +479,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
 
 void _showSuccessDialog(BuildContext context, String currency, String monto) {
   bool isDarkMode =
-      MediaQuery.of(context).platformBrightness == Brightness.dark;
+      MediaQuery.of(context).platformBrightness == Brightness.light;
 
   showDialog(
     context: context,
@@ -525,7 +520,6 @@ void _showSuccessDialog(BuildContext context, String currency, String monto) {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context); // Cierra el cuadro de diálogo
-                Navigator.pop(context); // Regresa a la pantalla anterior
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFFF7000),

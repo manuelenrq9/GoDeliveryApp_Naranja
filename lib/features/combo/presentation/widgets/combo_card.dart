@@ -71,7 +71,7 @@ class ComboCard extends StatelessWidget {
                           const Icon(Icons.error),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   // Título del combo
                   Text(
                     combo.name,
@@ -87,7 +87,7 @@ class ComboCard extends StatelessWidget {
                   Text(
                     combo.description, // Manejo de null en descripción
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: Color.fromARGB(255, 175, 91, 7),
                     ),
                     maxLines: 3,
