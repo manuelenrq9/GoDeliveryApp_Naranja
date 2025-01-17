@@ -36,7 +36,10 @@ class Product extends Equatable{
         name: json['name'] as String,
         description: json['description'] as String,
         image: List<String>.from(json['images'] ?? []),
-        price: json['price'] as num,
+        // price: json['price'] as num,
+        price: json['price'] is String
+          ? num.tryParse(json['price']) ?? 0 // Convierte String a num
+          : json['price'] as num, 
         currency: json['currency'] as String,
         weight: json['weight'] as num,
         stock: json['stock'] as num,
