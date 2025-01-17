@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 
 class PagoConZelleScreen extends StatefulWidget {
+  final String monto;
+  final String currency;
+
+  const PagoConZelleScreen({
+    Key? key,
+    required this.monto,
+    required this.currency,
+  }) : super(key: key);
+
   @override
   _PagoConZelleScreenState createState() => _PagoConZelleScreenState();
 }
@@ -145,25 +154,20 @@ class _PagoConZelleScreenState extends State<PagoConZelleScreen> {
               // Monto de la transacción
               _buildTitleText('Monto de la transacción'),
               const SizedBox(height: 8),
-              TextFormField(
-                controller: _amountController,
-                focusNode: _amountFocusNode,
-                decoration: _buildInputDecoration(
-                  hintText: '\$0.00',
-                  icon: Icons.attach_money,
-                  isDarkMode: isDarkMode,
-                  isFocused: _amountFocusNode.hasFocus,
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(12.0),
                 ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa un monto';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Por favor ingresa un monto válido';
-                  }
-                  return null;
-                },
+                child: Text(
+                  '\$${widget.currency} ${widget.monto}',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
 
@@ -277,7 +281,7 @@ class _PagoConZelleScreenState extends State<PagoConZelleScreen> {
 
   void _confirmarPago(BuildContext context) {
     final email = _emailController.text;
-    final amount = _amountController.text;
+
     final message = _messageController.text;
 
     showDialog(
@@ -314,7 +318,7 @@ class _PagoConZelleScreenState extends State<PagoConZelleScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Tu pago de \$${amount} ha sido procesado con éxito.',
+              'Tu pago de \$${widget.currency} ${widget.monto} ha sido procesado con éxito.',
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? Colors.white

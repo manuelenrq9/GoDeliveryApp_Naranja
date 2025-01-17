@@ -167,7 +167,7 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
           setState(() {
             _codeCupon = coupon.name;
             _cupon =
-                "${(coupon.value*100).toStringAsFixed(0)}% ${converter.selectedCurrency} ${converter.convert(double.parse((((widget.totalDecimal - _distanceKm) / (1 + coupon.value)) - (widget.totalDecimal - _distanceKm)).toStringAsFixed(2))).toStringAsFixed(2)}";
+                "${(coupon.value * 100).toStringAsFixed(0)}% ${converter.selectedCurrency} ${converter.convert(double.parse((((widget.totalDecimal - _distanceKm) / (1 + coupon.value)) - (widget.totalDecimal - _distanceKm)).toStringAsFixed(2))).toStringAsFixed(2)}";
           });
           widget.totalDecimal += double.parse(
               ((widget.totalDecimal / (1 + coupon.value)) - widget.totalDecimal)
@@ -275,10 +275,9 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                                 ),
                                 // Precio
                                 DiscountPriceMenu(
-                                  specialPrice: item.price,
-                                  discountId: item.discount,
-                                  currency: item.currency
-                                ),
+                                    specialPrice: item.price,
+                                    discountId: item.discount,
+                                    currency: item.currency),
                               ],
                             ),
                           );
@@ -406,7 +405,12 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                       setState(() {
                         _selectPaymentMethod(
                           'Credit/Debit Card',
-                          CreditDebitScreen(),
+                          CreditDebitScreen(
+                            currency: converter.selectedCurrency,
+                            monto: converter
+                                .convert(widget.totalDecimal.toDouble())
+                                .toStringAsFixed(2),
+                          ),
                         );
                       });
                     },
@@ -421,7 +425,12 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                       setState(() {
                         _selectPaymentMethod(
                           'Pago Movil',
-                          MobilePaymentScreen(currency: converter.selectedCurrency,monto: converter.convert(widget.totalDecimal.toDouble()).toStringAsFixed(2),),
+                          MobilePaymentScreen(
+                            currency: converter.selectedCurrency,
+                            monto: converter
+                                .convert(widget.totalDecimal.toDouble())
+                                .toStringAsFixed(2),
+                          ),
                         );
                       });
                     },
@@ -435,7 +444,12 @@ class _ProcessOrderScreenState extends State<ProcessOrderScreen> {
                       setState(() {
                         _selectPaymentMethod(
                           'Transferencia Zelle',
-                          PagoConZelleScreen(),
+                          PagoConZelleScreen(
+                            currency: converter.selectedCurrency,
+                            monto: converter
+                                .convert(widget.totalDecimal.toDouble())
+                                .toStringAsFixed(2),
+                          ),
                         );
                         // _selectedPaymentMethod = 'Zelle';
                       });

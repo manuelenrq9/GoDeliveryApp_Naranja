@@ -92,7 +92,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
 
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pop(context);
-      _showSuccessDialog(context);
+      _showSuccessDialog(context, widget.currency, widget.monto);
     });
   }
 
@@ -467,8 +467,8 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                         Future.delayed(const Duration(seconds: 3), () {
                           Navigator.pop(
                               context); // Cierra el diálogo de procesamiento
-                          _showSuccessDialog(
-                              context); // Muestra el mensaje de éxito
+                          _showSuccessDialog(context, widget.currency,
+                              widget.monto); // Muestra el mensaje de éxito
                         });
                       }
                     },
@@ -532,13 +532,17 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
   }
 }
 
-void _showSuccessDialog(BuildContext context) {
+void _showSuccessDialog(BuildContext context, String currency, String monto) {
+  bool isDarkMode =
+      MediaQuery.of(context).platformBrightness == Brightness.dark;
+
   showDialog(
     context: context,
     barrierDismissible: false, // No se puede cerrar tocando fuera del cuadro
     builder: (BuildContext context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -548,7 +552,7 @@ void _showSuccessDialog(BuildContext context) {
               size: 50,
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               '¡Pago Móvil Realizado Exitosamente!',
               style: TextStyle(
                 fontSize: 18,
@@ -558,10 +562,13 @@ void _showSuccessDialog(BuildContext context) {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'El pago se ha procesado correctamente. Detalles del pago: \n\n'
-              'Banco: Mercantil\nReferencia: 0105 - Mercantil\nMonto: \$35',
-              style: TextStyle(fontSize: 14, color: Colors.black),
+              'Banco: Mercantil\nReferencia: 0105 - Mercantil\nMonto: $currency $monto',
+              style: TextStyle(
+                fontSize: 14,
+                color: isDarkMode ? Colors.white : Colors.black,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
