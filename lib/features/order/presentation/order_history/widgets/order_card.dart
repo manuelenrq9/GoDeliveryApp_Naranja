@@ -105,8 +105,6 @@ class _OrderCardState extends State<OrderCard> {
     List<OrderPayment> payment = widget.order.paymentMethod;
     double total = 0;
     String currency = '';
-    OrderReport report = widget.order.report[0];
-    String reportText = report.description;
     payment.forEach((payment) {
       total = payment.total;
       currency = payment.currency;
