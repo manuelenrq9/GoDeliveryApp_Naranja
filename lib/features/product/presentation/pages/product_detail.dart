@@ -336,7 +336,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                   Text(
                     widget.product.description,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
                           : Colors.black,
