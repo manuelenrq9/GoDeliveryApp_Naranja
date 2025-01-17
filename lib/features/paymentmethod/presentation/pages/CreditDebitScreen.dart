@@ -432,11 +432,11 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
     );
   }
 
-  void _confirmarPago(BuildContext context, String currency, String monto) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  void _confirmarPago(BuildContext context2, String currency, String monto) {
+    final bool isDarkMode = Theme.of(context2).brightness == Brightness.dark;
 
     showDialog(
-      context: context,
+      context: context2,
       builder: (context) => AlertDialog(
         backgroundColor: isDarkMode
             ? Colors.black
@@ -484,7 +484,7 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
             child: TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                Navigator.pop(context);
+                Navigator.pop(context, true); 
               },
               child: Text(
                 'Aceptar',

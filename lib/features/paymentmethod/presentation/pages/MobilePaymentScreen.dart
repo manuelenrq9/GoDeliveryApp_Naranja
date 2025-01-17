@@ -125,7 +125,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
   @override
   Widget build(BuildContext context) {
     bool isDarkMode =
-        MediaQuery.of(context).platformBrightness == Brightness.dark;
+        MediaQuery.of(context).platformBrightness == Brightness.light;
 
     return Scaffold(
       appBar: AppBar(
@@ -259,7 +259,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                     child: TextFormField(
                       focusNode: _phoneFocusNode,
                       decoration: InputDecoration(
-                        labelText: 'Número de Referencia',
+                        labelText: 'Número de teléfono',
                         labelStyle: TextStyle(
                             color: isDarkMode ? Colors.white : Colors.black),
                         hintText: '4265634985',
@@ -358,69 +358,19 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                     color: Color.fromARGB(255, 175, 91, 7),
                   ),
                 ),
-              const SizedBox(height: 15),
-              Divider(height: 20, color: Colors.grey.shade400),
-              const SizedBox(height: 15),
               Row(
                 children: [
-                  Expanded(
-                    flex: 2,
-                    child: DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: 'Prefijo',
-                        labelStyle: TextStyle(
-                            color: isDarkMode ? Colors.white : Colors.black),
-                        filled: true,
-                        fillColor: isDarkMode ? Colors.black : Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: Color(0xFFFF7000)),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      dropdownColor: isDarkMode ? Colors.black : Colors.white,
-                      items: [
-                        '+58',
-                        '+1',
-                        '+44',
-                        '+49',
-                        '+34',
-                        '+39',
-                        '+81',
-                        '+86',
-                        '+91'
-                      ].map((String prefix) {
-                        return DropdownMenuItem<String>(
-                          value: prefix,
-                          child: Text(prefix),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        // Handle prefix change if needed
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Seleccione ';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 10),
                   Expanded(
                     flex: 5,
                     child: TextFormField(
                       focusNode: _idFocusNode,
                       decoration: InputDecoration(
-                        labelText: 'Número de telefono',
+                        labelText: 'Número de Referencia',
                         labelStyle: TextStyle(
                             color: isDarkMode ? Colors.white : Colors.black),
-                        hintText: '4265634985',
+                        hintText: '1234567890',
                         prefixIcon: Icon(
-                          Icons.phone,
+                          Icons.confirmation_num,
                           color: _idFocusNode.hasFocus
                               ? Color(0xFFFF7000)
                               : (isDarkMode ? Colors.white : Colors.black),
