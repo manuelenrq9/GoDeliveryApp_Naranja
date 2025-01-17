@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CreditDebitScreen extends StatefulWidget {
-  const CreditDebitScreen({super.key});
+  final String monto;
+  final String currency;
+
+  const CreditDebitScreen({
+    Key? key,
+    required this.monto,
+    required this.currency,
+  }) : super(key: key);
 
   @override
   _CreditDebitScreenState createState() => _CreditDebitScreenState();
@@ -409,7 +416,7 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                   ),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      _confirmarPago(context);
+                      _confirmarPago(context, widget.currency, widget.monto);
                     }
                   },
                   child: const Text(
@@ -425,31 +432,32 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
     );
   }
 
-  void _confirmarPago(BuildContext context) {
-    final String amount = '100.00';
-    final String email = 'user@example.com';
+  void _confirmarPago(BuildContext context, String currency, String monto) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: isDarkMode
+            ? Colors.black
+            : const Color.fromARGB(255, 255, 255, 255),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
         elevation: 24.0,
-        title: const Center(
+        title: Center(
           child: Column(
             children: [
               Icon(
                 Icons.check_circle_outline,
-                color: Color(0xFFFF7000),
+                color: const Color(0xFFFF7000),
                 size: 50,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 'Pago realizado',
                 style: TextStyle(
-                  color: Color(0xFFFF7000),
+                  color: const Color(0xFFFF7000),
                   fontWeight: FontWeight.bold,
                   fontSize: 24,
                 ),
@@ -461,22 +469,14 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Tu pago de \$${amount} ha sido procesado con éxito.',
-              style: const TextStyle(
-                color: Color(0xFF6D4C41),
+              'Tu pago de \$${currency} ${monto} ha sido procesado con éxito.',
+              style: TextStyle(
+                color: isDarkMode ? Colors.white : const Color(0xFF6D4C41),
                 fontSize: 16,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            Text(
-              'Correo: $email',
-              style: const TextStyle(
-                color: Color(0xFF6D4C41),
-                fontSize: 16,
-              ),
-              textAlign: TextAlign.center,
-            ),
           ],
         ),
         actions: [
@@ -486,10 +486,10 @@ class _CreditDebitScreenState extends State<CreditDebitScreen> {
                 Navigator.pop(context);
                 Navigator.pop(context);
               },
-              child: const Text(
+              child: Text(
                 'Aceptar',
                 style: TextStyle(
-                  color: Color(0xFFFF7000),
+                  color: const Color(0xFFFF7000),
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
